@@ -1,13 +1,18 @@
 "use client";
 
-import { ReactNode } from "react";
-import Providers from "./providers";
-import { ToastProvider } from "@/components/ui/ToastContext";
+import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
-export default function ClientLayout({ children }: { children: ReactNode }) {
+export default function ClientLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	return (
-		<Providers>
-			<ToastProvider>{children}</ToastProvider>
-		</Providers>
+		<SessionProvider>
+			{/* Single toast container, top-right only */}
+			<Toaster position="top-right" toastOptions={{ duration: 3500 }} />
+			{children}
+		</SessionProvider>
 	);
 }

@@ -1,99 +1,116 @@
 // lib/checkout.ts
-export type BasketItem = {
-	product_id: string;
-	name: string;
-	price_pence: number;
-	qty: number;
-};
-export type CheckoutPayload = {
-	pickup_date: string; // ISO date, e.g. "2025-01-12"
-	pickup_time: string; // "HH:mm"
-	bag: boolean;
-};
+// Shared helpers for basket + checkout + orders
 
-const BAG_SURCHARGE_PENCE = 70;
+import { setCart, getCart, type CartItem } from "@/lib/cart";
 
-export function readBasket(): BasketItem[] {
-	try {
-		return JSON.parse(localStorage.getItem("basket_v1") || "[]");
-	} catch {
-		return [];
+export type BasketItem = CartItem; // keep one canonical shape
+export const BAG_PENCE = 70;
+
+// Money
+export function formatGBP(pence: number) {
+	return `£${(pence / 100).toFixed(2)}`;
+}
+
+// Date/time helpers
+export function todayISO() {
+	const d = new Date();
+	// Local midnight normalisation
+	const localMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+	return localMidnight.toISOString().slice(0, 10);
+}
+
+export function addDaysISO(iso: string, days: number) {
+	const d = new Date(`${iso}T00:00:00`);
+	d.setDate(d.getDate() + days);
+	return d.toISOString().slice(0, 10);
+}
+
+export function isSunday(iso: string) {
+	const d = new Date(`${iso}T00:00:00`);
+	return d.getDay() === 0;
+}
+
+// Same-day cutoff at 12:00 local time
+export function sameDayCutoffApplies(now = new Date()) {
+	const h = now.getHours();
+	const m = now.getMinutes();
+	return h > 12 || (h === 12 && m >= 0);
+}
+
+export function computeDateBounds(now = new Date()) {
+	const base = todayISO();
+	const earliest = sameDayCutoffApplies(now) ? addDaysISO(base, 1) : base;
+	const max = addDaysISO(earliest, 7);
+	return { minDate: earliest, maxDate: max };
+}
+
+// Time slots (default 30-minute windows 09:00–17:30)
+export function buildSlots(start = "09:00", end = "17:30", stepMins = 30) {
+	const [sh, sm] = start.split(":").map(Number);
+	const [eh, em] = end.split(":").map(Number);
+	const out: string[] = [];
+	let h = sh,
+		m = sm;
+	while (h < eh || (h === eh && m <= em)) {
+		out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+		m += stepMins;
+		if (m >= 60) {
+			h += 1;
+			m -= 60;
+		}
+	}
+	return out;
+}
+
+// ---- Basket storage (delegate to lib/cart) ----
+
+function normalizeToCartItem(raw: any): CartItem | null {
+	if (!raw) return null;
+
+	const product_id = raw.product_id ?? raw.id ?? raw.productId;
+	const name = raw.name ?? raw.title ?? "";
+	const price_pence =
+		Number(
+			raw.price_pence ?? raw.pricePence ?? raw.price_pence_in_minor ?? raw.price
+		) || 0;
+	const qty = Number(raw.qty ?? raw.quantity ?? 1) || 1;
+
+	if (!product_id || !name || price_pence <= 0 || qty <= 0) return null;
+	return { product_id, name, price_pence, qty };
+}
+
+/** Read the basket using the canonical helper. */
+export function readBasketFromStorage(): BasketItem[] {
+	return getCart();
+}
+
+/** Write the entire basket atomically, normalized & collapsed. */
+export function writeBasketToStorage(items: BasketItem[]) {
+	const normalized = (Array.isArray(items) ? items : [])
+		.map(normalizeToCartItem)
+		.filter(Boolean) as CartItem[];
+	setCart(normalized);
+}
+
+export function clearBasketStorage() {
+	if (typeof window !== "undefined") {
+		localStorage.removeItem("basket_v1");
+		localStorage.removeItem("basket"); // legacy
 	}
 }
 
-export function calcTotalPence(items: BasketItem[], bag: boolean) {
-	const sum = items.reduce((acc, it) => acc + it.price_pence * it.qty, 0);
-	return sum + (bag ? BAG_SURCHARGE_PENCE : 0);
+// Totals
+export function calcSubtotal(items: BasketItem[]) {
+	return items.reduce((s, it) => s + it.price_pence * it.qty, 0);
 }
 
-// Jersey time helpers
-function nowInJersey() {
-	// crude but sufficient for client-side: rely on local time (you’re in Jersey)
-	return new Date();
+export function calcGST(subtotalPence: number, bag: boolean) {
+	const base = subtotalPence + (bag ? BAG_PENCE : 0);
+	return Math.round(base * 0.06); // 6%
 }
 
-export function validatePickup(dateISO: string, timeHHmm: string) {
-	if (!dateISO || !timeHHmm) return "Please choose a collection date and time.";
-	const d = new Date(`${dateISO}T${timeHHmm}:00`);
-	const now = nowInJersey();
-
-	// Block Sundays
-	if (d.getDay() === 0) return "No Sunday collections.";
-
-	// Limit to <= 7 days ahead (inclusive)
-	const max = new Date(now);
-	max.setDate(max.getDate() + 7);
-	const onlyDate = new Date(dateISO + "T00:00:00");
-	const today = new Date(now.toISOString().slice(0, 10) + "T00:00:00");
-	if (onlyDate < today) return "Collection date cannot be in the past.";
-	if (onlyDate > max) return "Collection date must be within 7 days.";
-
-	// Same-day cut-off 12:00 Jersey
-	const sameDay = onlyDate.getTime() === today.getTime();
-	if (sameDay) {
-		const cutoff = new Date(today);
-		cutoff.setHours(12, 0, 0, 0); // 12:00
-		if (now > cutoff) return "Same-day orders must be placed before 12:00.";
-	}
-
-	// 30-min slot sanity (basic check)
-	const [hh, mm] = timeHHmm.split(":").map(Number);
-	if (!(mm === 0 || mm === 30)) return "Please choose a 30-minute time slot.";
-
-	return null; // valid
-}
-
-export async function submitOrder(payload: CheckoutPayload) {
-	const items = readBasket();
-	if (!items.length) throw new Error("Your basket is empty.");
-
-	const total_pence = calcTotalPence(items, payload.bag);
-
-	// Minimal, safe order number for now (server can generate later)
-	const order_number = `WEB-${Date.now()}`;
-
-	const res = await fetch("/api/orders", {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		// Your existing POST expects: order_number, status, pickup_date, pickup_time, total_pence
-		body: JSON.stringify({
-			order_number,
-			status: "pending",
-			pickup_date: payload.pickup_date,
-			pickup_time: payload.pickup_time,
-			total_pence,
-			// OPTIONAL: if/when your API accepts items, include them:
-			// items,
-			bag: payload.bag,
-		}),
-	});
-
-	if (!res.ok) {
-		const { error } = await res
-			.json()
-			.catch(() => ({ error: "Failed to place order." }));
-		throw new Error(error || "Failed to place order.");
-	}
-	const json = await res.json();
-	return json.order as { id: string; order_number: string };
+export function calcTotal(items: BasketItem[], bag: boolean) {
+	const subtotal = calcSubtotal(items);
+	const gst = calcGST(subtotal, bag);
+	return subtotal + (bag ? BAG_PENCE : 0) + gst;
 }

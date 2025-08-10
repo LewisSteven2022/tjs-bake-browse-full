@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 const ADMIN_EMAILS = (
@@ -9,37 +10,44 @@ const ADMIN_EMAILS = (
 	.split(",")
 	.map((s) => s.trim().toLowerCase());
 
+function isAdmin(session: any) {
+	const email = (session?.user?.email || "").toLowerCase();
+	const role = (session?.user as any)?.role;
+	return role === "admin" || ADMIN_EMAILS.includes(email);
+}
+
 export default function NavAuth() {
 	const { data: session, status } = useSession();
-	const user = session?.user;
-	const email = (user?.email || "").toLowerCase();
-	const role = (user as any)?.role;
-	const isAdmin = role === "admin" || ADMIN_EMAILS.includes(email);
+	const [admin, setAdmin] = useState(false);
 
-	if (status === "loading") {
-		return <span className="opacity-60">…</span>;
-	}
+	useEffect(() => setAdmin(isAdmin(session)), [session]);
 
-	if (status === "authenticated" && user) {
+	if (status === "loading") return <span className="opacity-50">…</span>;
+
+	if (!session) {
 		return (
-			<div className="flex items-center gap-3">
-				{isAdmin && (
-					<Link href="/admin/orders" className="text-blue-600 hover:underline">
-						Management
-					</Link>
-				)}
-				<button
-					className="text-blue-600 hover:underline"
-					onClick={() => signOut({ callbackUrl: "/" })}>
-					Sign out
-				</button>
-			</div>
+			<button
+				onClick={() => signIn(undefined, { callbackUrl: "/" })}
+				className="rounded-lg border px-3 py-1 hover:bg-gray-50">
+				Sign in
+			</button>
 		);
 	}
 
 	return (
-		<button className="text-blue-600 hover:underline" onClick={() => signIn()}>
-			Sign in
-		</button>
+		<div className="flex items-center gap-3">
+			{admin && (
+				<Link
+					href="/admin"
+					className="rounded-lg bg-blue-500 text-white px-3 py-1 hover:bg-blue-600">
+					Management
+				</Link>
+			)}
+			<button
+				onClick={() => signOut({ callbackUrl: "/" })}
+				className="rounded-lg border px-3 py-1 hover:bg-gray-50">
+				Sign out
+			</button>
+		</div>
 	);
 }

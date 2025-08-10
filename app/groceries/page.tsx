@@ -1,22 +1,42 @@
-"use client";
-import { useEffect, useState } from "react";
-import ProductCard from "@/components/ProductCard";
+// app/groceries/page.tsx
+import ProductGrid, { Product } from "@/components/ProductGrid";
+import { createClient } from "@supabase/supabase-js";
 
-export default function Page() {
-	const [items, setItems] = useState<any[]>([]);
-	useEffect(() => {
-		fetch("/api/products?category=groceries")
-			.then((r) => r.json())
-			.then((j) => setItems(j.products || []));
-	}, []);
+export const revalidate = 60;
+
+async function fetchGroceries(): Promise<Product[]> {
+	const supabase = createClient(
+		process.env.NEXT_PUBLIC_SUPABASE_URL!,
+		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+		{ auth: { persistSession: false } }
+	);
+
+	const { data, error } = await supabase
+		.from("products")
+		.select("id, name, price_pence, image_url, pack_label, allergens")
+		.eq("category", "groceries")
+		.eq("visible", true)
+		.gt("stock", 0)
+		.order("name", { ascending: true });
+
+	if (error) {
+		console.error("fetchGroceries:", error);
+		return [];
+	}
+	return (data ?? []) as Product[];
+}
+
+export default async function GroceriesPage() {
+	const products = await fetchGroceries();
+
 	return (
-		<section className="space-y-4">
-			<h1 className="text-2xl font-semibold">Groceries</h1>
-			<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-				{items.map((p: any) => (
-					<ProductCard key={p.id} p={p} />
-				))}
-			</div>
-		</section>
+		<main className="mx-auto max-w-5xl p-4">
+			<h1 className="mb-4 text-2xl font-semibold">Groceries</h1>
+			{products.length === 0 ? (
+				<p>No groceries available right now.</p>
+			) : (
+				<ProductGrid products={products} />
+			)}
+		</main>
 	);
 }
