@@ -7,9 +7,14 @@ import {
 	setMinutes,
 } from "date-fns";
 
+export type GeneratedTime = {
+	time: string;
+	disabled?: boolean;
+	remaining?: number;
+};
 export type GeneratedDay = {
 	date: string;
-	times: string[];
+	times: GeneratedTime[];
 	disabled?: boolean;
 };
 
@@ -47,9 +52,9 @@ export function generateSlots(
 
 		const start = setMinutes(setHours(new Date(day), oh), om);
 		const end = setMinutes(setHours(new Date(day), ch), cm);
-		const times: string[] = [];
+		const times: GeneratedTime[] = [];
 		for (let t = start; t < end; t = addMinutes(t, stepMinutes)) {
-			times.push(format(t, "HH:mm"));
+			times.push({ time: format(t, "HH:mm") });
 		}
 		out.push({ date: dateStr, times });
 	}

@@ -130,6 +130,17 @@ export default function CheckoutPage() {
 			return;
 		}
 		try {
+			// Re-validate slot availability just before placing the order
+			const r = await fetch(`/api/slots`, { cache: "no-store" });
+			const j = await r.json();
+			const day = (Array.isArray(j.slots) ? j.slots : []).find(
+				(d: any) => d.date === date
+			);
+			const slot = day?.times?.find((t: any) => t.time === time);
+			if (!slot || slot.disabled) {
+				toast.error("That time slot is full. Please choose another.");
+				return;
+			}
 			const payload = {
 				items,
 				bag_opt_in: bag,

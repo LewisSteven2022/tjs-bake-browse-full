@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
 		const total_pence =
 			subtotal_pence + (bag_opt_in ? BAG_PENCE : 0) + gst_pence;
 
-		// --- Capacity check: max 4 per slot (exclude cancelled/rejected) ---
+		// --- Capacity check (exclude cancelled/rejected) ---
+		const CAPACITY = Number(process.env.NEXT_PUBLIC_SLOT_CAPACITY || 5);
 		const { count, error: cErr } = await admin
 			.from("orders")
 			.select("id", { count: "exact", head: true })
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
 		if (cErr) {
 			return NextResponse.json({ error: cErr.message }, { status: 500 });
 		}
-		if ((count ?? 0) >= 4) {
+		if ((count ?? 0) >= CAPACITY) {
 			return NextResponse.json(
 				{ error: "That time slot is full. Please choose another." },
 				{ status: 409 }
