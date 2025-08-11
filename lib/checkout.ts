@@ -12,17 +12,42 @@ export function formatGBP(pence: number) {
 }
 
 // Date/time helpers
-export function todayISO() {
-	const d = new Date();
-	// Local midnight normalisation
-	const localMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-	return localMidnight.toISOString().slice(0, 10);
+export function todayISO(now: Date = new Date()) {
+	// Return YYYY-MM-DD in local time without UTC conversion
+	const year = now.getFullYear();
+	const month = String(now.getMonth() + 1).padStart(2, "0");
+	const day = String(now.getDate()).padStart(2, "0");
+	return `${year}-${month}-${day}`;
+}
+
+export function formatLongDate(iso?: string | null) {
+	if (!iso) return "";
+	const d = new Date(`${iso}T00:00:00`);
+	if (isNaN(d.getTime())) return "";
+
+	const weekday = d.toLocaleDateString("en-GB", { weekday: "long" });
+	const day = d.getDate();
+	const month = d.toLocaleDateString("en-GB", { month: "long" });
+	const year = d.getFullYear();
+
+	// ordinal suffix (1st, 2nd, 3rd, 4th…)
+	const j = day % 10;
+	const k = day % 100;
+	let suffix = "th";
+	if (j === 1 && k !== 11) suffix = "st";
+	else if (j === 2 && k !== 12) suffix = "nd";
+	else if (j === 3 && k !== 13) suffix = "rd";
+
+	return `${weekday} ${day}${suffix} ${month} ${year}`;
 }
 
 export function addDaysISO(iso: string, days: number) {
 	const d = new Date(`${iso}T00:00:00`);
 	d.setDate(d.getDate() + days);
-	return d.toISOString().slice(0, 10);
+	const year = d.getFullYear();
+	const month = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${year}-${month}-${day}`;
 }
 
 export function isSunday(iso: string) {
@@ -38,8 +63,13 @@ export function sameDayCutoffApplies(now = new Date()) {
 }
 
 export function computeDateBounds(now = new Date()) {
-	const base = todayISO();
-	const earliest = sameDayCutoffApplies(now) ? addDaysISO(base, 1) : base;
+	// Start with today or tomorrow depending on the 11:59 cutoff
+	const base = todayISO(now);
+	let earliest = sameDayCutoffApplies(now) ? addDaysISO(base, 1) : base;
+	// Skip Sundays entirely
+	while (isSunday(earliest)) {
+		earliest = addDaysISO(earliest, 1);
+	}
 	const max = addDaysISO(earliest, 7);
 	return { minDate: earliest, maxDate: max };
 }
@@ -49,8 +79,8 @@ export function buildSlots(start = "09:00", end = "17:30", stepMins = 30) {
 	const [sh, sm] = start.split(":").map(Number);
 	const [eh, em] = end.split(":").map(Number);
 	const out: string[] = [];
-	let h = sh,
-		m = sm;
+	let h = sh;
+	let m = sm;
 	while (h < eh || (h === eh && m <= em)) {
 		out.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
 		m += stepMins;
@@ -62,7 +92,7 @@ export function buildSlots(start = "09:00", end = "17:30", stepMins = 30) {
 	return out;
 }
 
-// ---- Basket storage (delegate to lib/cart) ----
+// ---- Basket storage ----
 
 function normalizeToCartItem(raw: any): CartItem | null {
 	if (!raw) return null;
@@ -79,9 +109,10 @@ function normalizeToCartItem(raw: any): CartItem | null {
 	return { product_id, name, price_pence, qty };
 }
 
-/** Read the basket using the canonical helper. */
+/** Always return an array (never null/undefined) */
 export function readBasketFromStorage(): BasketItem[] {
-	return getCart();
+	const cart = getCart();
+	return Array.isArray(cart) ? cart : [];
 }
 
 /** Write the entire basket atomically, normalized & collapsed. */
@@ -101,7 +132,10 @@ export function clearBasketStorage() {
 
 // Totals
 export function calcSubtotal(items: BasketItem[]) {
-	return items.reduce((s, it) => s + it.price_pence * it.qty, 0);
+	return (Array.isArray(items) ? items : []).reduce(
+		(s, it) => s + it.price_pence * it.qty,
+		0
+	);
 }
 
 export function calcGST(subtotalPence: number, bag: boolean) {

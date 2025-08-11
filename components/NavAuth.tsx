@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
 import { useMemo } from "react";
+import { useSession, signOut } from "next-auth/react";
 
 export default function NavAuth() {
 	const { data: session, status } = useSession();
+
 	const email = (session?.user?.email || "").toLowerCase();
 	const role = (session?.user as any)?.role;
 	const adminEmails = (
@@ -19,9 +20,7 @@ export default function NavAuth() {
 		[role, email, adminEmails]
 	);
 
-	if (status === "loading") {
-		return <span className="opacity-60">…</span>;
-	}
+	if (status === "loading") return <span className="opacity-60">…</span>;
 
 	if (!session) {
 		return (

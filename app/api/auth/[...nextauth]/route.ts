@@ -35,11 +35,17 @@ export const authOptions: any = {
 	],
 	callbacks: {
 		async jwt({ token, user }: any) {
-			if (user) token.role = (user as any).role;
+			if (user) {
+				token.role = (user as any).role;
+				// Ensure we carry the user id through to the session
+				token.id = (user as any).id;
+			}
 			return token;
 		},
 		async session({ session, token }: any) {
 			(session.user as any).role = token.role;
+			// Expose id on session.user for server routes
+			(session.user as any).id = (token as any).id || (token as any).sub;
 			return session;
 		},
 	},

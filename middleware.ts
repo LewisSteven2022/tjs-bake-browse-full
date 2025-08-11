@@ -1,6 +1,5 @@
-// middleware.ts (project root)
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+// middleware.ts
+import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { admin } from "@/lib/db";
 
@@ -16,52 +15,61 @@ function isAdminFromToken(token: any) {
 	return role === "admin" || ADMIN_EMAILS.includes(email);
 }
 
-async function logApiRequest(
-	req: NextRequest,
-	message = "Request received (middleware)"
-) {
-	const urlPath = req.nextUrl.pathname;
-	const method = req.method;
-	let body: any = null;
-
-	if (method !== "GET" && method !== "HEAD") {
-		try {
-			body = await req.clone().json();
-		} catch {
-			// ignore non-JSON bodies
-		}
-	}
-
+async function logApiRequest(req: NextRequest) {
 	try {
+		const { pathname } = req.nextUrl;
+		const method = req.method;
+		let body: any = null;
+		if (method !== "GET" && method !== "HEAD") {
+			try {
+				body = await req.clone().json();
+			} catch {}
+		}
 		await admin.from("api_logs").insert({
-			endpoint: urlPath,
+			endpoint: pathname,
 			method,
-			message,
+			message: "Request (middleware)",
 			details: body ? JSON.stringify(body) : null,
 		});
-	} catch (err) {
-		console.error("Failed to save API log to Supabase:", err);
-	}
+	} catch {}
 }
 
 export async function middleware(req: NextRequest) {
 	const { pathname, search } = req.nextUrl;
 
-	// ✅ Log ALL /api/* (including ones we block)
-	if (pathname.startsWith("/api/")) {
-		await logApiRequest(req);
+	// ✅ 0) Never intercept NextAuth’s own routes
+	if (pathname.startsWith("/api/auth")) {
+		return NextResponse.next();
 	}
 
-	// ✅ Guard admin API: /api/admin/**
-	if (pathname.startsWith("/api/admin")) {
+	// in middleware.ts, inside middleware(req)
+	if (pathname.startsWith("/api/cart")) {
 		const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-		if (!token || !isAdminFromToken(token)) {
-			await logApiRequest(req, "Denied (unauthorised admin API)");
-			return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+		if (!token)
+			return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+	}
+
+	// 1) Hard-redirect anon users away from /checkout
+	if (pathname === "/checkout") {
+		const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+		if (!token) {
+			const loginUrl = new URL(
+				`/login?callbackUrl=${encodeURIComponent("/checkout")}`,
+				req.url
+			);
+			return NextResponse.redirect(loginUrl);
 		}
 	}
 
-	// ✅ Guard admin pages: /admin/**
+	// 2) Require auth to PLACE orders
+	if (pathname === "/api/orders" && req.method === "POST") {
+		const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+		if (!token) {
+			return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+		}
+	}
+
+	// 3) Admin page guard
 	if (pathname.startsWith("/admin")) {
 		const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 		if (!token) {
@@ -72,15 +80,26 @@ export async function middleware(req: NextRequest) {
 			return NextResponse.redirect(loginUrl);
 		}
 		if (!isAdminFromToken(token)) {
-			const home = new URL("/", req.url);
-			return NextResponse.redirect(home);
+			return NextResponse.redirect(new URL("/", req.url));
 		}
+	}
+
+	// 4) Admin API guard
+	if (pathname.startsWith("/api/admin/")) {
+		const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+		if (!token || !isAdminFromToken(token)) {
+			return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+		}
+	}
+
+	// 5) Best-effort API logging
+	if (pathname.startsWith("/api/")) {
+		await logApiRequest(req);
 	}
 
 	return NextResponse.next();
 }
 
-// Runs on both admin pages and all API routes
 export const config = {
-	matcher: ["/admin/:path*", "/api/:path*"],
+	matcher: ["/checkout", "/admin/:path*", "/api/:path*"],
 };
