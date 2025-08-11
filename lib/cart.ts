@@ -29,6 +29,11 @@ export async function addItem(i: CartItem) {
 		const j = await res.json().catch(() => ({}));
 		throw new Error(j?.error || "Add failed");
 	}
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("cart:changed", { detail: { delta: i.qty || 1 } })
+		);
+	}
 }
 
 export async function setQty(product_id: string, qty: number) {
@@ -40,6 +45,11 @@ export async function setQty(product_id: string, qty: number) {
 	if (!res.ok) {
 		const j = await res.json().catch(() => ({}));
 		throw new Error(j?.error || "Update failed");
+	}
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("cart:changed", { detail: { recalc: true } })
+		);
 	}
 }
 
@@ -53,11 +63,24 @@ export async function removeItem(product_id: string) {
 		const j = await res.json().catch(() => ({}));
 		throw new Error(j?.error || "Remove failed");
 	}
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("cart:changed", { detail: { recalc: true } })
+		);
+	}
 }
 
 export async function clearCart() {
-	const items = await getCart();
-	await Promise.all(items.map((i) => removeItem(i.product_id)));
+	await fetch("/api/cart", {
+		method: "DELETE",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ all: true }),
+	});
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("cart:changed", { detail: { reset: true } })
+		);
+	}
 }
 
 // --- Legacy shims (keep existing imports working) ---

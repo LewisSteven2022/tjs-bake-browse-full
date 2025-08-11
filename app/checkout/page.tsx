@@ -159,7 +159,7 @@ export default function CheckoutPage() {
 			const data = await res.json();
 			if (!res.ok) throw new Error(data?.error || "Failed to place order.");
 
-			clearCart();
+			await clearCart();
 			toast.success("Order placed!");
 			try {
 				localStorage.setItem("bag_opt_in", JSON.stringify(bag));

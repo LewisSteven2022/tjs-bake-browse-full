@@ -12,6 +12,7 @@ type Product = {
 	visible: boolean;
 	image_url?: string | null;
 	category?: string | null;
+	allergens?: string | string[] | null;
 };
 
 const GBP = (p: number) => `£${(p / 100).toFixed(2)}`;
@@ -44,7 +45,12 @@ export default function AdminInventoryPage() {
 			const res = await fetch("/api/admin/inventory", {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ id: p.id, stock: p.stock, visible: p.visible }),
+				body: JSON.stringify({
+					id: p.id,
+					stock: p.stock,
+					visible: p.visible,
+					allergens: p.allergens,
+				}),
 			});
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
@@ -122,6 +128,7 @@ export default function AdminInventoryPage() {
 								<th className="p-3 text-left">Price</th>
 								<th className="p-3 text-left">Stock</th>
 								<th className="p-3 text-left">Visible</th>
+								<th className="p-3 text-left">Allergens (JSON)</th>
 								<th className="p-3 text-left">Actions</th>
 							</tr>
 						</thead>
@@ -191,6 +198,26 @@ export default function AdminInventoryPage() {
 											/>
 											<span className="text-gray-700">Show</span>
 										</label>
+									</td>
+									<td className="p-3">
+										<input
+											type="text"
+											value={
+												Array.isArray(p.allergens)
+													? JSON.stringify(p.allergens)
+													: p.allergens || ""
+											}
+											onChange={(e) => {
+												const v = e.target.value;
+												setRows((prev) => {
+													const next = [...prev];
+													next[idx] = { ...p, allergens: v };
+													return next;
+												});
+											}}
+											placeholder='["tree_nuts","eggs","milk"]'
+											className="w-64 rounded-lg border px-2 py-1 font-mono text-xs"
+										/>
 									</td>
 									<td className="p-3">
 										<button

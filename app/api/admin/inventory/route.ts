@@ -10,7 +10,7 @@ export async function GET() {
 	try {
 		const { data, error } = await admin
 			.from("products")
-			.select("id,name,price_pence,stock,visible,image_url,category")
+			.select("id,name,price_pence,stock,visible,image_url,category,allergens")
 			.order("name", { ascending: true });
 
 		if (error) throw error;
@@ -24,7 +24,7 @@ export async function GET() {
 }
 
 /** PATCH /api/admin/inventory
- *  Body: { id: string, stock: number, visible: boolean }
+ *  Body: { id: string, stock: number, visible: boolean, allergens?: string | string[] | null }
  *  (Extend later with price updates if you’d like.)
  */
 export async function PATCH(req: NextRequest) {
@@ -33,6 +33,7 @@ export async function PATCH(req: NextRequest) {
 		const id = body?.id as string | undefined;
 		const stock = body?.stock;
 		const visible = body?.visible;
+		let allergens = body?.allergens as string | string[] | null | undefined;
 
 		if (!id || typeof stock !== "number" || typeof visible !== "boolean") {
 			return NextResponse.json(
@@ -50,9 +51,37 @@ export async function PATCH(req: NextRequest) {
 			);
 		}
 
+		// Normalise allergens for Postgres text[] column
+		// Accepts: JSON string ("[\"eggs\"]"), comma-separated string ("eggs, milk"),
+		// or a real array ["eggs", "milk"].
+		let updateFields: any = { stock, visible };
+		if (typeof allergens !== "undefined") {
+			let arr: string[] | null = null;
+			if (Array.isArray(allergens)) {
+				arr = allergens.map((s: any) => String(s).trim()).filter(Boolean);
+			} else if (allergens === null || allergens === "") {
+				arr = [];
+			} else if (typeof allergens === "string") {
+				try {
+					const parsed = JSON.parse(allergens);
+					if (Array.isArray(parsed)) {
+						arr = parsed.map((s: any) => String(s).trim()).filter(Boolean);
+					}
+				} catch {
+					arr = allergens
+						.split(",")
+						.map((s: string) => s.trim())
+						.filter(Boolean);
+				}
+			}
+			if (arr !== null) {
+				updateFields.allergens = arr; // Supabase maps JS arrays to Postgres text[]
+			}
+		}
+
 		const { data, error } = await admin
 			.from("products")
-			.update({ stock, visible })
+			.update(updateFields)
 			.eq("id", id)
 			.select("id")
 			.single();

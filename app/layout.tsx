@@ -2,6 +2,7 @@ import "./globals.css";
 import Link from "next/link";
 import Providers from "./providers";
 import NavAuth from "@/components/NavAuth";
+import NavBasket from "@/components/NavBasket";
 import { Toaster } from "react-hot-toast";
 
 export const metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({
 								<Link href="/about">About us</Link>
 								<Link href="/groceries">Groceries</Link>
 								<Link href="/baked-goods">Baked Goods</Link>
-								<Link href="/basket">Basket</Link>
+								<NavBasket />
 								<NavAuth />
 							</nav>
 						</div>

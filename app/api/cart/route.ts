@@ -148,13 +148,10 @@ export async function DELETE(req: NextRequest) {
 
 		const body = await req.json().catch(() => ({}));
 		const product_id = String(body?.product_id || "").trim();
-		if (!product_id) return err("product_id required", 400);
+		const clearAll = body?.all === true || !product_id;
 
-		const { error } = await admin
-			.from("cart_items")
-			.delete()
-			.eq("user_id", userId)
-			.eq("product_id", product_id);
+		const q = admin.from("cart_items").delete().eq("user_id", userId);
+		const { error } = clearAll ? await q : await q.eq("product_id", product_id);
 
 		if (error) return err(error.message, 500);
 		return ok({ ok: true }, 200);

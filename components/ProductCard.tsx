@@ -4,6 +4,8 @@ import { addItem } from "@/lib/cart";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import AllergenIcons from "./AllergenIcons";
 
 type Product = {
 	id: string;
@@ -19,6 +21,7 @@ export default function ProductCard({ product }: Props) {
 	const { data: session, status } = useSession();
 	const router = useRouter();
 	if (!product) return null;
+	const [flashAdded, setFlashAdded] = useState(false);
 
 	const handleAdd = async () => {
 		if (status !== "loading" && !session) {
@@ -35,6 +38,13 @@ export default function ProductCard({ product }: Props) {
 				qty: 1,
 			});
 			toast.success(`${product.name} added to basket`);
+			if (typeof window !== "undefined") {
+				window.dispatchEvent(
+					new CustomEvent("cart:changed", { detail: { delta: 1 } })
+				);
+			}
+			setFlashAdded(true);
+			setTimeout(() => setFlashAdded(false), 500);
 		} catch (e: any) {
 			toast.error(e?.message || "Could not add to basket");
 		}
@@ -58,9 +68,15 @@ export default function ProductCard({ product }: Props) {
 			<div className="text-sm opacity-70">
 				£{(product.price_pence / 100).toFixed(2)}
 			</div>
+			<AllergenIcons allergens={product.allergens as any} />
 			<button
 				type="button"
-				className="mt-3 rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+				className={`mt-3 rounded-xl px-4 py-2 text-white transition-colors ${
+					flashAdded
+						? "bg-green-600 hover:bg-green-700"
+						: "bg-blue-600 hover:bg-blue-700"
+				}`}
+				id={`add-${product.id}`}
 				onClick={handleAdd}>
 				Add to basket
 			</button>
