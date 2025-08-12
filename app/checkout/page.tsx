@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { toast } from "react-hot-toast";
 
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
 import {
@@ -16,6 +15,11 @@ import {
 	buildSlots,
 } from "@/lib/checkout";
 import DateTimePicker from "@/components/DateTimePicker";
+import {
+	useNotifications,
+	showErrorNotification,
+	showSuccessNotification,
+} from "@/components/NotificationManager";
 
 type Customer = {
 	name: string;
@@ -26,6 +30,7 @@ type Customer = {
 export default function CheckoutPage() {
 	const router = useRouter();
 	const { data: session, status } = useSession();
+	const { showNotification } = useNotifications();
 
 	// --- Soft nudge when not signed in ---
 	if (status !== "loading" && !session) {
@@ -126,7 +131,7 @@ export default function CheckoutPage() {
 	const placeOrder = async () => {
 		const errMsg = validateForm();
 		if (errMsg) {
-			toast.error(errMsg);
+			showErrorNotification(showNotification, "Form Validation Error", errMsg);
 			return;
 		}
 		try {
@@ -138,7 +143,11 @@ export default function CheckoutPage() {
 			);
 			const slot = day?.times?.find((t: any) => t.time === time);
 			if (!slot || slot.disabled) {
-				toast.error("That time slot is full. Please choose another.");
+				showErrorNotification(
+					showNotification,
+					"Time Slot Unavailable",
+					"That time slot is full. Please choose another."
+				);
 				return;
 			}
 			const payload = {
@@ -160,18 +169,30 @@ export default function CheckoutPage() {
 			if (!res.ok) throw new Error(data?.error || "Failed to place order.");
 
 			await clearCart();
-			toast.success("Order placed!");
+			showSuccessNotification(
+				showNotification,
+				"Order Placed Successfully! 🎉",
+				"Your order has been confirmed. You'll receive a confirmation email shortly."
+			);
 			try {
 				localStorage.setItem("bag_opt_in", JSON.stringify(bag));
 				localStorage.setItem("last_customer", JSON.stringify(customer));
 			} catch {}
 
 			const orderId = data?.order_id;
-			router.push(
-				orderId ? `/order-success?order_id=${orderId}` : "/order-success"
-			);
+
+			// Small delay to show the success notification
+			setTimeout(() => {
+				router.push(
+					orderId ? `/order-success?order_id=${orderId}` : "/order-success"
+				);
+			}, 1500);
 		} catch (e: any) {
-			toast.error(e?.message || "Something went wrong.");
+			showErrorNotification(
+				showNotification,
+				"Order Failed",
+				e?.message || "Something went wrong. Please try again."
+			);
 		}
 	};
 

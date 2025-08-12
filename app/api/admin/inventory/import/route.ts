@@ -69,36 +69,27 @@ export async function POST(req: NextRequest) {
 			return Number.isFinite(n) ? n : def;
 		};
 		const cleanArr = (v: string) => {
-			if (!v) return [];
-			// Split on | or ; and normalise to our allergen keys (lowercase, underscores)
+			if (!v || v.trim() === "") return [];
 			return v
-				.split(/[|;]+/)
+				.split("|")
 				.map((s) => s.trim())
-				.filter(Boolean)
-				.map((s) => s.toLowerCase().replace(/\s+/g, "_"));
+				.filter(Boolean);
+		};
+
+		const at = (field: string) => {
+			const i = idx(field);
+			return i >= 0 ? (rows[0]?.split(",")[i] || "").trim() : "";
 		};
 
 		let inserted = 0;
 		let updated = 0;
 		const errors: Array<{ line: number; error: string }> = [];
 
-		// Process in small batches to avoid large payloads; here we do row-by-row for clarity.
 		for (let i = 0; i < rows.length; i++) {
-			const raw = rows[i];
-
-			// Naive CSV split – OK for simple values (no embedded commas/newlines).
-			// If you need robust CSV (quoted commas), we can switch to a tiny parser later.
-			const cols = raw.split(",").map((c) => c.trim());
-
-			function at(col: string) {
-				const j = idx(col);
-				return j >= 0 ? cols[j] ?? "" : "";
-			}
-
 			try {
 				const id = at("id");
 				const name = at("name");
-				const category = at("category");
+				const categorySlug = at("category");
 				const price_pence = toInt(at("price_pence"));
 				const pack_label = at("pack_label") || null;
 				const allergens = cleanArr(at("allergens"));
@@ -108,16 +99,33 @@ export async function POST(req: NextRequest) {
 				const stock = toInt(at("stock"));
 				const visible = toBool(at("visible"));
 
-				if (!name || !category) {
+				if (!name || !categorySlug) {
 					throw new Error("Missing name or category");
 				}
 				if (price_pence < 0 || stock < 0) {
 					throw new Error("price_pence and stock must be non-negative");
 				}
 
+				// Get category_id from slug
+				let category_id = null;
+				if (categorySlug) {
+					const { data: categoryData, error: catError } = await admin
+						.from("categories")
+						.select("id")
+						.eq("slug", categorySlug)
+						.single();
+
+					if (catError || !categoryData) {
+						throw new Error(
+							`Category '${categorySlug}' not found. Please create it first.`
+						);
+					}
+					category_id = categoryData.id;
+				}
+
 				const payload: any = {
 					name,
-					category,
+					category_id,
 					price_pence,
 					pack_label,
 					allergens,

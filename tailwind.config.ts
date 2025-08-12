@@ -1,7 +1,17 @@
-import type { Config } from "tailwindcss";
-const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
-  theme: { extend: { colors: { primary: "#7DB9FF", surface: "#FFFFFF", textbody: "#111827" }, borderRadius: { '2xl': '1rem' } } },
-  plugins: []
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+	content: [
+		"./app/**/*.{js,ts,jsx,tsx,mdx}",
+		"./components/**/*.{js,ts,jsx,tsx,mdx}",
+	],
+	theme: {
+		extend: {
+			colors: {
+				primary: "#3b82f6", // main blue
+				primaryDark: "#1e40af", // deeper blue
+				primaryLight: "#93c5fd", // lighter blue
+			},
+		},
+	},
+	plugins: [],
 };
-export default config;

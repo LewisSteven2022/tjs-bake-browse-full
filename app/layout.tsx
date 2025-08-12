@@ -3,10 +3,10 @@ import Link from "next/link";
 import Providers from "./providers";
 import NavAuth from "@/components/NavAuth";
 import NavBasket from "@/components/NavBasket";
-import { Toaster } from "react-hot-toast";
+import Footer from "@/components/Footer";
 
 export const metadata = {
-	title: "TJ’s Bake & Browse",
+	title: "TJ's Bake & Browse",
 	description: "Click & collect storefront for Jersey",
 };
 
@@ -22,7 +22,7 @@ export default function RootLayout({
 					<header className="border-b bg-white">
 						<div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
 							<Link href="/" className="text-xl font-semibold text-blue-500">
-								TJ’s Bake & Browse
+								TJ's Bake & Browse
 							</Link>
 							<nav className="flex items-center gap-4 text-sm">
 								<Link href="/about">About us</Link>
@@ -34,12 +34,7 @@ export default function RootLayout({
 						</div>
 					</header>
 					<main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
-					<footer className="border-t text-sm text-gray-500 py-6 mt-12">
-						<div className="max-w-5xl mx-auto px-4">
-							© {new Date().getFullYear()} TJ’s Bake & Browse • Jersey •{" "}
-							<Link href="/disclaimer">Disclaimer</Link>
-						</div>
-					</footer>
+					<Footer />
 				</Providers>
 			</body>
 		</html>

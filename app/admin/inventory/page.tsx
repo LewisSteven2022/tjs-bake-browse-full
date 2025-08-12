@@ -2,7 +2,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import { ALLERGENS } from "@/components/AllergenIcons";
+import {
+	useNotifications,
+	showErrorNotification,
+	showSuccessNotification,
+	showInfoNotification,
+} from "@/components/NotificationManager";
+
+type Category = {
+	id: string;
+	name: string;
+	slug: string;
+	description?: string | null;
+};
 
 type Product = {
 	id: string;
@@ -11,8 +24,9 @@ type Product = {
 	stock: number;
 	visible: boolean;
 	image_url?: string | null;
-	category?: string | null;
+	category?: Category | null;
 	allergens?: string | string[] | null;
+	_tempPrice?: string; // Temporary field for price input
 };
 
 const GBP = (p: number) => `£${(p / 100).toFixed(2)}`;
@@ -21,19 +35,73 @@ export default function AdminInventoryPage() {
 	const [rows, setRows] = useState<Product[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [savingId, setSavingId] = useState<string | null>(null);
+	const [editing, setEditing] = useState<{
+		id: string;
+		values: string[];
+	} | null>(null);
+	const [editingCategory, setEditingCategory] = useState<{
+		id: string;
+		categoryId: string | null;
+	} | null>(null);
+	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+	const [categories, setCategories] = useState<Category[]>([]);
+	const [showNewCategory, setShowNewCategory] = useState(false);
+	const [newCategory, setNewCategory] = useState({
+		name: "",
+		slug: "",
+		description: "",
+	});
+	const [hasNewSchema, setHasNewSchema] = useState(false);
+	const { showNotification } = useNotifications();
 
 	async function load() {
 		try {
 			setLoading(true);
-			const res = await fetch("/api/admin/inventory", { cache: "no-store" });
+			const [res, catRes] = await Promise.all([
+				fetch(`/api/admin/inventory?t=${Date.now()}`, { cache: "no-store" }),
+				fetch(`/api/admin/categories?t=${Date.now()}`, {
+					cache: "no-store",
+				}).catch(() => null),
+			]);
+
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
 				throw new Error(j?.error || `Failed to load inventory (${res.status})`);
 			}
+
 			const j = await res.json();
 			setRows(j.products ?? []);
+
+			// Check if categories API is available (indicates new schema)
+			if (catRes && catRes.ok) {
+				const catJ = await catRes.json();
+				setCategories(catJ.categories ?? []);
+				setHasNewSchema(true);
+			} else {
+				setHasNewSchema(false);
+				// Create mock categories from existing product categories
+				const existingCategories = new Set<string>();
+				j.products?.forEach((p: any) => {
+					if (p.category?.name) {
+						existingCategories.add(p.category.name);
+					}
+				});
+				const mockCategories: Category[] = Array.from(existingCategories).map(
+					(name) => ({
+						id: name,
+						name,
+						slug: name.toLowerCase().replace(/\s+/g, "_"),
+						description: `Category: ${name}`,
+					})
+				);
+				setCategories(mockCategories);
+			}
 		} catch (e: any) {
-			toast.error(e?.message || "Failed to load inventory");
+			showErrorNotification(
+				showNotification,
+				"Load Failed",
+				e?.message || "Failed to load data"
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -42,25 +110,150 @@ export default function AdminInventoryPage() {
 	async function saveRow(p: Product) {
 		try {
 			setSavingId(p.id);
+			const payload = {
+				id: p.id,
+				name: p.name,
+				stock: p.stock,
+				visible: p.visible,
+				price_pence: p.price_pence,
+				allergens: p.allergens,
+				...(hasNewSchema && { category_id: p.category?.id || null }),
+			};
+			console.log("Saving product with payload:", payload);
+			console.log(
+				"Price in pence:",
+				p.price_pence,
+				"Price in pounds:",
+				(p.price_pence / 100).toFixed(2)
+			);
+
 			const res = await fetch("/api/admin/inventory", {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					id: p.id,
-					stock: p.stock,
-					visible: p.visible,
-					allergens: p.allergens,
-				}),
+				body: JSON.stringify(payload),
 			});
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
 				throw new Error(j?.error || `Update failed (${res.status})`);
 			}
-			toast.success("Saved");
+			showSuccessNotification(
+				showNotification,
+				"Saved",
+				"Product has been saved successfully."
+			);
+
+			// Update local state immediately for better UX
+			setRows((prevRows) =>
+				prevRows.map((row) => (row.id === p.id ? { ...row, ...payload } : row))
+			);
 		} catch (e: any) {
-			toast.error(e?.message || "Save failed");
+			showErrorNotification(
+				showNotification,
+				"Save Failed",
+				e?.message || "Save failed"
+			);
 		} finally {
 			setSavingId(null);
+		}
+	}
+
+	async function createCategory() {
+		if (!hasNewSchema) {
+			showErrorNotification(
+				showNotification,
+				"Category Management Required",
+				"Category management requires database migration. Please contact support."
+			);
+			return;
+		}
+
+		if (!newCategory.name.trim() || !newCategory.slug.trim()) {
+			showErrorNotification(
+				showNotification,
+				"Missing Information",
+				"Name and slug are required"
+			);
+			return;
+		}
+
+		try {
+			const res = await fetch("/api/admin/categories", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(newCategory),
+			});
+
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				throw new Error(
+					j?.error || `Failed to create category (${res.status})`
+				);
+			}
+
+			showSuccessNotification(
+				showNotification,
+				"Category Created",
+				"New category has been created successfully."
+			);
+			setNewCategory({ name: "", slug: "", description: "" });
+			setShowNewCategory(false);
+			load(); // Reload to get the new category
+		} catch (e: any) {
+			showErrorNotification(
+				showNotification,
+				"Creation Failed",
+				e?.message || "Failed to create category"
+			);
+		}
+	}
+
+	// Handle price input changes in the modal
+	const handlePriceChange = (newPrice: string) => {
+		if (!editingProduct) return;
+
+		// Convert price string to pence (e.g., "2.99" -> 299)
+		const priceMatch = newPrice.match(/£?(\d+\.?\d*)/);
+		if (priceMatch) {
+			const pounds = parseFloat(priceMatch[1]);
+			const pence = Math.round(pounds * 100);
+			setEditingProduct({ ...editingProduct, price_pence: pence });
+		}
+	};
+
+	// Convert pounds to pence for storage
+	const convertPoundsToPence = (pounds: string): number => {
+		const cleanPrice = pounds.replace(/[£,\s]/g, "");
+		const numericPrice = parseFloat(cleanPrice);
+		if (isNaN(numericPrice) || numericPrice < 0) return 0;
+		const pence = Math.round(numericPrice * 100);
+		console.log(
+			`Converting ${pounds} -> ${cleanPrice} -> ${numericPrice} -> ${pence} pence`
+		);
+		return pence;
+	};
+
+	// Format price for display (pence to £ format)
+	const formatPriceForDisplay = (pence: number) => {
+		return `£${(pence / 100).toFixed(2)}`;
+	};
+
+	function startEditingProduct(product: Product) {
+		setEditingProduct(product);
+	}
+
+	function cancelEditingProduct() {
+		setEditingProduct(null);
+	}
+
+	async function saveProductChanges() {
+		if (!editingProduct) return;
+
+		try {
+			await saveRow(editingProduct);
+			setEditingProduct(null);
+			await load(); // Refresh the data
+		} catch (e: any) {
+			// Error already handled in saveRow
 		}
 	}
 
@@ -89,12 +282,20 @@ export default function AdminInventoryPage() {
 							body: fd,
 						});
 						if (res.ok) {
-							toast.success("Import complete");
+							showSuccessNotification(
+								showNotification,
+								"Import Complete",
+								"Products have been imported successfully."
+							);
 							(e.currentTarget as HTMLFormElement).reset();
 							load();
 						} else {
 							const j = await res.json().catch(() => ({}));
-							toast.error(j?.error || "Import failed");
+							showErrorNotification(
+								showNotification,
+								"Import Failed",
+								j?.error || "Import failed"
+							);
 						}
 					}}
 					className="flex items-center gap-2">
@@ -128,7 +329,7 @@ export default function AdminInventoryPage() {
 								<th className="p-3 text-left">Price</th>
 								<th className="p-3 text-left">Stock</th>
 								<th className="p-3 text-left">Visible</th>
-								<th className="p-3 text-left">Allergens (JSON)</th>
+								<th className="p-3 text-left">Allergens</th>
 								<th className="p-3 text-left">Actions</th>
 							</tr>
 						</thead>
@@ -160,77 +361,449 @@ export default function AdminInventoryPage() {
 											</div>
 										</div>
 									</td>
-									<td className="p-3">{p.category || "—"}</td>
-									<td className="p-3">{GBP(p.price_pence)}</td>
-									<td className="p-3">
-										<input
-											type="number"
-											min={0}
-											step={1}
-											value={p.stock}
-											onChange={(e) => {
-												const v = Math.max(
-													0,
-													parseInt(e.target.value || "0", 10)
-												);
-												setRows((prev) => {
-													const next = [...prev];
-													next[idx] = { ...p, stock: v };
-													return next;
-												});
-											}}
-											className="w-24 rounded-lg border px-2 py-1"
-										/>
+									<td className="p-3 min-w-[180px]">
+										<div className="flex items-center gap-2">
+											<span className="truncate max-w-[12ch] text-gray-700">
+												{p.category?.name || "—"}
+											</span>
+											{hasNewSchema && (
+												<button
+													className="rounded-lg border px-2 py-1 hover:bg-gray-50"
+													onClick={() =>
+														setEditingCategory({
+															id: p.id,
+															categoryId: p.category?.id || null,
+														})
+													}>
+													Edit
+												</button>
+											)}
+										</div>
+									</td>
+									<td className="p-3 min-w-[120px]">
+										<span className="font-mono text-sm">
+											{formatPriceForDisplay(p.price_pence)}
+										</span>
 									</td>
 									<td className="p-3">
-										<label className="inline-flex items-center gap-2 cursor-pointer select-none">
-											<input
-												type="checkbox"
-												checked={p.visible}
-												onChange={(e) => {
-													const v = e.target.checked;
-													setRows((prev) => {
-														const next = [...prev];
-														next[idx] = { ...p, visible: v };
-														return next;
-													});
-												}}
-											/>
-											<span className="text-gray-700">Show</span>
-										</label>
+										<span className="font-mono text-sm">{p.stock}</span>
 									</td>
 									<td className="p-3">
-										<input
-											type="text"
-											value={
-												Array.isArray(p.allergens)
-													? JSON.stringify(p.allergens)
-													: p.allergens || ""
-											}
-											onChange={(e) => {
-												const v = e.target.value;
-												setRows((prev) => {
-													const next = [...prev];
-													next[idx] = { ...p, allergens: v };
-													return next;
-												});
-											}}
-											placeholder='["tree_nuts","eggs","milk"]'
-											className="w-64 rounded-lg border px-2 py-1 font-mono text-xs"
-										/>
+										<span
+											className={`text-sm ${
+												p.visible ? "text-green-600" : "text-red-600"
+											}`}>
+											{p.visible ? "Yes" : "No"}
+										</span>
+									</td>
+									<td className="p-3 min-w-[220px]">
+										{(() => {
+											const norm = Array.isArray(p.allergens)
+												? (p.allergens as string[])
+												: typeof p.allergens === "string" &&
+												  p.allergens.trim() !== ""
+												? (() => {
+														try {
+															const j = JSON.parse(p.allergens as string);
+															return Array.isArray(j)
+																? (j as string[])
+																: String(p.allergens)
+																		.split(",")
+																		.map((s) => s.trim())
+																		.filter(Boolean);
+														} catch {
+															return String(p.allergens)
+																.split(",")
+																.map((s) => s.trim())
+																.filter(Boolean);
+														}
+												  })()
+												: [];
+											const summary =
+												norm.length === 0
+													? "None"
+													: norm
+															.map(
+																(k) =>
+																	ALLERGENS[k as keyof typeof ALLERGENS]
+																		?.label || k
+															)
+															.slice(0, 3)
+															.join(", ") +
+													  (norm.length > 3 ? ` +${norm.length - 3}` : "");
+											return (
+												<div className="flex items-center gap-2">
+													<span
+														className="truncate max-w-[14ch] text-gray-700"
+														title={summary}>
+														{summary}
+													</span>
+													<button
+														className="rounded-lg border px-2 py-1 hover:bg-gray-50"
+														onClick={() =>
+															setEditing({ id: p.id, values: norm as string[] })
+														}>
+														Edit
+													</button>
+												</div>
+											);
+										})()}
 									</td>
 									<td className="p-3">
 										<button
-											onClick={() => saveRow(p)}
-											disabled={savingId === p.id}
-											className="rounded-lg border px-3 py-1 hover:bg-gray-50 disabled:opacity-60">
-											{savingId === p.id ? "Saving…" : "Save"}
+											onClick={() => startEditingProduct(p)}
+											className="rounded-lg border px-3 py-1 hover:bg-gray-50">
+											Edit Product
 										</button>
 									</td>
 								</tr>
 							))}
 						</tbody>
 					</table>
+				</div>
+			)}
+
+			{/* Edit Product Modal */}
+			{editingProduct && (
+				<div className="fixed inset-0 z-50">
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={cancelEditingProduct}
+					/>
+					<div className="absolute inset-0 grid place-items-center p-4">
+						<div className="w-full max-w-lg rounded-xl border bg-white p-6 shadow-xl">
+							<h2 className="mb-4 text-lg font-semibold">Edit Product</h2>
+							<div className="space-y-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Product Name
+									</label>
+									<input
+										type="text"
+										value={editingProduct.name}
+										onChange={(e) =>
+											setEditingProduct({
+												...editingProduct,
+												name: e.target.value,
+											})
+										}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="Product name"
+									/>
+								</div>
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Price
+									</label>
+									<div className="flex items-center gap-2">
+										<input
+											type="text"
+											value={
+												editingProduct._tempPrice !== undefined
+													? editingProduct._tempPrice
+													: formatPriceForDisplay(editingProduct.price_pence)
+											}
+											onChange={(e) => {
+												// Update the input value but don't convert yet
+												const newValue = e.target.value;
+												// Only update if it's a valid price format
+												if (
+													/^£?\d*\.?\d*$/.test(newValue.replace(/[£,\s]/g, ""))
+												) {
+													// Store the raw input temporarily
+													setEditingProduct({
+														...editingProduct,
+														_tempPrice: newValue,
+													});
+												}
+											}}
+											onBlur={(e) => {
+												// Convert and validate on blur
+												const pence = convertPoundsToPence(e.target.value);
+												if (pence !== editingProduct.price_pence) {
+													setEditingProduct({
+														...editingProduct,
+														price_pence: pence,
+														_tempPrice: undefined,
+													});
+												}
+											}}
+											className="w-32 rounded-lg border px-3 py-2 text-right font-mono"
+											placeholder="£0.00"
+										/>
+										<span className="text-xs text-gray-500">
+											({editingProduct.price_pence} pence)
+										</span>
+									</div>
+									<p className="text-xs text-gray-500 mt-1">
+										Enter price in pounds (e.g., 2.99 for £2.99)
+									</p>
+								</div>
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Stock Level
+									</label>
+									<input
+										type="number"
+										min={0}
+										step={1}
+										value={editingProduct.stock}
+										onChange={(e) => {
+											const v = Math.max(
+												0,
+												parseInt(e.target.value || "0", 10)
+											);
+											setEditingProduct({ ...editingProduct, stock: v });
+										}}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="0"
+									/>
+								</div>
+								<div>
+									<label className="inline-flex items-center gap-2 cursor-pointer select-none">
+										<input
+											type="checkbox"
+											checked={editingProduct.visible}
+											onChange={(e) =>
+												setEditingProduct({
+													...editingProduct,
+													visible: e.target.checked,
+												})
+											}
+										/>
+										<span className="text-gray-700">
+											Product visible to customers
+										</span>
+									</label>
+								</div>
+							</div>
+							<div className="mt-6 flex justify-end gap-3">
+								<button
+									className="rounded-lg border px-4 py-2 hover:bg-gray-50"
+									onClick={cancelEditingProduct}>
+									Cancel
+								</button>
+								<button
+									className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+									onClick={saveProductChanges}>
+									Save Changes
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Allergens Modal */}
+			{editing && (
+				<div className="fixed inset-0 z-50">
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setEditing(null)}
+					/>
+					<div className="absolute inset-0 grid place-items-center p-4">
+						<div className="w-full max-w-lg rounded-xl border bg-white p-4 shadow-xl">
+							<h2 className="mb-3 text-lg font-semibold">Edit allergens</h2>
+							<div className="grid grid-cols-2 gap-2 max-h-64 overflow-auto">
+								{Object.entries(ALLERGENS)
+									.sort((a, b) => a[1].label.localeCompare(b[1].label))
+									.map(([key, meta]) => {
+										const checked = editing.values.includes(key);
+										return (
+											<label
+												key={key}
+												className="inline-flex items-center gap-2 cursor-pointer select-none">
+												<input
+													type="checkbox"
+													checked={checked}
+													onChange={(e) => {
+														const next = e.target.checked
+															? [...editing.values, key]
+															: editing.values.filter((k) => k !== key);
+														setEditing({ ...editing, values: next });
+													}}
+												/>
+												<span>{meta.label}</span>
+											</label>
+										);
+									})}
+							</div>
+							<div className="mt-4 flex justify-end gap-2">
+								<button
+									className="rounded-lg border px-3 py-1 hover:bg-gray-50"
+									onClick={() => setEditing(null)}>
+									Cancel
+								</button>
+								<button
+									className="rounded-lg bg-blue-600 px-3 py-1 text-white hover:bg-blue-700"
+									onClick={async () => {
+										const newRows = rows.map((r) =>
+											r.id === editing.id
+												? { ...r, allergens: editing.values }
+												: r
+										);
+										setRows(newRows);
+										const updated = newRows.find((r) => r.id === editing.id);
+										if (updated) await saveRow(updated);
+										setEditing(null);
+									}}>
+									Save
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Category Modal - Only show if new schema is available */}
+			{editingCategory && hasNewSchema && (
+				<div className="fixed inset-0 z-50">
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setEditingCategory(null)}
+					/>
+					<div className="absolute inset-0 grid place-items-center p-4">
+						<div className="w-full max-w-lg rounded-xl border bg-white p-4 shadow-xl">
+							<h2 className="mb-3 text-lg font-semibold">Edit category</h2>
+							<div className="space-y-3">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Select Category
+									</label>
+									<select
+										value={editingCategory.categoryId || ""}
+										onChange={(e) =>
+											setEditingCategory({
+												...editingCategory,
+												categoryId: e.target.value || null,
+											})
+										}
+										className="w-full rounded-lg border px-3 py-2">
+										<option value="">No category</option>
+										{categories.map((cat) => (
+											<option key={cat.id} value={cat.id}>
+												{cat.name}
+											</option>
+										))}
+									</select>
+								</div>
+								<div className="pt-2">
+									<button
+										className="text-blue-600 hover:text-blue-700 text-sm"
+										onClick={() => setShowNewCategory(true)}>
+										+ Add new category
+									</button>
+								</div>
+							</div>
+							<div className="mt-4 flex justify-end gap-2">
+								<button
+									className="rounded-lg border px-3 py-1 hover:bg-gray-50"
+									onClick={() => setEditingCategory(null)}>
+									Cancel
+								</button>
+								<button
+									className="rounded-lg bg-blue-600 px-3 py-1 text-white hover:bg-blue-700"
+									onClick={async () => {
+										const newRows = rows.map((r) =>
+											r.id === editingCategory.id
+												? {
+														...r,
+														category:
+															categories.find(
+																(c) => c.id === editingCategory.categoryId
+															) || null,
+												  }
+												: r
+										);
+										setRows(newRows);
+										const updated = newRows.find(
+											(r) => r.id === editingCategory.id
+										);
+										if (updated) await saveRow(updated);
+										setEditingCategory(null);
+									}}>
+									Save
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* New Category Modal - Only show if new schema is available */}
+			{showNewCategory && hasNewSchema && (
+				<div className="fixed inset-0 z-50">
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setShowNewCategory(false)}
+					/>
+					<div className="absolute inset-0 grid place-items-center p-4">
+						<div className="w-full max-w-lg rounded-xl border bg-white p-4 shadow-xl">
+							<h2 className="mb-3 text-lg font-semibold">Add new category</h2>
+							<div className="space-y-3">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Name
+									</label>
+									<input
+										type="text"
+										value={newCategory.name}
+										onChange={(e) =>
+											setNewCategory({ ...newCategory, name: e.target.value })
+										}
+										placeholder="e.g., Beverages"
+										className="w-full rounded-lg border px-3 py-2"
+									/>
+								</div>
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Slug
+									</label>
+									<input
+										type="text"
+										value={newCategory.slug}
+										onChange={(e) =>
+											setNewCategory({ ...newCategory, slug: e.target.value })
+										}
+										placeholder="e.g., beverages"
+										className="w-full rounded-lg border px-3 py-2"
+									/>
+									<p className="text-xs text-gray-500 mt-1">
+										Lowercase letters, numbers, and underscores only
+									</p>
+								</div>
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Description (optional)
+									</label>
+									<textarea
+										value={newCategory.description}
+										onChange={(e) =>
+											setNewCategory({
+												...newCategory,
+												description: e.target.value,
+											})
+										}
+										placeholder="Brief description of this category"
+										rows={3}
+										className="w-full rounded-lg border px-3 py-2"
+									/>
+								</div>
+							</div>
+							<div className="mt-4 flex justify-end gap-2">
+								<button
+									className="rounded-lg border px-3 py-2 hover:bg-gray-50"
+									onClick={() => setShowNewCategory(false)}>
+									Cancel
+								</button>
+								<button
+									className="rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700"
+									onClick={createCategory}>
+									Create Category
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>

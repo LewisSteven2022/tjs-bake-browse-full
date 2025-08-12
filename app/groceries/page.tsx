@@ -1,8 +1,20 @@
-// app/groceries/page.tsx
-import ProductGrid, { Product } from "@/components/ProductGrid";
 import { createClient } from "@supabase/supabase-js";
+import ParallaxHero from "@/components/ParallaxHero";
+import ProductGrid from "@/components/ProductGrid";
 
-export const revalidate = 60;
+export type Product = {
+	id: string;
+	name: string;
+	price_pence: number;
+	image_url?: string | null;
+	pack_label?: string | null;
+	allergens?: string[] | null;
+	category?: {
+		id: string;
+		name: string;
+		slug: string;
+	} | null;
+};
 
 async function fetchGroceries(): Promise<Product[]> {
 	const supabase = createClient(
@@ -13,8 +25,19 @@ async function fetchGroceries(): Promise<Product[]> {
 
 	const { data, error } = await supabase
 		.from("products")
-		.select("id, name, price_pence, image_url, pack_label, allergens")
-		.eq("category", "groceries")
+		.select(
+			`
+      id,
+      name,
+      price_pence,
+      image_url,
+      pack_label,
+      allergens,
+      category_id,
+      categories!inner(id, name, slug)
+    `
+		)
+		.eq("categories.slug", "groceries")
 		.eq("visible", true)
 		.gt("stock", 0)
 		.order("name", { ascending: true });
@@ -23,20 +46,69 @@ async function fetchGroceries(): Promise<Product[]> {
 		console.error("fetchGroceries:", error);
 		return [];
 	}
-	return (data ?? []) as Product[];
+
+	// Normalise allergens + flatten category
+	const products = (data ?? []).map((product) => {
+		let normalizedAllergens: string[] | null = null;
+		if (Array.isArray(product.allergens)) {
+			normalizedAllergens = product.allergens;
+		} else if (
+			typeof product.allergens === "string" &&
+			product.allergens.trim() !== ""
+		) {
+			try {
+				const parsed = JSON.parse(product.allergens);
+				normalizedAllergens = Array.isArray(parsed)
+					? parsed
+					: [product.allergens];
+			} catch {
+				normalizedAllergens = product.allergens
+					.split(",")
+					.map((s: string) => s.trim())
+					.filter(Boolean);
+			}
+		}
+
+		return {
+			...product,
+			allergens: normalizedAllergens,
+			category:
+				product.categories &&
+				Array.isArray(product.categories) &&
+				product.categories.length > 0
+					? {
+							id: product.categories[0].id,
+							name: product.categories[0].name,
+							slug: product.categories[0].slug,
+					  }
+					: null,
+		};
+	});
+
+	return products as Product[];
 }
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function GroceriesPage() {
 	const products = await fetchGroceries();
 
 	return (
-		<main className="mx-auto max-w-5xl p-4">
-			<h1 className="mb-4 text-2xl font-semibold">Groceries</h1>
-			{products.length === 0 ? (
-				<p>No groceries available right now.</p>
-			) : (
+		<main className="bg-white">
+			<ParallaxHero
+				title="Our Groceries"
+				subtitle="Quality ingredients for allergen-conscious cooking."
+				image="/images/dry-goods.jpg"
+				height="300px"
+			/>
+
+			<section className="max-w-6xl mx-auto px-4 py-16">
+				<h1 className="mb-8 text-3xl font-bold text-primaryDark">
+					Browse Groceries
+				</h1>
 				<ProductGrid products={products} />
-			)}
+			</section>
 		</main>
 	);
 }

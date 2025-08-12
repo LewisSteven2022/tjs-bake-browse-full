@@ -4,11 +4,24 @@ import { admin } from "@/lib/db";
 
 // GET /api/admin/inventory/export
 export async function GET() {
-	// Select a comprehensive, safe set of columns we’ve used across the app
+	// Select a comprehensive, safe set of columns we've used across the app
 	const { data, error } = await admin
 		.from("products")
 		.select(
-			"id,name,category,price_pence,pack_label,allergens,ingredients,short_description,image_url,stock,visible"
+			`
+			id,
+			name,
+			category_id,
+			categories!inner(id, name, slug),
+			price_pence,
+			pack_label,
+			allergens,
+			ingredients,
+			short_description,
+			image_url,
+			stock,
+			visible
+		`
 		)
 		.order("name", { ascending: true });
 
@@ -47,10 +60,14 @@ export async function GET() {
 		const allergensJoined = Array.isArray(r.allergens)
 			? r.allergens.join("|")
 			: "";
+		const categorySlug =
+			r.categories && Array.isArray(r.categories) && r.categories.length > 0
+				? r.categories[0].slug
+				: "";
 		const line = [
 			esc(r.id),
 			esc(r.name),
-			esc(r.category ?? ""),
+			esc(categorySlug),
 			esc(r.price_pence ?? ""),
 			esc(r.pack_label ?? ""),
 			esc(allergensJoined),

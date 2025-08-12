@@ -1,12 +1,11 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
-import { Toaster } from "react-hot-toast";
+import { NotificationProvider } from "@/components/NotificationManager";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
 	return (
 		<SessionProvider>
-			{children}
-			<Toaster position="top-right" />
+			<NotificationProvider>{children}</NotificationProvider>
 		</SessionProvider>
 	);
 }

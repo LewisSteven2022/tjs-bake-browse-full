@@ -4,6 +4,12 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+// import { mergeGuestCart } from "@/lib/cart";
+import {
+	useNotifications,
+	showErrorNotification,
+	showSuccessNotification,
+} from "@/components/NotificationManager";
 
 export default function RegisterPage() {
 	const router = useRouter();
@@ -12,12 +18,12 @@ export default function RegisterPage() {
 	const [mobile, setMobile] = useState("");
 	const [password, setPassword] = useState("");
 	const [busy, setBusy] = useState(false);
-	const [err, setErr] = useState<string | null>(null);
+	const { showNotification } = useNotifications();
 
 	async function onSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		setBusy(true);
-		setErr(null);
+
 		const res = await fetch("/api/auth/register", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -26,7 +32,11 @@ export default function RegisterPage() {
 		const j = await res.json().catch(() => ({}));
 		if (!res.ok) {
 			setBusy(false);
-			setErr(j?.error || "Registration failed");
+			showErrorNotification(
+				showNotification,
+				"Registration Failed",
+				j?.error || "Registration failed. Please try again."
+			);
 			return;
 		}
 		// Auto sign-in after register
@@ -37,7 +47,27 @@ export default function RegisterPage() {
 			callbackUrl: "/",
 		});
 		setBusy(false);
-		if (si && !si.error) router.push("/");
+		if (si && !si.error) {
+			// Merge guest cart after successful registration and sign-in
+			// TODO: Implement guest cart merging functionality
+			// try {
+			// 	await mergeGuestCart();
+			// } catch (error) {
+			// 	console.error("Failed to merge guest cart:", error);
+			// 	// Don't block registration if cart merge fails
+			// }
+
+			showSuccessNotification(
+				showNotification,
+				"Welcome to TJ's! 🎉",
+				"Account created successfully! You're now signed in and ready to shop."
+			);
+
+			// Small delay to show the success notification
+			setTimeout(() => {
+				router.push("/");
+			}, 1000);
+		}
 	}
 
 	return (
@@ -85,18 +115,17 @@ export default function RegisterPage() {
 						required
 					/>
 				</div>
-				{err && <p className="text-sm text-red-600">{err}</p>}
 				<button
 					type="submit"
 					disabled={busy}
-					className="w-full rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60">
-					{busy ? "Creating account…" : "Create account"}
+					className="w-full rounded-xl bg-primary px-3 py-2 text-white hover:bg-primaryDark disabled:opacity-50">
+					{busy ? "Creating account..." : "Create Account"}
 				</button>
 			</form>
-			<p className="mt-4 text-sm">
+			<p className="mt-4 text-center text-sm text-gray-600">
 				Already have an account?{" "}
-				<Link className="text-blue-600 hover:underline" href="/login">
-					Sign in
+				<Link href="/login" className="text-primary hover:underline">
+					Sign in here
 				</Link>
 			</p>
 		</main>

@@ -4,19 +4,8 @@ import React from "react";
 // Canonical allergen keys → label and icon path under /public/icons/allergens
 export const ALLERGENS: Record<string, { label: string; icon: string }> = {
 	celery: { label: "Celery", icon: "/icons/allergens/celery.svg" },
-	cereals_containing_gluten: {
-		label: "Cereals containing gluten",
-		icon: "/icons/allergens/cereals_containing_gluten.svg",
-	},
-	crustaceans: {
-		label: "Crustaceans",
-		icon: "/icons/allergens/crustaceans.svg",
-	},
 	eggs: { label: "Eggs", icon: "/icons/allergens/eggs.svg" },
-	fish: { label: "Fish", icon: "/icons/allergens/fish.svg" },
-	lupin: { label: "Lupin", icon: "/icons/allergens/lupin.svg" },
 	milk: { label: "Milk", icon: "/icons/allergens/milk.svg" },
-	molluscs: { label: "Molluscs", icon: "/icons/allergens/molluscs.svg" },
 	mustard: { label: "Mustard", icon: "/icons/allergens/mustard.svg" },
 	peanuts: { label: "Peanuts", icon: "/icons/allergens/peanuts.svg" },
 	sesame: { label: "Sesame", icon: "/icons/allergens/sesame.svg" },
@@ -25,7 +14,7 @@ export const ALLERGENS: Record<string, { label: string; icon: string }> = {
 		label: "Sulphur dioxide",
 		icon: "/icons/allergens/sulphur_dioxide.svg",
 	},
-	tree_nuts: { label: "Tree nuts", icon: "/icons/allergens/tree_nuts.svg" },
+	nuts: { label: "Nuts", icon: "/icons/allergens/tree_nuts.svg" },
 };
 
 export type AllergenKey = keyof typeof ALLERGENS;

@@ -8,13 +8,78 @@ import { admin } from "@/lib/db";
  */
 export async function GET() {
 	try {
-		const { data, error } = await admin
-			.from("products")
-			.select("id,name,price_pence,stock,visible,image_url,category,allergens")
-			.order("name", { ascending: true });
+		// First, check if the new categories table exists
+		const { data: tableCheck, error: tableError } = await admin
+			.from("information_schema.tables")
+			.select("table_name")
+			.eq("table_name", "categories")
+			.eq("table_schema", "public")
+			.single();
 
-		if (error) throw error;
-		return NextResponse.json({ products: data ?? [] }, { status: 200 });
+		const hasNewSchema = !tableError && tableCheck;
+
+		if (hasNewSchema) {
+			// Use new schema with categories table
+			const { data, error } = await admin
+				.from("products")
+				.select(
+					`
+					id,
+					name,
+					price_pence,
+					stock,
+					visible,
+					image_url,
+					category_id,
+					allergens,
+					categories(id, name, slug)
+				`
+				)
+				.order("name", { ascending: true });
+
+			if (error) throw error;
+
+			// Transform the data to flatten the category info
+			const products = (data ?? []).map((product) => ({
+				...product,
+				category:
+					product.categories &&
+					Array.isArray(product.categories) &&
+					product.categories.length > 0
+						? {
+								id: product.categories[0].id,
+								name: product.categories[0].name,
+								slug: product.categories[0].slug,
+						  }
+						: null,
+			}));
+
+			return NextResponse.json({ products }, { status: 200 });
+		} else {
+			// Fall back to old schema with category string
+			const { data, error } = await admin
+				.from("products")
+				.select(
+					"id,name,price_pence,stock,visible,image_url,category,allergens"
+				)
+				.order("name", { ascending: true });
+
+			if (error) throw error;
+
+			// Transform old category string to new format for compatibility
+			const products = (data ?? []).map((product) => ({
+				...product,
+				category: product.category
+					? {
+							id: null,
+							name: product.category,
+							slug: product.category,
+					  }
+					: null,
+			}));
+
+			return NextResponse.json({ products }, { status: 200 });
+		}
 	} catch (e: any) {
 		return NextResponse.json(
 			{ error: e?.message ?? "Failed to load inventory" },
@@ -24,77 +89,181 @@ export async function GET() {
 }
 
 /** PATCH /api/admin/inventory
- *  Body: { id: string, stock: number, visible: boolean, allergens?: string | string[] | null }
- *  (Extend later with price updates if you’d like.)
+ *  Updates a product's stock, visibility, allergens, price, or category.
  */
 export async function PATCH(req: NextRequest) {
 	try {
-		const body = await req.json().catch(() => null);
-		const id = body?.id as string | undefined;
-		const stock = body?.stock;
-		const visible = body?.visible;
-		let allergens = body?.allergens as string | string[] | null | undefined;
+		const body = await req.json();
+		const { id, name, stock, visible, allergens, price_pence, category_id } =
+			body;
 
-		if (!id || typeof stock !== "number" || typeof visible !== "boolean") {
+		if (!id) {
 			return NextResponse.json(
-				{
-					error:
-						"Fields required: id (string), stock (number), visible (boolean)",
-				},
-				{ status: 400 }
-			);
-		}
-		if (!Number.isInteger(stock) || stock < 0) {
-			return NextResponse.json(
-				{ error: "stock must be a non-negative integer" },
+				{ error: "Product ID is required" },
 				{ status: 400 }
 			);
 		}
 
-		// Normalise allergens for Postgres text[] column
-		// Accepts: JSON string ("[\"eggs\"]"), comma-separated string ("eggs, milk"),
-		// or a real array ["eggs", "milk"].
-		let updateFields: any = { stock, visible };
-		if (typeof allergens !== "undefined") {
-			let arr: string[] | null = null;
+		// Check if new schema exists
+		const { data: tableCheck, error: tableError } = await admin
+			.from("information_schema.tables")
+			.select("table_name")
+			.eq("table_name", "categories")
+			.eq("table_schema", "public")
+			.single();
+
+		const hasNewSchema = !tableError && tableCheck;
+
+		const updates: any = {};
+
+		// Handle stock updates
+		if (stock !== undefined) {
+			if (typeof stock !== "number" || stock < 0) {
+				return NextResponse.json(
+					{ error: "Stock must be a non-negative number" },
+					{ status: 400 }
+				);
+			}
+			updates.stock = stock;
+		}
+
+		// Handle visibility updates
+		if (visible !== undefined) {
+			if (typeof visible !== "boolean") {
+				return NextResponse.json(
+					{ error: "Visible must be a boolean value" },
+					{ status: 400 }
+				);
+			}
+			updates.visible = visible;
+		}
+
+		// Handle price updates
+		if (price_pence !== undefined) {
+			if (typeof price_pence !== "number" || price_pence < 0) {
+				return NextResponse.json(
+					{ error: "Price must be a non-negative number" },
+					{ status: 400 }
+				);
+			}
+			// Ensure price is stored as pence (whole number)
+			updates.price_pence = Math.round(price_pence);
+		}
+
+		// Handle allergen updates
+		if (allergens !== undefined) {
+			// Normalise allergens to string array
 			if (Array.isArray(allergens)) {
-				arr = allergens.map((s: any) => String(s).trim()).filter(Boolean);
-			} else if (allergens === null || allergens === "") {
-				arr = [];
+				updates.allergens = allergens;
 			} else if (typeof allergens === "string") {
 				try {
 					const parsed = JSON.parse(allergens);
-					if (Array.isArray(parsed)) {
-						arr = parsed.map((s: any) => String(s).trim()).filter(Boolean);
-					}
+					updates.allergens = Array.isArray(parsed) ? parsed : [allergens];
 				} catch {
-					arr = allergens
+					updates.allergens = allergens
 						.split(",")
 						.map((s: string) => s.trim())
 						.filter(Boolean);
 				}
-			}
-			if (arr !== null) {
-				updateFields.allergens = arr; // Supabase maps JS arrays to Postgres text[]
+			} else {
+				updates.allergens = [];
 			}
 		}
 
-		const { data, error } = await admin
-			.from("products")
-			.update(updateFields)
-			.eq("id", id)
-			.select("id")
-			.single();
-
-		if (error) throw error;
-		if (!data) {
-			return NextResponse.json({ error: "Product not found" }, { status: 404 });
+		// Handle category updates (only if new schema exists)
+		if (hasNewSchema && category_id !== undefined) {
+			updates.category_id = category_id;
 		}
 
-		return NextResponse.json({ ok: true, id: data.id }, { status: 200 });
+		// Handle name updates
+		if (name !== undefined) {
+			if (typeof name !== "string" || name.trim().length === 0) {
+				return NextResponse.json(
+					{ error: "Name must be a non-empty string" },
+					{ status: 400 }
+				);
+			}
+			updates.name = name.trim();
+		}
+
+		if (Object.keys(updates).length === 0) {
+			return NextResponse.json(
+				{ error: "No fields to update" },
+				{ status: 400 }
+			);
+		}
+
+		updates.updated_at = new Date().toISOString();
+
+		if (hasNewSchema) {
+			// Use new schema
+			const { data, error } = await admin
+				.from("products")
+				.update(updates)
+				.eq("id", id)
+				.select(
+					`
+					id,
+					name,
+					price_pence,
+					stock,
+					visible,
+					image_url,
+					category_id,
+					allergens,
+					categories(id, name, slug)
+				`
+				)
+				.single();
+
+			if (error) throw error;
+
+			// Transform the response to flatten category info
+			const product = {
+				...data,
+				category:
+					data.categories &&
+					Array.isArray(data.categories) &&
+					data.categories.length > 0
+						? {
+								id: data.categories[0].id,
+								name: data.categories[0].name,
+								slug: data.categories[0].slug,
+						  }
+						: null,
+			};
+
+			return NextResponse.json({ product }, { status: 200 });
+		} else {
+			// Use old schema
+			const { data, error } = await admin
+				.from("products")
+				.update(updates)
+				.eq("id", id)
+				.select(
+					"id,name,price_pence,stock,visible,image_url,category,allergens"
+				)
+				.single();
+
+			if (error) throw error;
+
+			// Transform old category string to new format
+			const product = {
+				...data,
+				category: data.category
+					? {
+							id: null,
+							name: data.category,
+							slug: data.category,
+					  }
+					: null,
+			};
+
+			return NextResponse.json({ product }, { status: 200 });
+		}
 	} catch (e: any) {
 		return NextResponse.json(
-			{ error: e?.message ?? "Failed to update inventory" },
+			{ error: e?.message ?? "Failed to update product" },
 			{ status: 500 }
 		);
 	}

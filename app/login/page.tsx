@@ -4,8 +4,13 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { toast } from "react-hot-toast";
 import Link from "next/link";
+// import { mergeGuestCart } from "@/lib/cart";
+import {
+	useNotifications,
+	showErrorNotification,
+	showSuccessNotification,
+} from "@/components/NotificationManager";
 
 function mapNextAuthError(code?: string | null): string {
 	switch (code) {
@@ -28,21 +33,30 @@ export default function LoginPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [busy, setBusy] = useState(false);
+	const { showNotification } = useNotifications();
 
 	const callbackUrl = searchParams.get("callbackUrl") || "/";
 
-	// If NextAuth redirected here with ?error=..., show a friendly toast
+	// If NextAuth redirected here with ?error=..., show a friendly notification
 	useEffect(() => {
 		const err = searchParams.get("error");
 		if (err) {
-			toast.error(mapNextAuthError(err));
+			showErrorNotification(
+				showNotification,
+				"Sign In Error",
+				mapNextAuthError(err)
+			);
 		}
-	}, [searchParams]);
+	}, [searchParams, showNotification]);
 
 	async function onSubmit(e: React.FormEvent) {
 		e.preventDefault();
 		if (!email || !password) {
-			toast.error("Please enter your email and password.");
+			showErrorNotification(
+				showNotification,
+				"Missing Information",
+				"Please enter your email and password."
+			);
 			return;
 		}
 		setBusy(true);
@@ -55,66 +69,84 @@ export default function LoginPage() {
 			});
 
 			if (res?.error) {
-				toast.error(mapNextAuthError(res.error));
+				showErrorNotification(
+					showNotification,
+					"Sign In Failed",
+					mapNextAuthError(res.error)
+				);
 				setBusy(false);
 				return;
 			}
 
-			toast.success("Signed in. Welcome back!");
-			router.push(callbackUrl);
-			router.refresh();
+			// Merge guest cart after successful login
+			// TODO: Implement guest cart merging functionality
+			// try {
+			// 	await mergeGuestCart();
+			// } catch (error) {
+			// 	console.error("Failed to merge guest cart:", error);
+			// 	// Don't block login if cart merge fails
+			// }
+
+			showSuccessNotification(
+				showNotification,
+				"Welcome Back! 🎉",
+				"Successfully signed in. Welcome back to TJ's Bake & Browse!"
+			);
+
+			// Small delay to show the success notification
+			setTimeout(() => {
+				router.push(callbackUrl);
+				router.refresh();
+			}, 1000);
 		} catch (err: any) {
-			toast.error("Unable to sign in. Please try again.");
+			showErrorNotification(
+				showNotification,
+				"Sign In Error",
+				"Unable to sign in. Please try again."
+			);
 			setBusy(false);
 		}
 	}
 
 	return (
-		<main className="mx-auto max-w-md p-4">
-			<h1 className="mb-4 text-2xl font-semibold">Sign in</h1>
-			<form
-				onSubmit={onSubmit}
-				className="space-y-3 rounded-2xl border bg-white p-4">
+		<main className="mx-auto max-w-md p-6">
+			<h1 className="mb-4 text-2xl font-semibold">Sign In</h1>
+			<form onSubmit={onSubmit} className="space-y-3">
 				<div>
 					<label className="block text-sm text-gray-600">Email</label>
 					<input
-						type="email"
 						className="mt-1 w-full rounded-xl border px-3 py-2"
+						type="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						placeholder="you@example.com"
 						autoComplete="email"
 						required
 					/>
 				</div>
-
 				<div>
 					<label className="block text-sm text-gray-600">Password</label>
 					<input
-						type="password"
 						className="mt-1 w-full rounded-xl border px-3 py-2"
+						type="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						placeholder="••••••••"
 						autoComplete="current-password"
 						required
 					/>
 				</div>
-
 				<button
 					type="submit"
 					disabled={busy}
-					className="w-full rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-60">
-					{busy ? "Signing in…" : "Sign in"}
+					className="w-full rounded-xl bg-primary px-3 py-2 text-white hover:bg-primaryDark disabled:opacity-50">
+					{busy ? "Signing in..." : "Sign In"}
 				</button>
-
-				<p className="text-sm text-gray-600">
-					Don’t have an account?{" "}
-					<Link className="text-blue-600 hover:underline" href="/register">
-						Register
-					</Link>
-				</p>
 			</form>
+			<p className="mt-4 text-center text-sm text-gray-600">
+				Don't have an account?{" "}
+				<Link href="/register" className="text-primary hover:underline">
+					Register here
+				</Link>
+			</p>
 		</main>
 	);
 }

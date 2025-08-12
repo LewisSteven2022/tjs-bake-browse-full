@@ -42,3 +42,44 @@ exception
     raise;
 end;
 $$;
+
+-- Create categories table
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text unique not null,
+  slug text unique not null,
+  description text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- Insert default categories
+insert into public.categories (name, slug, description) values
+  ('Baked Goods', 'baked_goods', 'Freshly baked breads, pastries, and desserts'),
+  ('Groceries', 'groceries', 'General grocery items and ingredients')
+on conflict (slug) do nothing;
+
+-- Add category_id column to products table if it doesn't exist
+do $$
+begin
+  if not exists (select 1 from information_schema.columns where table_name = 'products' and column_name = 'category_id') then
+    alter table public.products add column category_id uuid references public.categories(id);
+    
+    -- Migrate existing category data
+    update public.products set category_id = c.id
+    from public.categories c
+    where products.category = c.slug;
+    
+    -- Make category_id not null after migration
+    alter table public.products alter column category_id set not null;
+    
+    -- Drop the old category column
+    alter table public.products drop column category;
+  end if;
+end $$;
+
+-- Enable RLS on categories
+alter table public.categories enable row level security;
+
+-- Create policy for categories (read-only for now)
+create policy if not exists categories_read on public.categories for select using (true);

@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // ensure you export authOptions there
+import { authOptions } from "@/lib/auth";
 
 const ADMIN_EMAILS = (
 	process.env.NEXT_PUBLIC_ADMIN_EMAILS || "admin@example.com"

@@ -1,18 +1,46 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
 type CartItem = { product_id: string; qty: number };
+
+// Simple guest cart fallback - TODO: Implement proper guest cart functionality
+function getGuestCart(): CartItem[] {
+	if (typeof window === "undefined") return [];
+	try {
+		const stored = localStorage.getItem("guest-cart");
+		return stored ? JSON.parse(stored) : [];
+	} catch {
+		return [];
+	}
+}
 
 async function fetchCount(): Promise<number> {
 	try {
 		const res = await fetch("/api/cart", { cache: "no-store" });
-		if (!res.ok) return 0;
+		if (!res.ok) {
+			// If not authenticated, get count from guest cart
+			if (res.status === 401) {
+				const guestItems = getGuestCart();
+				return guestItems.reduce(
+					(s: number, i: CartItem) => s + (Number(i.qty) || 0),
+					0
+				);
+			}
+			return 0;
+		}
 		const j = await res.json();
 		const items: CartItem[] = Array.isArray(j.items) ? j.items : [];
-		return items.reduce((s, i) => s + (Number(i.qty) || 0), 0);
+		return items.reduce(
+			(s: number, i: CartItem) => s + (Number(i.qty) || 0),
+			0
+		);
 	} catch {
-		return 0;
+		// On error, fall back to guest cart
+		const guestItems = getGuestCart();
+		return guestItems.reduce(
+			(s: number, i: CartItem) => s + (Number(i.qty) || 0),
+			0
+		);
 	}
 }
 

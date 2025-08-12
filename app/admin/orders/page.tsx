@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
+import {
+	useNotifications,
+	showErrorNotification,
+	showSuccessNotification,
+	showInfoNotification,
+} from "@/components/NotificationManager";
 
 type Order = {
 	id: string;
@@ -49,6 +54,7 @@ export default function AdminOrdersPage() {
 	const lastSeenCountRef = useRef<number>(0);
 	const lastSeenNewestRef = useRef<string>("");
 	const audioCtxRef = useRef<AudioContext | null>(null);
+	const { showNotification } = useNotifications();
 
 	function playNewOrderChime() {
 		if (!soundOn) return;
@@ -90,7 +96,11 @@ export default function AdminOrdersPage() {
 		});
 		if (!res.ok) {
 			const j = await res.json().catch(() => ({}));
-			toast.error(j?.error || `Failed to load orders (${res.status})`);
+			showErrorNotification(
+				showNotification,
+				"Load Failed",
+				j?.error || `Failed to load orders (${res.status})`
+			);
 			setLoading(false);
 			return;
 		}
@@ -200,7 +210,11 @@ export default function AdminOrdersPage() {
 		const label = next[0].toUpperCase() + next.slice(1);
 
 		// Optimistic UI hint
-		toast.loading(`Updating ${ids.length} orders to ${label}…`, { id: "bulk" });
+		showInfoNotification(
+			showNotification,
+			`Updating ${ids.length} orders to ${label}…`,
+			"Updating orders"
+		);
 
 		// Perform in parallel (bounded would be nicer; this is fine for small batches)
 		const results = await Promise.allSettled(
@@ -220,12 +234,17 @@ export default function AdminOrdersPage() {
 
 		const failures = results.filter((r) => r.status === "rejected");
 		if (failures.length) {
-			toast.error(
+			showErrorNotification(
+				showNotification,
 				`Updated ${ids.length - failures.length}/${ids.length}. Some failed.`,
-				{ id: "bulk" }
+				"Some orders failed to update"
 			);
 		} else {
-			toast.success(`Updated ${ids.length} orders to ${label}`, { id: "bulk" });
+			showSuccessNotification(
+				showNotification,
+				`Updated ${ids.length} orders to ${label}`,
+				"Orders updated"
+			);
 		}
 
 		clearSelection();
@@ -468,7 +487,10 @@ function StatusSelect({
 	onUpdated: () => void;
 }) {
 	const [saving, setSaving] = useState(false);
-	async function save(next: string) {
+	const { showNotification } = useNotifications();
+
+	async function save(next: Status) {
+		if (next === value) return;
 		setSaving(true);
 		const res = await fetch("/api/admin/orders", {
 			method: "PATCH",
@@ -478,16 +500,24 @@ function StatusSelect({
 		const j = await res.json().catch(() => ({}));
 		setSaving(false);
 		if (!res.ok) {
-			toast.error(j?.error || "Update failed");
+			showErrorNotification(
+				showNotification,
+				"Update Failed",
+				j?.error || "Update failed"
+			);
 			return;
 		}
-		toast.success("Status updated");
+		showSuccessNotification(
+			showNotification,
+			"Status Updated",
+			"Order status has been updated successfully."
+		);
 		onUpdated();
 	}
 	return (
 		<select
 			defaultValue={value}
-			onChange={(e) => save(e.target.value)}
+			onChange={(e) => save(e.target.value as Status)}
 			className="rounded-lg border px-2 py-1"
 			disabled={saving}
 			title="Change status">
@@ -510,6 +540,7 @@ function QuickActions({
 	onUpdated: () => void;
 }) {
 	const [busy, setBusy] = useState<string | null>(null);
+	const { showNotification } = useNotifications();
 
 	async function setStatus(next: Status) {
 		setBusy(next);
@@ -521,10 +552,18 @@ function QuickActions({
 		const j = await res.json().catch(() => ({}));
 		setBusy(null);
 		if (!res.ok) {
-			toast.error(j?.error || "Update failed");
+			showErrorNotification(
+				showNotification,
+				"Update Failed",
+				j?.error || "Update failed"
+			);
 			return;
 		}
-		toast.success(`Marked ${next}`);
+		showSuccessNotification(
+			showNotification,
+			`Marked ${next}`,
+			`Order marked as ${next}`
+		);
 		onUpdated();
 	}
 

@@ -2,18 +2,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { admin } from "@/lib/db";
 
-const ALLOWED_CATEGORIES = ["baked_goods", "groceries"] as const;
-
 export async function GET(req: NextRequest) {
 	try {
 		const { searchParams } = new URL(req.url);
 		const category = searchParams.get("category");
 		const limitRaw = searchParams.get("limit");
 		const offsetRaw = searchParams.get("offset");
-
-		if (category && !ALLOWED_CATEGORIES.includes(category as any)) {
-			return NextResponse.json({ error: "Invalid category" }, { status: 400 });
-		}
 
 		const limit = Number.isFinite(Number(limitRaw))
 			? parseInt(limitRaw as string, 10)
@@ -26,13 +20,29 @@ export async function GET(req: NextRequest) {
 		let q = admin
 			.from("products")
 			.select(
-				"id,name,price_pence,image_url,pack_label,allergens,sku,category,stock,visible,created_at"
+				`
+				id,
+				name,
+				price_pence,
+				image_url,
+				pack_label,
+				allergens,
+				sku,
+				category_id,
+				categories!inner(id, name, slug),
+				stock,
+				visible,
+				created_at
+			`
 			)
 			.eq("visible", true)
 			.gt("stock", 0)
 			.order("created_at", { ascending: false });
 
-		if (category) q = q.eq("category", category);
+		if (category) {
+			// If category is provided, join with categories table to filter by slug
+			q = q.eq("categories.slug", category);
+		}
 
 		// Optional pagination
 		if (offset > 0 || limit > 0) {
@@ -47,8 +57,23 @@ export async function GET(req: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		// Transform the data to flatten the category info
+		const products = (data ?? []).map((product) => ({
+			...product,
+			category:
+				product.categories &&
+				Array.isArray(product.categories) &&
+				product.categories.length > 0
+					? {
+							id: product.categories[0].id,
+							name: product.categories[0].name,
+							slug: product.categories[0].slug,
+					  }
+					: null,
+		}));
+
 		return NextResponse.json(
-			{ products: data ?? [] },
+			{ products },
 			{
 				headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
 			}
