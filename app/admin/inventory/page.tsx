@@ -269,7 +269,7 @@ export default function AdminInventoryPage() {
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
 				<a
 					href="/api/admin/inventory/export"
-					className="rounded border px-3 py-2 hover:bg-gray-50 w-full sm:w-auto text-center">
+					className="rounded-full border px-3 py-2 hover:bg-gray-50 w-full sm:w-auto text-center">
 					Export CSV
 				</a>
 
@@ -307,7 +307,7 @@ export default function AdminInventoryPage() {
 						required
 					/>
 					<button
-						className="rounded border px-3 py-2 hover:bg-gray-50"
+						className="rounded-full border px-3 py-2 hover:bg-gray-50"
 						type="submit">
 						Import CSV
 					</button>
@@ -487,7 +487,7 @@ export default function AdminInventoryPage() {
 												name: e.target.value,
 											})
 										}
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 										placeholder="Product name"
 									/>
 								</div>
@@ -555,7 +555,7 @@ export default function AdminInventoryPage() {
 											);
 											setEditingProduct({ ...editingProduct, stock: v });
 										}}
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 										placeholder="0"
 									/>
 								</div>
@@ -584,9 +584,12 @@ export default function AdminInventoryPage() {
 									Cancel
 								</button>
 								<button
-									className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-									onClick={saveProductChanges}>
-									Save Changes
+									onClick={saveProductChanges}
+									disabled={savingId === editingProduct?.id}
+									className="rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700">
+									{savingId === editingProduct?.id
+										? "Saving..."
+										: "Save Changes"}
 								</button>
 							</div>
 						</div>
@@ -678,7 +681,7 @@ export default function AdminInventoryPage() {
 												categoryId: e.target.value || null,
 											})
 										}
-										className="w-full rounded-lg border px-3 py-2">
+										className="w-full rounded-full border px-3 py-2">
 										<option value="">No category</option>
 										{categories.map((cat) => (
 											<option key={cat.id} value={cat.id}>
@@ -752,7 +755,7 @@ export default function AdminInventoryPage() {
 											setNewCategory({ ...newCategory, name: e.target.value })
 										}
 										placeholder="e.g., Beverages"
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 									/>
 								</div>
 								<div>
@@ -766,7 +769,7 @@ export default function AdminInventoryPage() {
 											setNewCategory({ ...newCategory, slug: e.target.value })
 										}
 										placeholder="e.g., beverages"
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 									/>
 									<p className="text-xs text-gray-500 mt-1">
 										Lowercase letters, numbers, and underscores only
@@ -786,7 +789,7 @@ export default function AdminInventoryPage() {
 										}
 										placeholder="Brief description of this category"
 										rows={3}
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 									/>
 								</div>
 							</div>

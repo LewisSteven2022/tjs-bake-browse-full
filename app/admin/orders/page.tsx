@@ -34,6 +34,15 @@ type Status = (typeof ALL_STATUSES)[number];
 
 const FILTERS = ["all", ...ALL_STATUSES] as const;
 
+const TIME_FILTERS = [
+	{ value: "all", label: "All Times" },
+	{ value: "urgent", label: "🚨 Urgent (Next 2 hours)" },
+	{ value: "today", label: "📅 Today" },
+	{ value: "morning", label: "🌅 Morning (9AM-12PM)" },
+	{ value: "afternoon", label: "☀️ Afternoon (12PM-5PM)" },
+	{ value: "evening", label: "🌆 Evening (5PM-7PM)" },
+] as const;
+
 const REFRESH_MS = 30_000;
 
 export default function AdminOrdersPage() {
@@ -43,6 +52,7 @@ export default function AdminOrdersPage() {
 		useState<(typeof FILTERS)[number]>("all");
 	const [fromDate, setFromDate] = useState("");
 	const [toDate, setToDate] = useState("");
+	const [timeFilter, setTimeFilter] = useState<string>("all");
 	const [autoRefresh, setAutoRefresh] = useState(true);
 	const [soundOn, setSoundOn] = useState(true);
 	const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -90,6 +100,7 @@ export default function AdminOrdersPage() {
 			params.set("status", statusFilter);
 		if (fromDate) params.set("from", fromDate);
 		if (toDate) params.set("to", toDate);
+		if (timeFilter && timeFilter !== "all") params.set("time", timeFilter);
 
 		const res = await fetch(`/api/admin/orders?${params.toString()}`, {
 			cache: "no-store",
@@ -168,7 +179,7 @@ export default function AdminOrdersPage() {
 			document.removeEventListener("visibilitychange", onVis);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [autoRefresh, statusFilter, fromDate, toDate]);
+	}, [autoRefresh, statusFilter, fromDate, toDate, timeFilter]);
 
 	// Selection helpers
 	const allVisibleIds = rows.map((r) => r.id);
@@ -262,6 +273,53 @@ export default function AdminOrdersPage() {
 				</div>
 			</div>
 
+			{/* Quick Filter Buttons */}
+			<div className="flex flex-wrap items-center gap-2 rounded-lg border bg-blue-50 p-3">
+				<span className="text-sm font-medium text-blue-800">
+					Quick Filters:
+				</span>
+				<button
+					onClick={() => {
+						setTimeFilter("urgent");
+						setStatusFilter("ready");
+						setFromDate("");
+						setToDate("");
+					}}
+					className="rounded-full bg-red-600 px-3 py-1.5 text-white text-sm font-medium hover:bg-red-700 transition-colors">
+					🚨 Urgent Ready Orders
+				</button>
+				<button
+					onClick={() => {
+						setTimeFilter("today");
+						setStatusFilter("all");
+						setFromDate("");
+						setToDate("");
+					}}
+					className="rounded-full bg-blue-600 px-3 py-1.5 text-white text-sm font-medium hover:bg-blue-700 transition-colors">
+					📅 Today's Orders
+				</button>
+				<button
+					onClick={() => {
+						setTimeFilter("all");
+						setStatusFilter("preparing");
+						setFromDate("");
+						setToDate("");
+					}}
+					className="rounded-full bg-orange-600 px-3 py-1.5 text-white text-sm font-medium hover:bg-orange-700 transition-colors">
+					⚙️ All Preparing
+				</button>
+				<button
+					onClick={() => {
+						setTimeFilter("all");
+						setStatusFilter("all");
+						setFromDate("");
+						setToDate("");
+					}}
+					className="rounded-full bg-gray-600 px-3 py-1.5 text-white text-sm font-medium hover:bg-gray-700 transition-colors">
+					🔄 Clear All Filters
+				</button>
+			</div>
+
 			{/* Filters / Controls */}
 			<div className="flex flex-wrap items-end gap-3 rounded-lg border bg-white p-3">
 				<div>
@@ -283,7 +341,7 @@ export default function AdminOrdersPage() {
 						type="date"
 						value={fromDate}
 						onChange={(e) => setFromDate(e.target.value)}
-						className="rounded-lg border px-3 py-1"
+						className="rounded-full border px-3 py-1"
 					/>
 				</div>
 				<div>
@@ -292,19 +350,32 @@ export default function AdminOrdersPage() {
 						type="date"
 						value={toDate}
 						onChange={(e) => setToDate(e.target.value)}
-						className="rounded-lg border px-3 py-1"
+						className="rounded-full border px-3 py-1"
 					/>
+				</div>
+				<div>
+					<label className="block text-sm text-gray-600">Time</label>
+					<select
+						value={timeFilter}
+						onChange={(e) => setTimeFilter(e.target.value)}
+						className="rounded-lg border px-3 py-1">
+						{TIME_FILTERS.map((tf) => (
+							<option key={tf.value} value={tf.value}>
+								{tf.label}
+							</option>
+						))}
+					</select>
 				</div>
 
 				<div className="ml-auto flex items-center gap-2">
 					<button
 						onClick={handleRefresh}
-						className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+						className="rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700"
 						disabled={loading}>
 						{loading ? "Refreshing…" : "Refresh"}
 					</button>
 
-					<label className="flex cursor-pointer select-none items-center gap-2 rounded-lg border px-3 py-2 hover:bg-gray-50">
+					<label className="flex cursor-pointer select-none items-center gap-2 rounded-full border px-3 py-2 hover:bg-gray-50">
 						<input
 							type="checkbox"
 							checked={autoRefresh}
@@ -313,7 +384,7 @@ export default function AdminOrdersPage() {
 						Auto-refresh every {Math.round(REFRESH_MS / 1000)}s
 					</label>
 
-					<label className="flex cursor-pointer select-none items-center gap-2 rounded-lg border px-3 py-2 hover:bg-gray-50">
+					<label className="flex cursor-pointer select-none items-center gap-2 rounded-full border px-3 py-2 hover:bg-gray-50">
 						<input
 							type="checkbox"
 							checked={soundOn}
@@ -324,44 +395,83 @@ export default function AdminOrdersPage() {
 				</div>
 			</div>
 
+			{/* Filter Summary */}
+			{rows.length > 0 && (
+				<div className="flex items-center justify-between rounded-lg border bg-green-50 p-3">
+					<div className="flex items-center gap-4 text-sm">
+						<span className="font-medium text-green-800">
+							📊 {rows.length} order{rows.length !== 1 ? "s" : ""} found
+						</span>
+						{statusFilter !== "all" && (
+							<span className="text-green-700">
+								Status: <span className="font-medium">{statusFilter}</span>
+							</span>
+						)}
+						{timeFilter !== "all" && (
+							<span className="text-green-700">
+								Time:{" "}
+								<span className="font-medium">
+									{TIME_FILTERS.find((tf) => tf.value === timeFilter)?.label}
+								</span>
+							</span>
+						)}
+						{(fromDate || toDate) && (
+							<span className="text-green-700">
+								Date: {fromDate || "Any"} to {toDate || "Any"}
+							</span>
+						)}
+					</div>
+					<button
+						onClick={() => {
+							setStatusFilter("all");
+							setTimeFilter("all");
+							setFromDate("");
+							setToDate("");
+						}}
+						className="text-sm text-green-600 hover:text-green-800 underline">
+						Clear Filters
+					</button>
+				</div>
+			)}
+
 			{/* Bulk toolbar (only when selection exists) */}
 			{selected.size > 0 && (
 				<div className="flex flex-wrap items-center gap-2 rounded-lg border bg-white p-3 text-sm">
 					<div className="font-medium">{selected.size} selected</div>
 					<div className="h-5 w-px bg-gray-300" />
 					<button
-						className="rounded border border-blue-300 px-3 py-1 text-blue-700 hover:bg-blue-50"
+						className="rounded-full border border-blue-300 px-3 py-1 text-blue-700 hover:bg-blue-50"
 						onClick={() => bulkUpdateStatus("preparing")}>
 						Mark Preparing
 					</button>
 					<button
-						className="rounded border border-blue-300 px-3 py-1 text-blue-700 hover:bg-blue-50"
+						className="rounded-full border border-blue-300 px-3 py-1 text-blue-700 hover:bg-blue-50"
 						onClick={() => bulkUpdateStatus("ready")}>
 						Mark Ready
 					</button>
 					<button
-						className="rounded border border-blue-300 px-3 py-1 text-blue-700 hover:bg-blue-50"
+						className="rounded-full border border-blue-300 px-3 py-1 text-blue-700 hover:bg-blue-50"
 						onClick={() => bulkUpdateStatus("collected")}>
 						Mark Collected
 					</button>
 					<button
-						className="rounded border border-amber-300 px-3 py-1 text-amber-700 hover:bg-amber-50"
+						className="rounded-full border border-amber-300 px-3 py-1 text-amber-700 hover:bg-amber-50"
 						onClick={() => bulkUpdateStatus("cancelled")}>
 						Cancel
 					</button>
 					<button
-						className="rounded border border-red-300 px-3 py-1 text-red-700 hover:bg-red-50"
+						className="rounded-full border border-red-300 px-3 py-1 text-red-700 hover:bg-red-50"
 						onClick={() => bulkUpdateStatus("rejected")}>
 						Reject
 					</button>
 					<button
-						className="rounded border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50"
+						className="rounded-full border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50"
 						onClick={() => bulkUpdateStatus("unpaid")}>
 						Set Unpaid
 					</button>
 					<div className="h-5 w-px bg-gray-300" />
 					<button
-						className="rounded border px-3 py-1 hover:bg-gray-50"
+						className="rounded-full border px-3 py-1 hover:bg-gray-50"
 						onClick={clearSelection}
 						title="Clear selection">
 						Clear
@@ -399,6 +509,35 @@ function OrdersTable({
 	onToggleRow: (id: string) => void;
 	onStatusUpdated: () => void;
 }) {
+	// Function to check if an order is urgent (within next 2 hours)
+	const isUrgent = (pickupDate: string, pickupTime: string) => {
+		try {
+			const now = new Date();
+			const today = now.toISOString().split("T")[0];
+
+			if (pickupDate !== today) return false;
+
+			// Parse time more safely
+			const timeParts = pickupTime.split(":");
+			if (timeParts.length !== 2) return false;
+
+			const hours = parseInt(timeParts[0], 10);
+			const minutes = parseInt(timeParts[1], 10);
+
+			if (isNaN(hours) || isNaN(minutes)) return false;
+
+			const pickupDateTime = new Date();
+			pickupDateTime.setHours(hours, minutes, 0, 0);
+
+			const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+			return pickupDateTime <= twoHoursFromNow && pickupDateTime >= now;
+		} catch (error) {
+			// If anything goes wrong, don't mark as urgent
+			console.warn("Error checking if order is urgent:", error);
+			return false;
+		}
+	};
+
 	return rows.length === 0 ? (
 		<div className="rounded-xl border bg-white p-4">
 			No orders match the current filters.
@@ -430,47 +569,64 @@ function OrdersTable({
 					</tr>
 				</thead>
 				<tbody>
-					{rows.map((o) => (
-						<tr key={o.id} className="border-t">
-							<td className="p-3">
-								<input
-									type="checkbox"
-									aria-label={`Select order ${o.order_number}`}
-									checked={selected.has(o.id)}
-									onChange={() => onToggleRow(o.id)}
-								/>
-							</td>
-							<td className="p-3 font-mono">
-								{String(o.order_number).padStart(3, "0")}
-							</td>
-							<td className="p-3 capitalize">{o.status}</td>
-							<td className="p-3">
-								{o.pickup_date} {o.pickup_time}
-							</td>
-							<td className="p-3">
-								<div>{o.customer_name || "—"}</div>
-								<div className="text-gray-500">
-									{o.customer_email || o.customer_phone || "—"}
-								</div>
-							</td>
-							<td className="p-3">{GBP(o.total_pence)}</td>
-							<td className="p-3">{new Date(o.created_at).toLocaleString()}</td>
-							<td className="p-3">
-								<div className="flex flex-wrap items-center gap-2">
-									<StatusSelect
-										id={o.id}
-										value={o.status}
-										onUpdated={onStatusUpdated}
+					{rows.map((o) => {
+						const urgent = isUrgent(o.pickup_date, o.pickup_time);
+						return (
+							<tr
+								key={o.id}
+								className={`border-t ${urgent ? "bg-red-50" : ""}`}>
+								<td className="p-3">
+									<input
+										type="checkbox"
+										aria-label={`Select order ${o.order_number}`}
+										checked={selected.has(o.id)}
+										onChange={() => onToggleRow(o.id)}
 									/>
-									<QuickActions
-										id={o.id}
-										status={o.status}
-										onUpdated={onStatusUpdated}
-									/>
-								</div>
-							</td>
-						</tr>
-					))}
+								</td>
+								<td className="p-3 font-mono">
+									{String(o.order_number).padStart(3, "0")}
+								</td>
+								<td className="p-3 capitalize">{o.status}</td>
+								<td className="p-3">
+									<div
+										className={`flex items-center gap-2 ${
+											urgent ? "text-red-700 font-semibold" : ""
+										}`}>
+										{o.pickup_date} {o.pickup_time}
+										{urgent && (
+											<span className="inline-flex items-center gap-1 bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+												🚨 Urgent
+											</span>
+										)}
+									</div>
+								</td>
+								<td className="p-3">
+									<div>{o.customer_name || "—"}</div>
+									<div className="text-gray-500">
+										{o.customer_email || o.customer_phone || "—"}
+									</div>
+								</td>
+								<td className="p-3">{GBP(o.total_pence)}</td>
+								<td className="p-3">
+									{new Date(o.created_at).toLocaleString()}
+								</td>
+								<td className="p-3">
+									<div className="flex flex-wrap items-center gap-2">
+										<StatusSelect
+											id={o.id}
+											value={o.status}
+											onUpdated={onStatusUpdated}
+										/>
+										<QuickActions
+											id={o.id}
+											status={o.status}
+											onUpdated={onStatusUpdated}
+										/>
+									</div>
+								</td>
+							</tr>
+						);
+					})}
 				</tbody>
 			</table>
 		</div>

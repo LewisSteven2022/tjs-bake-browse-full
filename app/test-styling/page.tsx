@@ -29,7 +29,7 @@ export default function TestStylingPage() {
 					</p>
 				</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 					{/* Homepage Test */}
 					<Link href="/test-styling/homepage" className="group">
 						<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100 p-8 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
@@ -49,6 +49,40 @@ export default function TestStylingPage() {
 								improved call-to-action
 							</p>
 							<div className="inline-flex items-center gap-2 text-yellow-600 font-semibold group-hover:text-yellow-700 transition-colors">
+								<span>View Page</span>
+								<svg
+									className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+									fill="currentColor"
+									viewBox="0 0 20 20">
+									<path
+										fillRule="evenodd"
+										d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+										clipRule="evenodd"
+									/>
+								</svg>
+							</div>
+						</div>
+					</Link>
+
+					{/* Modern Homepage Test */}
+					<Link href="/test-styling/homepage" className="group">
+						<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-blue-100 p-8 text-center hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-2">
+							<div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6">
+								<svg
+									className="w-10 h-10 text-white"
+									fill="currentColor"
+									viewBox="0 0 20 20">
+									<path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
+								</svg>
+							</div>
+							<h3 className="text-2xl font-bold text-gray-800 mb-3">
+								Clean Homepage
+							</h3>
+							<p className="text-gray-600 mb-4">
+								Professional, clean design matching the About page aesthetic
+								with subtle blue accents and elegant typography
+							</p>
+							<div className="inline-flex items-center gap-2 text-purple-600 font-semibold group-hover:text-purple-700 transition-colors">
 								<span>View Page</span>
 								<svg
 									className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"

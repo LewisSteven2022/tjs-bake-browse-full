@@ -1,5 +1,67 @@
 # Learning Material
 
+## Recent Updates
+
+### Comprehensive Button Styling Update (Latest)
+
+**Date**: Current Session  
+**Scope**: Site-wide button and input field styling consistency
+
+**Changes Made**:
+
+- **Button Styling Standardisation**: Updated all buttons across the site to use consistent `rounded-full` styling with blue color scheme (`bg-blue-800 hover:bg-blue-700`)
+- **Input Field Consistency**: Standardised all input fields to use `rounded-full` styling for visual consistency
+- **Color Scheme Unification**: Replaced various color schemes (gradients, different blues, primary colors) with consistent blue-800/blue-700 palette
+- **Component Updates**: Updated buttons in all major components and pages:
+  - Main pages: Homepage, About, Login, Register, Basket, Checkout, Order Success
+  - Admin pages: Orders, Products, Inventory management
+  - Test pages: Notifications, Scroll dismissal, Styling variations
+  - Components: NavAuth, PremiumNotification, ProductCard
+
+**Technical Details**:
+
+- **Before**: Mixed styling with `rounded-lg`, `rounded-xl`, gradients, and various color schemes
+- **After**: Consistent `rounded-full` styling with `bg-blue-800 hover:bg-blue-700` for primary actions
+- **Border Styling**: Secondary buttons use `rounded-full border` with `hover:bg-gray-50`
+- **Input Fields**: All form inputs now use `rounded-full border` for consistency
+
+**Benefits**:
+
+- **Visual Consistency**: Unified button appearance across all pages
+- **Professional Look**: Clean, modern rounded design that matches the site's aesthetic
+- **User Experience**: Consistent interaction patterns throughout the application
+- **Maintainability**: Easier to maintain and update button styles in the future
+
+**Files Modified**:
+
+- `app/page.tsx` - Homepage CTA buttons
+- `app/login/page.tsx` - Login form and button
+- `app/register/page.tsx` - Registration form and button
+- `app/basket/page.tsx` - Basket action buttons
+- `app/checkout/page.tsx` - Checkout form and buttons
+- `app/order-success/page.tsx` - Success page navigation buttons
+- `app/admin/orders/page.tsx` - Admin order management buttons
+- `app/admin/products/page.tsx` - Admin product management buttons
+- `app/admin/inventory/page.tsx` - Admin inventory management buttons
+- `components/NavAuth.tsx` - Navigation authentication buttons
+- `components/PremiumNotification.tsx` - Notification action buttons
+- `components/ProductCard.tsx` - Product card action buttons
+- `app/test-notifications/page.tsx` - Test notification buttons
+- `app/test-scroll-dismissal/page.tsx` - Test scroll dismissal buttons
+- `app/test-styling/homepage/page.tsx` - Test homepage styling buttons
+- `app/test-styling/baked-goods/page.tsx` - Test baked goods page buttons
+
+**Design Philosophy**:
+
+- **Primary Actions**: Blue buttons (`bg-blue-800 hover:bg-blue-700`) for main actions like "Sign In", "Checkout", "Save Changes"
+- **Secondary Actions**: Bordered buttons (`border hover:bg-gray-50`) for secondary actions like "Clear basket", "Cancel"
+- **Form Elements**: Consistent rounded styling for all input fields and form controls
+- **Visual Hierarchy**: Clear distinction between primary and secondary actions through color and styling
+
+---
+
+## Previous Updates
+
 This document contains explanations and examples of code patterns, libraries, and techniques used in the TJ's Bake & Browse project.
 
 ## Frontend
@@ -189,6 +251,95 @@ return NextResponse.json(
 - Proper HTTP status codes for client handling
 - Security through input validation
 
+### Admin Orders Collection Slot Time Filtering Enhancement (December 2024)
+
+**Objective**: Enhance admin orders page with time-based filtering to prioritise urgent orders needing collection.
+
+**Key Implementation Details**:
+
+1. **Time Filter State Management**:
+
+   ```typescript
+   const [timeFilter, setTimeFilter] = useState<string>("all");
+   const TIME_FILTERS = [
+   	{ value: "all", label: "All Times" },
+   	{ value: "urgent", label: "🚨 Urgent (Next 2 hours)" },
+   	{ value: "today", label: "📅 Today" },
+   	{ value: "morning", label: "🌅 Morning (9AM-12PM)" },
+   	{ value: "afternoon", label: "☀️ Afternoon (12PM-5PM)" },
+   	{ value: "evening", label: "🌆 Evening (5PM-7PM)" },
+   ] as const;
+   ```
+
+2. **Robust Time Parsing**:
+
+   ```typescript
+   const isUrgent = (pickupDate: string, pickupTime: string) => {
+   	try {
+   		const now = new Date();
+   		const today = now.toISOString().split("T")[0];
+
+   		if (pickupDate !== today) return false;
+
+   		const timeParts = pickupTime.split(":");
+   		if (timeParts.length !== 2) return false;
+
+   		const hours = parseInt(timeParts[0], 10);
+   		const minutes = parseInt(timeParts[1], 10);
+
+   		if (isNaN(hours) || isNaN(minutes)) return false;
+
+   		// ... time comparison logic
+   	} catch (error) {
+   		console.warn("Error checking if order is urgent:", error);
+   		return false;
+   	}
+   };
+   ```
+
+3. **API Route Enhancement**:
+
+   ```typescript
+   if (time && time !== "all") {
+   	try {
+   		const now = new Date();
+   		const today = now.toISOString().split("T")[0];
+
+   		switch (time) {
+   			case "urgent":
+   				const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+   				const currentTimeStr = now.toTimeString().slice(0, 5);
+   				const twoHoursTimeStr = twoHoursFromNow.toTimeString().slice(0, 5);
+
+   				q = q
+   					.eq("pickup_date", today)
+   					.lte("pickup_time", twoHoursTimeStr)
+   					.gte("pickup_time", currentTimeStr);
+   				break;
+   			// ... other time cases
+   		}
+   	} catch (error) {
+   		console.warn("Error applying time filter:", error);
+   		// Continue without time filtering if there's an error
+   	}
+   }
+   ```
+
+**Lessons Learned**:
+
+1. **Error Handling**: Always wrap time parsing logic in try-catch blocks to prevent crashes from malformed data
+2. **Input Validation**: Validate time format before parsing to ensure robust functionality
+3. **Graceful Degradation**: If time filtering fails, continue without it rather than breaking the entire page
+4. **User Experience**: Visual indicators (red backgrounds, urgent badges) make urgent orders immediately identifiable
+5. **Quick Filters**: Pre-configured filter combinations improve admin workflow efficiency
+
+**Testing Approach**:
+
+- Test with various time formats and edge cases
+- Verify API responses for different time filter combinations
+- Test error handling with invalid time data
+- Verify visual indicators appear correctly for urgent orders
+
 ## Database
 
 ### Supabase Integration
@@ -362,3 +513,107 @@ className =
 - Improves visual hierarchy and readability
 - Provides accurate business information to customers
 - Maintains professional appearance while addressing user feedback
+
+### Suggestions Form Implementation (December 2024)
+
+**Objective**: Create a customer feedback system accessible to logged-in users to collect suggestions and improve business operations.
+
+**Key Implementation Details**:
+
+1. **Authentication Protection**:
+
+   ```typescript
+   // Check authentication in API route
+   const session = await getServerSession(authOptions);
+   if (!session?.user) {
+   	return NextResponse.json(
+   		{ error: "Authentication required" },
+   		{ status: 401 }
+   	);
+   }
+   ```
+
+2. **Form State Management**:
+
+   ```typescript
+   const [formData, setFormData] = useState({
+   	subject: "",
+   	message: "",
+   	category: "general",
+   });
+   const [isSubmitting, setIsSubmitting] = useState(false);
+   ```
+
+3. **Input Validation**:
+
+   ```typescript
+   // Validate required fields
+   if (!subject || !message || !category) {
+   	return NextResponse.json(
+   		{ error: "Subject, message, and category are required" },
+   		{ status: 400 }
+   	);
+   }
+
+   // Validate lengths
+   if (subject.length > 100 || message.length > 1000) {
+   	return NextResponse.json(
+   		{ error: "Input exceeds maximum length" },
+   		{ status: 400 }
+   	);
+   }
+   ```
+
+4. **Email Integration**:
+
+   ```typescript
+   const emailSubject = `[Suggestion] ${subject}`;
+   const emailBody = `
+   New suggestion submitted by ${session.user.name} (${session.user.email})
+   
+   Category: ${category}
+   Subject: ${subject}
+   
+   Message:
+   ${message}
+   `;
+
+   await sendEmail({
+   	to: "tjsbakeandbrowse@gmail.com",
+   	subject: emailSubject,
+   	text: emailBody,
+   });
+   ```
+
+5. **Navigation Integration**:
+   ```typescript
+   // Add to NavAuth component
+   <Link
+   	href="/suggestions"
+   	className="rounded-full border px-3 py-1 hover:bg-gray-50 text-sm">
+   	💡 Suggestions
+   </Link>
+   ```
+
+**Lessons Learned**:
+
+1. **Authentication First**: Always implement authentication protection for user-generated content to prevent spam
+2. **Input Validation**: Validate both client and server-side to ensure data quality and security
+3. **User Experience**: Provide multiple access points (navigation + order success page) for better engagement
+4. **Error Handling**: Comprehensive error handling with user-friendly messages improves reliability
+5. **Email Integration**: Structured email format with clear subject lines helps business process feedback efficiently
+
+**Testing Approach**:
+
+- Test form submission with valid and invalid data
+- Verify authentication protection works correctly
+- Test email delivery and formatting
+- Verify navigation integration across different pages
+- Test responsive design on various screen sizes
+
+**Business Value**:
+
+- Direct customer feedback collection
+- Improved customer engagement
+- Business insights for product/service improvements
+- Professional appearance and user experience

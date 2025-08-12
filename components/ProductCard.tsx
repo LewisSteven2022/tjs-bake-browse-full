@@ -70,7 +70,7 @@ export default function ProductCard({ product }: { product: Product }) {
 				whileInView={{ opacity: 1 }}
 				viewport={{ once: true }}
 				transition={{ duration: 0.2 }}
-				className="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 overflow-hidden flex flex-col h-full">
+				className="bg-white rounded-lg shadow-lg hover:shadow-xl border border-gray-200 hover:border-blue-200 transition-all duration-300 overflow-hidden flex flex-col h-full">
 				{/* Product Image */}
 				<div className="w-full h-48 relative">
 					{product.image_url ? (
@@ -98,7 +98,7 @@ export default function ProductCard({ product }: { product: Product }) {
 				</div>
 
 				{/* Content */}
-				<div className="flex flex-col items-center text-center p-6 space-y-4 flex-grow">
+				<div className="flex flex-col items-center text-center p-6 pb-3 space-y-2 flex-grow">
 					<h3 className="font-semibold text-xl text-primaryDark leading-tight">
 						{product.name}
 					</h3>
@@ -136,22 +136,22 @@ export default function ProductCard({ product }: { product: Product }) {
 					<button
 						onClick={addToBasket}
 						disabled={isAdding || isAdded}
-						className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded font-semibold transition-colors duration-200 ${
+						className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-colors duration-200 text-sm ${
 							isAdding
 								? "bg-gray-300 text-gray-500 cursor-not-allowed"
 								: isAdded
 								? "bg-green-500 text-white cursor-default"
-								: "bg-primary hover:bg-primaryDark text-white"
+								: "bg-blue-800 hover:bg-blue-700 text-white"
 						}`}>
 						{isAdding ? (
 							<>
-								<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-								Adding...
+								<div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+								<span className="whitespace-nowrap">Adding...</span>
 							</>
 						) : isAdded ? (
 							<>
 								<svg
-									className="w-4 h-4"
+									className="w-3 h-3"
 									fill="currentColor"
 									viewBox="0 0 20 20">
 									<path
@@ -160,12 +160,12 @@ export default function ProductCard({ product }: { product: Product }) {
 										clipRule="evenodd"
 									/>
 								</svg>
-								Added to Basket!
+								<span className="whitespace-nowrap">Added!</span>
 							</>
 						) : (
 							<>
-								<ShoppingCart size={18} />
-								Add to Basket
+								<ShoppingCart size={16} />
+								<span className="whitespace-nowrap">Add to Basket</span>
 							</>
 						)}
 					</button>

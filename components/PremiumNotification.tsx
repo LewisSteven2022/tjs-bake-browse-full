@@ -205,14 +205,14 @@ const PremiumNotification: React.FC<NotificationProps> = ({
 								{onViewBasket && (
 									<button
 										onClick={onViewBasket}
-										className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0">
+										className="flex-1 bg-blue-800 text-white px-4 py-2.5 rounded-full font-semibold text-sm hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0">
 										View Basket
 									</button>
 								)}
 								{onContinueShopping && (
 									<button
 										onClick={onContinueShopping}
-										className="flex-1 bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 border border-gray-200">
+										className="flex-1 bg-gray-50 text-gray-700 px-4 py-2.5 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 border border-gray-200">
 										Continue Shopping
 									</button>
 								)}

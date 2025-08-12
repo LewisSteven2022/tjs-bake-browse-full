@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
 import {
@@ -41,7 +42,7 @@ export default function CheckoutPage() {
 					<p className="mb-3">Please sign in to place your order.</p>
 					<a
 						href={`/login?callbackUrl=${encodeURIComponent("/checkout")}`}
-						className="inline-block rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+						className="inline-block rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700">
 						Sign in
 					</a>
 				</div>
@@ -259,7 +260,7 @@ export default function CheckoutPage() {
 										onChange={(e) =>
 											setCustomer({ ...customer, name: e.target.value })
 										}
-										className="mt-1 w-full rounded-xl border px-3 py-2"
+										className="mt-1 w-full rounded-full border px-3 py-2"
 										placeholder={session?.user?.name || "Jane Doe"}
 									/>
 								</div>
@@ -271,7 +272,7 @@ export default function CheckoutPage() {
 										onChange={(e) =>
 											setCustomer({ ...customer, email: e.target.value })
 										}
-										className="mt-1 w-full rounded-xl border px-3 py-2"
+										className="mt-1 w-full rounded-full border px-3 py-2"
 										placeholder={session?.user?.email || "jane@example.com"}
 									/>
 								</div>
@@ -283,7 +284,7 @@ export default function CheckoutPage() {
 										onChange={(e) =>
 											setCustomer({ ...customer, phone: e.target.value })
 										}
-										className="mt-1 w-full rounded-xl border px-3 py-2"
+										className="mt-1 w-full rounded-full border px-3 py-2"
 										placeholder="07700 900000"
 									/>
 								</div>
@@ -328,7 +329,7 @@ export default function CheckoutPage() {
 
 						<button
 							onClick={placeOrder}
-							className="mt-4 w-full rounded-xl bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+							className="mt-4 w-full rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700">
 							Place order
 						</button>
 					</aside>

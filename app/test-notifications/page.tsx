@@ -133,7 +133,7 @@ export default function TestNotificationsPage() {
 						</h3>
 						<button
 							onClick={handleShowSuccess}
-							className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 transform hover:-translate-y-1">
+							className="w-full bg-blue-800 text-white px-4 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Show Success
 						</button>
 					</div>
@@ -144,7 +144,7 @@ export default function TestNotificationsPage() {
 						</h3>
 						<button
 							onClick={handleShowInfo}
-							className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-cyan-700 transition-all duration-200 transform hover:-translate-y-1">
+							className="w-full bg-blue-800 text-white px-4 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Show Info
 						</button>
 					</div>
@@ -155,7 +155,7 @@ export default function TestNotificationsPage() {
 						</h3>
 						<button
 							onClick={handleShowWarning}
-							className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-yellow-600 hover:to-orange-700 transition-all duration-200 transform hover:-translate-y-1">
+							className="w-full bg-blue-800 text-white px-4 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Show Warning
 						</button>
 					</div>
@@ -166,7 +166,7 @@ export default function TestNotificationsPage() {
 						</h3>
 						<button
 							onClick={handleShowError}
-							className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-pink-700 transition-all duration-200 transform hover:-translate-y-1">
+							className="w-full bg-blue-800 text-white px-4 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Show Error
 						</button>
 					</div>

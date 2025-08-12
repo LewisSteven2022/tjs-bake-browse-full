@@ -41,6 +41,18 @@ export default function TestScrollDismissalPage() {
 		});
 	};
 
+	const testWarningNotification = () => {
+		showNotification({
+			title: "Warning ⚠️",
+			message:
+				"This is a test warning notification. Try scrolling down to see it auto-dismiss!",
+			type: "warning",
+			autoHide: true,
+			duration: 10000,
+			dismissOnScroll: true,
+		});
+	};
+
 	return (
 		<div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-8">
 			<div className="max-w-4xl mx-auto">
@@ -56,20 +68,24 @@ export default function TestScrollDismissalPage() {
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 						<button
 							onClick={testBasketNotification}
-							className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg">
+							className="bg-blue-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Test Basket Notification
 						</button>
 
 						<button
 							onClick={testSuccessNotification}
-							className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg">
+							className="bg-blue-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Test Success Notification
 						</button>
-
 						<button
 							onClick={testInfoNotification}
-							className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-1 hover:shadow-lg">
+							className="bg-blue-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
 							Test Info Notification
+						</button>
+						<button
+							onClick={testWarningNotification}
+							className="bg-blue-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:-translate-y-1">
+							Test Warning Notification
 						</button>
 					</div>
 

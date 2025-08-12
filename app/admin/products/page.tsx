@@ -220,7 +220,7 @@ export default function Page() {
 						}
 					/>
 					<button
-						className="rounded-lg py-2 px-4 bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50"
+						className="rounded-full py-2 px-4 bg-blue-800 text-white hover:bg-blue-700 disabled:opacity-50"
 						onClick={create}
 						disabled={isLoading || !form.name || !form.sku}>
 						{isLoading ? "Creating..." : "Create Product"}
@@ -261,12 +261,12 @@ export default function Page() {
 								<td className="p-3 text-center">
 									<div className="flex gap-2 justify-center">
 										<button
-											className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+											className="px-3 py-1 bg-blue-800 text-white rounded-full text-xs hover:bg-blue-700"
 											onClick={() => startEditing(product)}>
 											Edit
 										</button>
 										<button
-											className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+											className="px-3 py-1 bg-red-600 text-white rounded-full text-xs hover:bg-red-700"
 											onClick={() => deleteProduct(product.id)}
 											disabled={isLoading}>
 											Delete
@@ -303,7 +303,7 @@ export default function Page() {
 												name: e.target.value,
 											})
 										}
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 										placeholder="Product name"
 									/>
 								</div>
@@ -320,7 +320,7 @@ export default function Page() {
 												sku: e.target.value,
 											})
 										}
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 										placeholder="Stock keeping unit"
 									/>
 								</div>
@@ -375,7 +375,7 @@ export default function Page() {
 											);
 											setEditingProduct({ ...editingProduct, stock: v });
 										}}
-										className="w-full rounded-lg border px-3 py-2"
+										className="w-full rounded-full border px-3 py-2"
 										placeholder="0"
 									/>
 								</div>
@@ -405,11 +405,9 @@ export default function Page() {
 									Cancel
 								</button>
 								<button
-									className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
 									onClick={saveChanges}
-									disabled={
-										isLoading || !editingProduct.name || !editingProduct.sku
-									}>
+									disabled={isLoading}
+									className="rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50">
 									{isLoading ? "Saving..." : "Save Changes"}
 								</button>
 							</div>
