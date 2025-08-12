@@ -12,7 +12,7 @@ const ALLOWED_STATUSES = [
 ] as const;
 type OrderStatus = (typeof ALLOWED_STATUSES)[number];
 
-// GET /api/admin/orders?status=...&from=YYYY-MM-DD&to=YYYY-MM-DD&limit=500
+// GET /api/admin/orders?status=...&from=YYYY-MM-DD&to=YYYY-MM-DD&time=...&limit=500
 // (Admin access enforced by middleware)
 export async function GET(req: NextRequest) {
 	try {
@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
 		const status = url.searchParams.get("status"); // one of ALLOWED_STATUSES | "all" | null
 		const from = url.searchParams.get("from"); // YYYY-MM-DD
 		const to = url.searchParams.get("to"); // YYYY-MM-DD
+		const time = url.searchParams.get("time"); // time filter
 		const limitParam = url.searchParams.get("limit");
 		const limit = Math.min(Math.max(Number(limitParam || 500), 1), 2000);
 
@@ -28,7 +29,8 @@ export async function GET(req: NextRequest) {
 			.select(
 				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_opt_in, bag_fee_pence, customer_name, customer_email, customer_phone, created_at"
 			)
-			.order("created_at", { ascending: false })
+			.order("pickup_date", { ascending: true })
+			.order("pickup_time", { ascending: true })
 			.limit(limit);
 
 		if (status && status !== "all") {
@@ -46,6 +48,54 @@ export async function GET(req: NextRequest) {
 		}
 		if (from) q = q.gte("pickup_date", from);
 		if (to) q = q.lte("pickup_date", to);
+
+		// Apply time filtering
+		if (time && time !== "all") {
+			try {
+				const now = new Date();
+				const today = now.toISOString().split("T")[0];
+
+				switch (time) {
+					case "urgent":
+						// Show orders in next 2 hours that are ready
+						const twoHoursFromNow = new Date(
+							now.getTime() + 2 * 60 * 60 * 1000
+						);
+						const currentTimeStr = now.toTimeString().slice(0, 5);
+						const twoHoursTimeStr = twoHoursFromNow.toTimeString().slice(0, 5);
+
+						q = q
+							.eq("pickup_date", today)
+							.lte("pickup_time", twoHoursTimeStr)
+							.gte("pickup_time", currentTimeStr);
+						break;
+					case "today":
+						q = q.eq("pickup_date", today);
+						break;
+					case "morning":
+						q = q
+							.eq("pickup_date", today)
+							.gte("pickup_time", "09:00")
+							.lt("pickup_time", "12:00");
+						break;
+					case "afternoon":
+						q = q
+							.eq("pickup_date", today)
+							.gte("pickup_time", "12:00")
+							.lt("pickup_time", "17:00");
+						break;
+					case "evening":
+						q = q
+							.eq("pickup_date", today)
+							.gte("pickup_time", "17:00")
+							.lte("pickup_time", "19:00");
+						break;
+				}
+			} catch (error) {
+				console.warn("Error applying time filter:", error);
+				// Continue without time filtering if there's an error
+			}
+		}
 
 		const { data, error } = await q;
 		if (error) throw error;

@@ -96,6 +96,7 @@ if (name !== undefined) {
 
 #### 4.2 Mailing List Opt-in (1.5-2.5 hours)
 
+Í<!-- Œ -->
 **Files:** User registration system  
 **Enhancement:** Tick box for marketing opt-in  
 **Implementation:** DB column marketing_opt_in, RLS, export functionality

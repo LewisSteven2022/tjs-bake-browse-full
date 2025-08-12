@@ -161,7 +161,7 @@ export default function BasketPage() {
 						</div>
 					))}
 
-					<label className="flex w-fit cursor-pointer select-none items-center gap-2 rounded-xl border px-3 py-2 hover:bg-gray-50 bg-white">
+					<label className="flex w-fit cursor-pointer select-none items-center gap-2 rounded-full border px-3 py-2 hover:bg-gray-50 bg-white">
 						<input
 							type="checkbox"
 							className="h-4 w-4"
@@ -185,13 +185,13 @@ export default function BasketPage() {
 					<div className="grid sm:grid-cols-2 gap-2">
 						<button
 							onClick={clearAll}
-							className="w-full rounded-xl border px-4 py-2 hover:bg-gray-50 disabled:opacity-60"
+							className="w-full rounded-full border px-4 py-2 hover:bg-gray-50 disabled:opacity-60"
 							disabled={busyId === "__all__"}>
 							Clear basket
 						</button>
 						<Link
 							href="/checkout"
-							className="block w-full rounded-xl bg-blue-600 px-4 py-2 text-center text-white hover:bg-blue-700">
+							className="block w-full rounded-full bg-blue-800 px-4 py-2 text-center text-white hover:bg-blue-700">
 							Checkout
 						</Link>
 					</div>

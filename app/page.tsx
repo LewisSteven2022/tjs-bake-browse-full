@@ -100,7 +100,7 @@ export default function HomePage() {
 					</h2>
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
 						<Link href="/baked-goods" className="group">
-							<div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-800 to-blue-600 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1">
+							<div className="inline-flex items-center gap-3 bg-blue-800 text-white px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform group-hover:-translate-y-1">
 								<svg
 									className="w-6 h-6"
 									fill="currentColor"
@@ -155,7 +155,7 @@ export default function HomePage() {
 							</p>
 							<Link
 								href="/about"
-								className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primaryDark transition-colors font-semibold shadow-lg">
+								className="inline-flex items-center gap-2 bg-blue-800 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition-colors font-semibold shadow-lg">
 								<span>Learn More About Us</span>
 								<svg
 									className="w-4 h-4"

@@ -77,7 +77,7 @@ export default function RegisterPage() {
 				<div>
 					<label className="block text-sm text-gray-600">Full name</label>
 					<input
-						className="mt-1 w-full rounded-xl border px-3 py-2"
+						className="mt-1 w-full rounded-full border px-3 py-2"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
 						required
@@ -86,7 +86,7 @@ export default function RegisterPage() {
 				<div>
 					<label className="block text-sm text-gray-600">Email</label>
 					<input
-						className="mt-1 w-full rounded-xl border px-3 py-2"
+						className="mt-1 w-full rounded-full border px-3 py-2"
 						type="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
@@ -97,7 +97,7 @@ export default function RegisterPage() {
 				<div>
 					<label className="block text-sm text-gray-600">Mobile</label>
 					<input
-						className="mt-1 w-full rounded-xl border px-3 py-2"
+						className="mt-1 w-full rounded-full border px-3 py-2"
 						type="tel"
 						value={mobile}
 						onChange={(e) => setMobile(e.target.value)}
@@ -107,7 +107,7 @@ export default function RegisterPage() {
 				<div>
 					<label className="block text-sm text-gray-600">Password</label>
 					<input
-						className="mt-1 w-full rounded-xl border px-3 py-2"
+						className="mt-1 w-full rounded-full border px-3 py-2"
 						type="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
@@ -118,7 +118,7 @@ export default function RegisterPage() {
 				<button
 					type="submit"
 					disabled={busy}
-					className="w-full rounded-xl bg-primary px-3 py-2 text-white hover:bg-primaryDark disabled:opacity-50">
+					className="w-full rounded-full bg-blue-800 px-3 py-2 text-white hover:bg-blue-700 disabled:opacity-50">
 					{busy ? "Creating account..." : "Create Account"}
 				</button>
 			</form>

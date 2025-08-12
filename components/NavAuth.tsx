@@ -25,11 +25,13 @@ export default function NavAuth() {
 	if (!session) {
 		return (
 			<div className="flex items-center gap-3">
-				<Link className="hover:underline" href="/login">
-					Sign in
+				<Link
+					href="/login"
+					className="rounded-full bg-blue-800 px-3 py-1 text-white hover:bg-blue-700">
+					Sign In
 				</Link>
 				<Link
-					className="rounded-lg bg-blue-600 px-3 py-1 text-white hover:bg-blue-700"
+					className="rounded-full bg-blue-800 px-3 py-1 text-white hover:bg-blue-700"
 					href="/register">
 					Register
 				</Link>
@@ -41,18 +43,23 @@ export default function NavAuth() {
 		<div className="flex items-center gap-3">
 			{isAdmin && (
 				<Link
-					className="rounded-lg border px-3 py-1 hover:bg-gray-50"
+					className="rounded-full border px-3 py-1 hover:bg-gray-50"
 					href="/admin">
-					Management
+					Admin
 				</Link>
 			)}
+			<Link
+				href="/suggestions"
+				className="rounded-full border px-3 py-1 hover:bg-gray-50 text-sm">
+				💡 Suggestions
+			</Link>
 			<span className="hidden sm:inline text-sm text-gray-600">
 				{session.user?.name || session.user?.email}
 			</span>
 			<button
-				className="rounded-lg border px-3 py-1 hover:bg-gray-50"
-				onClick={() => signOut({ callbackUrl: "/" })}>
-				Sign out
+				onClick={() => signOut({ callbackUrl: "/" })}
+				className="rounded-full border px-3 py-1 hover:bg-gray-50">
+				Sign Out
 			</button>
 		</div>
 	);
