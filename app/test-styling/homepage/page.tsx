@@ -1,9 +1,8 @@
-import React from "react";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import ParallaxHero from "@/components/ParallaxHero";
 
-export default function HomePage() {
+export default function TestHomepagePage() {
 	return (
 		<main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
 			{/* Enhanced Hero Section */}
@@ -136,26 +135,24 @@ export default function HomePage() {
 			</section>
 
 			{/* Enhanced About Preview Section */}
-			<section className="bg-primaryLight/20 text-gray-800 py-20">
+			<section className="bg-gradient-to-r from-blue-800 to-blue-600 text-white py-20">
 				<div className="max-w-6xl mx-auto px-6">
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 						<div>
-							<h2 className="text-4xl font-bold mb-6 text-primaryDark">
-								Our Story
-							</h2>
-							<p className="text-xl text-gray-700 leading-relaxed mb-6">
+							<h2 className="text-4xl font-bold mb-6">Our Story</h2>
+							<p className="text-xl text-blue-100 leading-relaxed mb-6">
 								TJ's Bake & Browse began with a simple mission: to create
 								delicious, freshly baked goods that everyone can enjoy —
 								including those with food intolerances and allergies.
 							</p>
-							<p className="text-lg text-gray-700 leading-relaxed mb-8">
+							<p className="text-lg text-blue-100 leading-relaxed mb-8">
 								Operating from our fully licensed commercial kitchen, we
 								prioritise safety, transparency, and taste. Every item we make
 								is crafted with love, care, and the highest quality ingredients.
 							</p>
 							<Link
 								href="/about"
-								className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primaryDark transition-colors font-semibold shadow-lg">
+								className="inline-flex items-center gap-2 bg-white text-blue-800 px-6 py-3 rounded-full hover:bg-blue-50 transition-colors font-semibold shadow-lg">
 								<span>Learn More About Us</span>
 								<svg
 									className="w-4 h-4"
@@ -169,15 +166,36 @@ export default function HomePage() {
 								</svg>
 							</Link>
 						</div>
-						<div className="relative w-full h-80 rounded-lg overflow-hidden shadow-lg">
-							<Image
-								src="/images/baking-team.jpg"
-								alt="TJ's Bake & Browse kitchen"
-								fill
-								style={{ objectFit: "cover" }}
-							/>
+						<div className="relative">
+							<div className="w-full h-80 rounded-2xl overflow-hidden shadow-2xl">
+								<Image
+									src="/images/baking-team.jpg"
+									alt="TJ's Bake & Browse kitchen team"
+									fill
+									style={{ objectFit: "cover" }}
+									className="hover:scale-105 transition-transform duration-500"
+								/>
+							</div>
 						</div>
 					</div>
+				</div>
+			</section>
+
+			{/* Back to Test Styling */}
+			<section className="max-w-6xl mx-auto px-6 py-12">
+				<div className="text-center">
+					<Link
+						href="/test-styling"
+						className="inline-flex items-center gap-2 text-blue-800 hover:text-blue-700 transition-colors">
+						<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+							<path
+								fillRule="evenodd"
+								d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+								clipRule="evenodd"
+							/>
+						</svg>
+						<span>Back to Test Styling</span>
+					</Link>
 				</div>
 			</section>
 		</main>

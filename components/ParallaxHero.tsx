@@ -38,7 +38,6 @@ export default function ParallaxHero({
 					priority
 					style={{ objectFit: "cover" }}
 				/>
-				<div className="absolute inset-0 bg-primaryDark/40" />
 			</motion.div>
 
 			<motion.div

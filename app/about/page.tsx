@@ -8,7 +8,7 @@ import ParallaxHero from "@/components/ParallaxHero";
 
 export default function AboutPage() {
 	return (
-		<main className="bg-white text-gray-800">
+		<main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 text-gray-800">
 			<Head>
 				<title>About Us | TJ&apos;s Bake &amp; Browse</title>
 				<meta
@@ -63,17 +63,17 @@ export default function AboutPage() {
 			</section>
 
 			{/* Values Section */}
-			<section className="bg-primaryLight/20 py-16">
+			<section className="bg-primaryLight/20 py-12">
 				<div className="max-w-6xl mx-auto px-4 text-center">
 					<motion.h2
 						initial={{ opacity: 0, y: 30 }}
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ duration: 0.6 }}
-						className="text-3xl font-bold text-primaryDark mb-10">
+						className="text-3xl font-bold text-primaryDark mb-8">
 						Our Values
 					</motion.h2>
-					<div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
+					<div className="grid gap-6 sm:grid-cols-2 md:grid-cols-4">
 						{[
 							{
 								title: "Freshness",

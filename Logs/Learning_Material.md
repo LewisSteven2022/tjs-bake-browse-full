@@ -1,575 +1,364 @@
-# Learning Material - TJ's Bake & Browse
+# Learning Material
 
-## Project Management
-
-### To-Do System
-
-**Pattern**: Comprehensive, prioritized task management with time estimates and progress tracking
-
-```markdown
-# Task Structure
-
-### [Task Number]: [Task Title]
-
-**Status:** 🟡 TODO / 🟢 IN PROGRESS / ✅ COMPLETED  
-**Priority:** CRITICAL / HIGH / MEDIUM / LOW  
-**Estimated Time:** [Time estimate]  
-**Impact:** [Impact description]  
-**Description:** [Detailed description]  
-**Dependencies:** [Any dependencies]  
-**Notes:** [Additional context]
-```
-
-**Why this pattern**:
-
-- **Prioritization**: Critical bugs and high-impact features are addressed first
-- **Time estimation**: Realistic planning and resource allocation
-- **Progress tracking**: Clear status indicators and completion metrics
-- **Dependency management**: Understanding what blocks what
-- **Impact assessment**: Focus on high-value improvements
-
-**Key Features**:
-
-- **Phase-based implementation**: Critical fixes → Quick wins → Core functionality → Advanced features
-- **Bug tracking integration**: Dedicated bug log with detailed analysis
-- **Future improvements**: LLM-generated enhancement ideas with value assessment
-- **Progress metrics**: Total tasks, completion rates, time estimates
-
-**Implementation**:
-
-- **to-dos.md**: Main project task list in root directory
-- **Logs/02_BUG_TRACKING_LOG.md**: Detailed bug tracking and resolution
-- **Status indicators**: 🔴 BUG, 🟡 TODO, 🟢 IN PROGRESS, ✅ COMPLETED
-
----
-
-### Product Card Component Enhancements
-
-**Pattern**: Modern, responsive product cards with enhanced user experience
-
-```typescript
-// Enhanced ProductCard with visual feedback and modern styling
-export default function ProductCard({ product }: { product: Product }) {
-	const [isAdding, setIsAdding] = useState(false);
-	const [isAdded, setIsAdded] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
-	return (
-		<>
-			{/* ARIA live region for screen readers */}
-			<div aria-live="polite" className="sr-only">
-				{isAdded && `${product.name} added to basket`}
-			</div>
-
-			<motion.div
-				initial={{ opacity: 0, scale: 0.95 }}
-				whileInView={{ opacity: 1, scale: 1 }}
-				className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden flex flex-col h-full">
-				{/* Enhanced image container */}
-				<div className="w-full h-48 relative overflow-hidden">
-					<Image
-						src={product.image_url}
-						alt={product.name}
-						fill
-						className="object-cover transition-transform duration-300 hover:scale-105"
-						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-					/>
-				</div>
-
-				{/* Enhanced button states */}
-				<button
-					onClick={addToBasket}
-					disabled={isAdding || isAdded}
-					className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-						isAdding
-							? "bg-gray-300 text-gray-500 cursor-not-allowed"
-							: isAdded
-							? "bg-green-500 text-white cursor-default"
-							: "bg-primary hover:bg-primaryDark text-white shadow-md hover:shadow-lg transform hover:scale-105"
-					}`}>
-					{isAdding ? (
-						<>
-							<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-							Adding...
-						</>
-					) : isAdded ? (
-						<>
-							<svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-								<path
-									fillRule="evenodd"
-									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-									clipRule="evenodd"
-								/>
-							</svg>
-							Added to Basket!
-						</>
-					) : (
-						<>
-							<ShoppingCart size={20} />
-							Add to Basket
-						</>
-					)}
-				</button>
-			</motion.div>
-		</>
-	);
-}
-```
-
-**Why this pattern**: Modern product cards provide better user experience with visual feedback, accessibility features, and professional styling.
-
-**Key Features**:
-
-- **Visual States**: Loading spinner, success state, and disabled states
-- **Accessibility**: ARIA live regions for screen readers
-- **Modern Styling**: Rounded corners, shadows, hover effects, and smooth transitions
-- **Responsive Images**: Proper image sizing and hover effects
-- **Grid Layout**: Improved spacing and responsive grid system
-
-**Implementation Details**:
-
-- **State Management**: Multiple states for adding, success, and error handling
-- **Animation**: Framer Motion for smooth entrance animations and hover effects
-- **CSS Classes**: TailwindCSS for consistent, responsive styling
-- **Image Optimization**: Next.js Image component with proper sizing and hover effects
-
----
-
-### NextAuth Configuration Best Practices
-
-**Pattern**: Separate auth configuration from route handlers
-
-```typescript
-// lib/auth.ts - Centralized auth configuration
-export const authOptions: NextAuthOptions = {
-	session: { strategy: "jwt" },
-	providers: [
-		Credentials({
-			// ... provider configuration
-		}),
-	],
-	callbacks: {
-		// ... JWT and session callbacks
-	},
-};
-
-// app/api/auth/[...nextauth]/route.ts - Clean route handler
-import NextAuth from "next-auth";
-import { authOptions } from "@/lib/auth";
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
-```
-
-**Why this pattern**: Next.js App Router requires clean separation between configuration and route handlers. Exporting `authOptions` from route files causes build errors.
-
-**Key Benefits**:
-
-- **Build Compliance**: Avoids Next.js App Router export restrictions
-- **Reusability**: Auth configuration can be imported by other parts of the application
-- **Maintainability**: Centralized configuration in a dedicated library file
-- **Type Safety**: Proper TypeScript types for NextAuth configuration
-
-**Implementation Notes**:
-
-- **File Location**: Place auth configuration in `lib/auth.ts`
-- **Route Handler**: Keep route handlers minimal and focused
-- **Import Updates**: Update all files that previously imported from route handlers
-- **Type Safety**: Use proper NextAuth types for better development experience
-
----
+This document contains explanations and examples of code patterns, libraries, and techniques used in the TJ's Bake & Browse project.
 
 ## Frontend
 
-### React Components
+### Product Card Component Enhancements
 
-#### Component Structure
+**File:** `components/ProductCard.tsx`
 
-**Pattern**: Functional components with hooks and TypeScript
+**What was implemented:**
 
-```typescript
-"use client";
+- Visual feedback when adding items to basket (button state changes, loading spinner, success checkmark)
+- Accessibility improvements with ARIA live regions for screen readers
+- Modern styling with rounded corners, shadows, and hover effects
+- Consistent button positioning regardless of content length
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-
-export default function MyComponent() {
-	const [state, setState] = useState("");
-
-	useEffect(() => {
-		// Side effects
-	}, []);
-
-	return (
-		<motion.div
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			className="bg-white rounded-lg shadow">
-			{/* Component content */}
-		</motion.div>
-	);
-}
-```
-
-**Why this pattern**: Modern React with hooks provides clean, readable code. TypeScript adds type safety, and Framer Motion enables smooth animations.
-
-#### Premium Notification System
-
-**Pattern**: Context-based notification management with scroll dismissal
+**Key patterns:**
 
 ```typescript
-// Using the notification system
-import {
-	useNotifications,
-	showSuccessNotification,
-} from "@/components/NotificationManager";
+// State management for button interactions
+const [isAdding, setIsAdding] = useState(false);
+const [isAdded, setIsAdded] = useState(false);
 
-export default function MyComponent() {
-	const { showNotification } = useNotifications();
+// ARIA live region for accessibility
+<div aria-live="polite" className="sr-only">
+  {isAdded && `${product.name} added to basket`}
+</div>
 
-	const handleSuccess = () => {
-		showSuccessNotification(
-			showNotification,
-			"Success! 🎉",
-			"Operation completed successfully."
-		);
-	};
-
-	// Custom notification
-	const handleCustom = () => {
-		showNotification({
-			title: "Custom Title",
-			message: "Custom message content",
-			type: "info",
-			autoHide: true,
-			duration: 5000,
-			dismissOnScroll: true,
-		});
-	};
-}
-```
-
-**Why this pattern**:
-
-- **Professional appearance**: Modern design with gradients and animations
-- **Smart behavior**: Auto-dismisses on scroll for better UX
-- **Global state**: Context API provides app-wide notification management
-- **Type safety**: Full TypeScript support with proper interfaces
-- **Performance**: Throttled scroll detection and efficient rendering
-
-**Key Features**:
-
-- **5 notification types**: Success, Error, Info, Warning, Basket
-- **Scroll dismissal**: Automatically hides when users scroll down
-- **Action buttons**: Interactive notifications with clear next steps
-- **Bottom-right positioning**: Non-intrusive placement
-- **Smooth animations**: Framer Motion-powered transitions
-
-**Implementation**:
-
-```typescript
-// PremiumNotification.tsx - Main component
-// NotificationManager.tsx - Context provider
-// useNotifications hook - Easy access to notification functions
-```
-
-### Styling with Tailwind CSS
-
-#### Responsive Design
-
-**Pattern**: Mobile-first responsive design with breakpoint prefixes
-
-```typescript
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-	<div className="p-4 md:p-6 lg:p-8">
-		<h2 className="text-lg md:text-xl lg:text-2xl font-bold">
-			Responsive Title
-		</h2>
-	</div>
+// Consistent layout with fixed-height container
+<div className="min-h-[60px] flex flex-col items-center justify-center space-y-2">
+  {/* Optional content that maintains consistent spacing */}
 </div>
 ```
 
-**Why this pattern**: CSS Grid provides flexible, responsive layouts that adapt to different screen sizes. The `md:` prefix ensures the grid only applies on medium screens and larger.
+**Why this approach:**
 
-## Security
+- Improves user experience with immediate visual feedback
+- Ensures accessibility compliance for screen readers
+- Creates professional, consistent appearance across all product cards
+- Maintains performance while adding visual enhancements
 
-### Input Validation
+### NextAuth Configuration Best Practices
 
-#### Client and Server Validation
+**File:** `lib/auth.ts`
 
-**Pattern**: Validating data on both client and server sides
+**What was implemented:**
+
+- Separated NextAuth configuration from the API route handler
+- Centralized authentication options in a dedicated configuration file
+
+**Key patterns:**
 
 ```typescript
-// Client-side validation
-if (
-	!editingProduct.name ||
-	!editingProduct.sku ||
-	editingProduct.price_pence < 0
-)
-	return;
+// lib/auth.ts - Centralized configuration
+export const authOptions: NextAuthOptions = {
+	// ... configuration
+};
 
-// Server-side validation (in API route)
-if (!body || !body.name || !body.sku || typeof body.price_pence !== "number") {
+// API route - Clean import
+import { authOptions } from "@/lib/auth";
+const handler = NextAuth(authOptions);
+```
+
+**Why this approach:**
+
+- App Router compliance (prevents "authOptions is not a valid Route export" error)
+- Better code organisation and reusability
+- Easier testing and maintenance
+- Follows Next.js 13+ best practices
+
+### Performance Optimization / Product Card Performance Best Practices
+
+**File:** `components/ProductCard.tsx`, `components/ProductGrid.tsx`
+
+**What was implemented:**
+
+- Simplified animations and reduced CSS complexity
+- Optimised grid layout with reduced gaps
+- Balanced visual appeal with performance
+
+**Key patterns:**
+
+```typescript
+// Simplified motion.div for better performance
+<motion.div
+  initial={{ opacity: 0 }}
+  transition={{ duration: 0.2 }}
+  className="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200"
+>
+
+// Reduced grid gaps for better performance
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+```
+
+**Why this approach:**
+
+- Heavy animations can cause performance issues on lower-end devices
+- Simplified CSS reduces rendering complexity
+- Better balance between visual appeal and performance
+- Improved user experience across all device types
+
+### Consistent Site Styling System
+
+**File:** `app/test-styling/` directory
+
+**What was implemented:**
+
+- Comprehensive test page system for new styling approach
+- Blue colour scheme with modern pastel aesthetics
+- Professional premium feel with consistent design patterns
+- Test pages for baked-goods, about, and disclaimers sections
+
+**Key design patterns:**
+
+```typescript
+// Consistent background gradients
+className =
+	"min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50";
+
+// Enhanced card containers with backdrop blur
+className =
+	"bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-blue-100";
+
+// Gradient text for headings
+className =
+	"text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent";
+
+// Consistent spacing and typography
+className = "max-w-6xl mx-auto px-6 py-20";
+```
+
+**Design principles:**
+
+- **Colour consistency:** Blue-based palette throughout all components
+- **Visual hierarchy:** Clear distinction between sections and content levels
+- **Modern aesthetics:** Rounded corners, subtle shadows, and gradient accents
+- **Professional appearance:** Clean layouts with appropriate white space
+- **Accessibility:** High contrast ratios and clear typography
+
+**Test page structure:**
+
+- `/test-styling` - Main navigation hub
+- `/test-styling/baked-goods` - Enhanced product listing
+- `/test-styling/about` - Company story and values
+- `/test-styling/disclaimers` - Important information display
+
+**Why this approach:**
+
+- Allows testing new designs without affecting live site
+- Demonstrates consistent styling across different content types
+- Provides visual examples for stakeholder review
+- Establishes design system foundation for future development
+
+## Backend
+
+### API Route Error Handling
+
+**File:** `app/api/admin/inventory/route.ts`
+
+**What was implemented:**
+
+- Comprehensive error handling for PATCH requests
+- Input validation with meaningful error messages
+- Proper HTTP status codes for different error types
+
+**Key patterns:**
+
+```typescript
+// Input validation with descriptive errors
+if (typeof name !== "string" || name.trim().length === 0) {
 	return NextResponse.json(
-		{ error: "Missing required fields" },
+		{ error: "Name must be a non-empty string" },
 		{ status: 400 }
 	);
 }
+
+// Consistent error response format
+return NextResponse.json(
+	{ error: e?.message ?? "Failed to update product" },
+	{ status: 500 }
+);
 ```
 
-**Why this pattern**: Client-side validation provides immediate feedback, while server-side validation ensures data integrity regardless of client-side bypasses.
+**Why this approach:**
 
-## Performance
+- Better debugging and user experience
+- Consistent API response format
+- Proper HTTP status codes for client handling
+- Security through input validation
 
-### Optimistic Updates
+## Database
 
-#### Immediate UI Updates
+### Supabase Integration
 
-**Pattern**: Updating the UI immediately while API calls are in progress
+**File:** `lib/db.ts`
 
-```typescript
-// Update local state immediately
-setForm({ name: "", sku: "", price_pence: 0, stock: 0, visible: true });
+**What was implemented:**
 
-// Then refresh from server
-await load();
-```
+- Centralized database connection and query functions
+- Type-safe database operations
+- Error handling for database operations
 
-**Why this pattern**: This provides a snappy user experience by updating the UI immediately, then syncing with the server to ensure consistency.
-
-## Best Practices
-
-### Error Handling
-
-#### Try-Catch with Finally
-
-**Pattern**: Ensuring cleanup operations always execute
+**Key patterns:**
 
 ```typescript
-setIsLoading(true);
-try {
-	const r = await fetch("/api/admin/products", {
-		/* ... */
-	});
-	if (r.ok) {
-		/* ... */
-	}
-} finally {
-	setIsLoading(false);
+// Centralized client creation
+export const db = createClient(
+	process.env.NEXT_PUBLIC_SUPABASE_URL!,
+	process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+// Type-safe query functions
+export async function oneUserByEmail(email: string) {
+	const { data, error } = await db
+		.from("users")
+		.select("*")
+		.eq("email", email)
+		.single();
+
+	return { data, error };
 }
 ```
 
-**Why this pattern**: The `finally` block ensures that loading states are always reset, even if errors occur, preventing the UI from getting stuck in a loading state.
+**Why this approach:**
 
-### State Management
+- Single source of truth for database operations
+- Easier maintenance and updates
+- Consistent error handling patterns
+- Type safety for better development experience
 
-#### Immutable State Updates
+## General Patterns
 
-**Pattern**: Using spread operator for state updates
+### Component State Management
 
-```typescript
-onChange={(e) =>
-	setEditingProduct({ ...editingProduct, name: e.target.value })
-}
-```
+**File:** Various component files
 
-**Why this pattern**: Immutable updates prevent unexpected side effects and make state changes predictable and debuggable.
+**What was implemented:**
 
-### Notification Management
+- Local state for UI interactions
+- Optimistic updates for better UX
+- Proper cleanup and state reset
 
-#### Context-Based Global State
-
-**Pattern**: Using React Context for app-wide notification management
-
-```typescript
-// Provider setup
-<NotificationProvider>
-	<App />
-</NotificationProvider>;
-
-// Usage in components
-const { showNotification } = useNotifications();
-
-// Show notifications
-showSuccessNotification(showNotification, "Title", "Message");
-showErrorNotification(showNotification, "Error", "Details");
-```
-
-**Why this pattern**:
-
-- **Global access**: Any component can show notifications
-- **Centralised state**: Single source of truth for all notifications
-- **Performance**: Efficient re-rendering and state updates
-- **Type safety**: Full TypeScript support with proper interfaces
-
-#### Scroll-Based Dismissal
-
-**Pattern**: Automatically dismissing notifications when users scroll
+**Key patterns:**
 
 ```typescript
+// Local state management
+const [isAdding, setIsAdding] = useState(false);
+const [isAdded, setIsAdded] = useState(false);
+
+// Optimistic updates
+setRows((prevRows) =>
+	prevRows.map((row) => (row.id === p.id ? { ...row, ...payload } : row))
+);
+
+// State cleanup
 useEffect(() => {
-	if (!dismissOnScroll) return;
-
-	let lastScrollY = window.scrollY;
-	let scrollTimeout: NodeJS.Timeout;
-
-	const handleScroll = () => {
-		const currentScrollY = window.scrollY;
-
-		// If scrolling down more than 50px, dismiss notification
-		if (currentScrollY > lastScrollY + 50) {
-			handleClose();
-		}
-
-		lastScrollY = currentScrollY;
-	};
-
-	// Throttle scroll events for better performance
-	const throttledScroll = () => {
-		clearTimeout(scrollTimeout);
-		scrollTimeout = setTimeout(handleScroll, 100);
-	};
-
-	window.addEventListener("scroll", throttledScroll, { passive: true });
-
-	return () => {
-		window.removeEventListener("scroll", throttledScroll);
-		clearTimeout(scrollTimeout);
-	};
-}, [dismissOnScroll]);
+	if (isAdded) {
+		const timer = setTimeout(() => setIsAdded(false), 2000);
+		return () => clearTimeout(timer);
+	}
+}, [isAdded]);
 ```
 
-**Why this pattern**:
+**Why this approach:**
 
-- **Better UX**: Notifications don't block content reading
-- **Performance**: Throttled events prevent excessive function calls
-- **Memory management**: Proper cleanup of event listeners
-- **Smart threshold**: 50px threshold prevents accidental dismissal
+- Immediate user feedback
+- Better perceived performance
+- Proper memory management
+- Consistent user experience
 
-## User Experience
+### Error Boundary and Fallback Patterns
 
-### Notification Design
+**File:** `components/NavBasket.tsx`
 
-#### Professional Appearance
+**What was implemented:**
 
-**Pattern**: Modern notification design with gradients and animations
+- Graceful degradation when external functions are unavailable
+- Local fallback implementations for critical functionality
+- Error handling that doesn't break the user experience
 
-```typescript
-// Notification styling with Tailwind
-<motion.div
-	className="relative bg-white rounded-xl shadow-lg border-l-4 border-l-blue-500 overflow-hidden border border-gray-100"
-	style={{ minWidth: "280px", maxWidth: "340px" }}>
-	{/* Shimmer effect */}
-	<div className="h-1 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 animate-pulse" />
-
-	{/* Content */}
-	<div className="p-4">
-		<div className="flex items-center gap-3">
-			<div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
-				<ShoppingCart size={15} />
-			</div>
-			<h3 className="font-bold text-gray-900 text-base tracking-tight">
-				{title}
-			</h3>
-		</div>
-	</div>
-</motion.div>
-```
-
-**Why this pattern**:
-
-- **Visual hierarchy**: Clear distinction between title, message, and actions
-- **Brand consistency**: Unified design language across the application
-- **Accessibility**: High contrast and readable typography
-- **Modern feel**: Gradients and shadows create premium appearance
-
-#### Action Buttons
-
-**Pattern**: Interactive notifications with clear next steps
+**Key patterns:**
 
 ```typescript
-{
-	showActions && (
-		<div className="flex gap-3">
-			{onViewBasket && (
-				<button
-					onClick={onViewBasket}
-					className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2.5 rounded-lg font-semibold text-sm hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0">
-					View Basket
-				</button>
-			)}
-			{onContinueShopping && (
-				<button
-					onClick={onContinueShopping}
-					className="flex-1 bg-gray-50 text-gray-700 px-4 py-2.5 rounded-lg font-semibold text-sm hover:bg-gray-100 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 border border-gray-200">
-					Continue Shopping
-				</button>
-			)}
-		</div>
+// Local fallback implementation
+function getGuestCart(): CartItem[] {
+	if (typeof window === "undefined") return [];
+	try {
+		const stored = localStorage.getItem("guest-cart");
+		return stored ? JSON.parse(stored) : [];
+	} catch {
+		return [];
+	}
+}
+
+// Graceful error handling
+try {
+	// Primary implementation
+} catch {
+	// Fallback to local implementation
+	const guestItems = getGuestCart();
+	return guestItems.reduce(
+		(s: number, i: CartItem) => s + (Number(i.qty) || 0),
+		0
 	);
 }
 ```
 
-**Why this pattern**:
+**Why this approach:**
 
-- **Clear actions**: Users know exactly what to do next
-- **Primary/secondary**: Visual hierarchy guides user decisions
-- **Hover effects**: Interactive feedback for better engagement
-- **Consistent styling**: Matches the overall design system
+- Ensures functionality even when dependencies fail
+- Better user experience during development
+- Robust error handling
+- Maintains core functionality under various conditions
 
----
+### User-Requested Styling Updates
 
-## Performance Optimization
+**Files:** `components/ParallaxHero.tsx`, `app/about/page.tsx`, `app/disclaimer/page.tsx`
 
-### Product Card Performance Best Practices
+**What was implemented:**
 
-**Pattern**: Balance visual enhancements with performance considerations
+- Removed blue tinting from hero images as requested by user
+- Applied gradient background from test-styling/about to the real about page
+- Reduced padding on values cards section for better visual balance
+- Completely redesigned disclaimer page using test-styling approach
+- Updated dietary requirements content to remove healthcare consultation advice
+- Corrected ordering information: same-day collection available before 12 PM, orders after 2 PM may be processed next day
+
+**Key changes made:**
 
 ```typescript
-// ❌ Performance-Heavy Approach (Avoid)
-<motion.div
-	initial={{ opacity: 0, scale: 0.95 }}
-	whileInView={{ opacity: 1, scale: 1 }}
-	className="transform hover:-translate-y-2 transition-all duration-300">
-	<Image
-		className="hover:scale-105 transition-transform duration-300"
-		// Heavy hover effects on every image
-	/>
-</motion.div>
+// ParallaxHero - Removed blue tinting
+// Before: <div className="absolute inset-0 bg-primaryDark/40" />
+// After: {/* Removed blue tinting as requested by user */}
 
-// ✅ Performance-Optimized Approach
-<motion.div
-	initial={{ opacity: 0 }}
-	whileInView={{ opacity: 1 }}
-	transition={{ duration: 0.2 }}
-	className="transition-shadow duration-200">
-	<Image
-		className="object-cover"
-		// Simple, fast image rendering
-	/>
-</motion.div>
+// About page - Added gradient background
+className =
+	"min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50";
+
+// About page - Reduced values section padding
+className = "bg-primaryLight/20 py-12"; // was py-16
+className = "text-3xl font-bold text-primaryDark mb-8"; // was mb-10
+className = "grid gap-6 sm:grid-cols-2 md:grid-cols-4"; // was gap-8
+
+// Disclaimer page - Complete redesign with new styling
+className =
+	"min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50";
+className =
+	"bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-blue-100";
 ```
 
-**Why this pattern**: Performance is critical for user experience. Heavy animations and complex CSS can significantly slow down page rendering and navigation.
+**Content updates:**
 
-**Key Performance Principles**:
+- **Dietary Requirements**: Removed "consult healthcare professionals" advice, focused on ingredient selection and protocols
+- **Ordering Information**: Updated to reflect actual business practices (same-day collection before 12 PM, orders after 2 PM may be processed next day)
+- **Allergen Information**: Maintained existing content with enhanced visual presentation
 
-- **Minimize Transforms**: Avoid complex hover effects on multiple elements
-- **Simplify Animations**: Use lightweight entrance animations only
-- **Optimize CSS**: Reduce dynamic class generation and complex transitions
-- **Image Performance**: Avoid heavy image effects that trigger layout recalculation
-- **Grid Optimization**: Use appropriate spacing that doesn't cause layout thrashing
+**Why this approach:**
 
-**Performance Impact Examples**:
-
-- **Heavy Hover Effects**: Can cause 2-3x slower page rendering
-- **Complex Transforms**: May trigger layout recalculation on every interaction
-- **Excessive CSS Classes**: Increases bundle size and parsing time
-- **Large Grid Gaps**: Can cause unnecessary layout calculations
-
-**Implementation Guidelines**:
-
-- **Test Performance**: Always measure before/after performance impact
-- **Progressive Enhancement**: Start with basic functionality, add effects gradually
-- **Mobile First**: Ensure performance on slower devices
-- **Monitor Metrics**: Watch for layout thrashing and rendering delays
+- Respects user preferences while maintaining design consistency
+- Applies successful test styling elements to live pages
+- Improves visual hierarchy and readability
+- Provides accurate business information to customers
+- Maintains professional appearance while addressing user feedback

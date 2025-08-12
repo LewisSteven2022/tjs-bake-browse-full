@@ -19,18 +19,34 @@ export default function RootLayout({
 		<html lang="en">
 			<body>
 				<Providers>
-					<header className="border-b bg-white">
-						<div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-							<Link href="/" className="text-xl font-semibold text-blue-500">
-								TJ's Bake & Browse
-							</Link>
-							<nav className="flex items-center gap-4 text-sm">
-								<Link href="/about">About us</Link>
-								<Link href="/groceries">Groceries</Link>
-								<Link href="/baked-goods">Baked Goods</Link>
-								<NavBasket />
-								<NavAuth />
-							</nav>
+					<header className="border-b border-blue-200 bg-white shadow-sm">
+						<div className="max-w-5xl mx-auto px-4 py-4">
+							<div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4">
+								<Link
+									href="/"
+									className="text-xl font-semibold text-blue-800 hover:text-blue-600 transition-colors">
+									TJ's Bake & Browse
+								</Link>
+								<nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
+									<Link
+										href="/about"
+										className="text-gray-700 hover:text-blue-800 transition-colors">
+										About us
+									</Link>
+									<Link
+										href="/groceries"
+										className="text-gray-700 hover:text-blue-800 transition-colors">
+										Groceries
+									</Link>
+									<Link
+										href="/baked-goods"
+										className="text-gray-700 hover:text-blue-800 transition-colors">
+										Baked Goods
+									</Link>
+									<NavBasket />
+									<NavAuth />
+								</nav>
+							</div>
 						</div>
 					</header>
 					<main className="max-w-5xl mx-auto px-4 py-6">{children}</main>
