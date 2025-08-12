@@ -83,3 +83,51 @@ alter table public.categories enable row level security;
 
 -- Create policy for categories (read-only for now)
 create policy if not exists categories_read on public.categories for select using (true);
+
+-- Add missing RLS policies for users table (CRITICAL for authentication)
+-- Allow users to read their own profile
+create policy if not exists users_read_own on public.users 
+  for select using (auth.uid() = id);
+
+-- Allow users to update their own profile
+create policy if not exists users_update_own on public.users 
+  for update using (auth.uid() = id);
+
+-- Allow admin users to read all users
+create policy if not exists users_admin_read on public.users 
+  for select using (
+    exists (
+      select 1 from public.users 
+      where id = auth.uid() 
+      and role = 'admin'
+    )
+  );
+
+-- Add missing RLS policies for suggestions table
+-- Allow users to read their own suggestions
+create policy if not exists suggestions_read_own on public.suggestions 
+  for select using (auth.uid() = user_id);
+
+-- Allow users to create suggestions (with or without user_id)
+create policy if not exists suggestions_insert on public.suggestions 
+  for insert with check (true);
+
+-- Allow admin users to read all suggestions
+create policy if not exists suggestions_admin_read on public.suggestions 
+  for select using (
+    exists (
+      select 1 from public.users 
+      where id = auth.uid() 
+      and role = 'admin'
+    )
+  );
+
+-- Allow admin users to delete suggestions
+create policy if not exists suggestions_admin_delete on public.suggestions 
+  for delete using (
+    exists (
+      select 1 from public.users 
+      where id = auth.uid() 
+      and role = 'admin'
+    )
+  );

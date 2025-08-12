@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 		let q = admin
 			.from("orders")
 			.select(
-				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag, customer_name, customer_email, customer_phone, created_at"
+				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_opt_in, bag_fee_pence, customer_name, customer_email, customer_phone, created_at"
 			)
 			.order("created_at", { ascending: false })
 			.limit(limit);

@@ -46,10 +46,24 @@ export default function AdminInventoryPage() {
 	const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [showNewCategory, setShowNewCategory] = useState(false);
+	const [showAddProduct, setShowAddProduct] = useState(false);
 	const [newCategory, setNewCategory] = useState({
 		name: "",
 		slug: "",
 		description: "",
+	});
+	const [newProduct, setNewProduct] = useState({
+		name: "",
+		short_description: "",
+		description: "",
+		price_pence: 0,
+		pack_label: "",
+		allergens: [] as string[],
+		ingredients: "",
+		image_url: "",
+		stock: 0,
+		visible: true,
+		category_id: "",
 	});
 	const [hasNewSchema, setHasNewSchema] = useState(false);
 	const { showNotification } = useNotifications();
@@ -207,6 +221,63 @@ export default function AdminInventoryPage() {
 		}
 	}
 
+	async function createProduct() {
+		if (
+			!newProduct.name.trim() ||
+			newProduct.price_pence <= 0 ||
+			newProduct.stock < 0
+		) {
+			showErrorNotification(
+				showNotification,
+				"Missing Information",
+				"Name, price, and stock are required. Price must be greater than 0."
+			);
+			return;
+		}
+
+		try {
+			const res = await fetch("/api/admin/inventory", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(newProduct),
+			});
+
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				throw new Error(j?.error || `Failed to create product (${res.status})`);
+			}
+
+			showSuccessNotification(
+				showNotification,
+				"Product Created",
+				"New product has been created successfully."
+			);
+
+			// Reset form
+			setNewProduct({
+				name: "",
+				short_description: "",
+				description: "",
+				price_pence: 0,
+				pack_label: "",
+				allergens: [],
+				ingredients: "",
+				image_url: "",
+				stock: 0,
+				visible: true,
+				category_id: "",
+			});
+			setShowAddProduct(false);
+			load(); // Reload to get the new product
+		} catch (e: any) {
+			showErrorNotification(
+				showNotification,
+				"Creation Failed",
+				e?.message || "Failed to create product"
+			);
+		}
+	}
+
 	// Handle price input changes in the modal
 	const handlePriceChange = (newPrice: string) => {
 		if (!editingProduct) return;
@@ -265,13 +336,20 @@ export default function AdminInventoryPage() {
 		<div className="max-w-6xl mx-auto">
 			<h1 className="mb-4 text-2xl font-semibold">Inventory</h1>
 
-			{/* Toolbar: Export / Import */}
+			{/* Toolbar: Add Product, Export / Import */}
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
-				<a
-					href="/api/admin/inventory/export"
-					className="rounded border px-3 py-2 hover:bg-gray-50 w-full sm:w-auto text-center">
-					Export CSV
-				</a>
+				<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+					<button
+						onClick={() => setShowAddProduct(true)}
+						className="rounded border px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-center">
+						+ Add Product
+					</button>
+					<a
+						href="/api/admin/inventory/export"
+						className="rounded border px-3 py-2 hover:bg-gray-50 w-full sm:w-auto text-center">
+						Export CSV
+					</a>
+				</div>
 
 				<form
 					onSubmit={async (e) => {
@@ -800,6 +878,272 @@ export default function AdminInventoryPage() {
 									className="rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700"
 									onClick={createCategory}>
 									Create Category
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Add Product Modal */}
+			{showAddProduct && (
+				<div className="fixed inset-0 z-50">
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setShowAddProduct(false)}
+					/>
+					<div className="absolute inset-0 grid place-items-center p-4">
+						<div className="w-full max-w-2xl rounded-xl border bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+							<h2 className="mb-4 text-lg font-semibold">Add New Product</h2>
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								{/* Basic Information */}
+								<div className="md:col-span-2">
+									<h3 className="text-md font-medium text-gray-700 mb-2">
+										Basic Information
+									</h3>
+								</div>
+
+								<div className="md:col-span-2">
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Product Name *
+									</label>
+									<input
+										type="text"
+										value={newProduct.name}
+										onChange={(e) =>
+											setNewProduct({ ...newProduct, name: e.target.value })
+										}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="e.g., Gluten-Free Sourdough Bread"
+										required
+									/>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Price (£) *
+									</label>
+									<input
+										type="number"
+										step="0.01"
+										min="0"
+										value={newProduct.price_pence / 100}
+										onChange={(e) => {
+											const pounds = parseFloat(e.target.value) || 0;
+											const pence = Math.round(pounds * 100);
+											setNewProduct({ ...newProduct, price_pence: pence });
+										}}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="0.00"
+										required
+									/>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Stock Level *
+									</label>
+									<input
+										type="number"
+										min="0"
+										step="1"
+										value={newProduct.stock}
+										onChange={(e) => {
+											const stock = Math.max(
+												0,
+												parseInt(e.target.value || "0", 10)
+											);
+											setNewProduct({ ...newProduct, stock });
+										}}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="0"
+										required
+									/>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Category
+									</label>
+									<select
+										value={newProduct.category_id}
+										onChange={(e) =>
+											setNewProduct({
+												...newProduct,
+												category_id: e.target.value,
+											})
+										}
+										className="w-full rounded-lg border px-3 py-2">
+										<option value="">Select a category</option>
+										{categories.map((cat) => (
+											<option key={cat.id} value={cat.id}>
+												{cat.name}
+											</option>
+										))}
+									</select>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Pack Label
+									</label>
+									<input
+										type="text"
+										value={newProduct.pack_label}
+										onChange={(e) =>
+											setNewProduct({
+												...newProduct,
+												pack_label: e.target.value,
+											})
+										}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="e.g., 500g, 6-pack"
+									/>
+								</div>
+
+								{/* Allergens */}
+								<div className="md:col-span-2">
+									<h3 className="text-md font-medium text-gray-700 mb-2">
+										Allergens
+									</h3>
+									<div className="grid grid-cols-2 gap-2 max-h-32 overflow-auto border rounded-lg p-3">
+										{Object.entries(ALLERGENS)
+											.sort((a, b) => a[1].label.localeCompare(b[1].label))
+											.map(([key, meta]) => {
+												const checked = newProduct.allergens.includes(key);
+												return (
+													<label
+														key={key}
+														className="inline-flex items-center gap-2 cursor-pointer select-none text-sm">
+														<input
+															type="checkbox"
+															checked={checked}
+															onChange={(e) => {
+																const next = e.target.checked
+																	? [...newProduct.allergens, key]
+																	: newProduct.allergens.filter(
+																			(k) => k !== key
+																	  );
+																setNewProduct({
+																	...newProduct,
+																	allergens: next,
+																});
+															}}
+														/>
+														<span>{meta.label}</span>
+													</label>
+												);
+											})}
+									</div>
+								</div>
+
+								{/* Additional Details */}
+								<div className="md:col-span-2">
+									<h3 className="text-md font-medium text-gray-700 mb-2">
+										Additional Details
+									</h3>
+								</div>
+
+								<div className="md:col-span-2">
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Short Description
+									</label>
+									<input
+										type="text"
+										value={newProduct.short_description}
+										onChange={(e) =>
+											setNewProduct({
+												...newProduct,
+												short_description: e.target.value,
+											})
+										}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="Brief description for product listings"
+									/>
+								</div>
+
+								<div className="md:col-span-2">
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Full Description
+									</label>
+									<textarea
+										value={newProduct.description}
+										onChange={(e) =>
+											setNewProduct({
+												...newProduct,
+												description: e.target.value,
+											})
+										}
+										rows={3}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="Detailed product description"
+									/>
+								</div>
+
+								<div className="md:col-span-2">
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Ingredients
+									</label>
+									<textarea
+										value={newProduct.ingredients}
+										onChange={(e) =>
+											setNewProduct({
+												...newProduct,
+												ingredients: e.target.value,
+											})
+										}
+										rows={2}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="List of ingredients"
+									/>
+								</div>
+
+								<div className="md:col-span-2">
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Image URL
+									</label>
+									<input
+										type="url"
+										value={newProduct.image_url}
+										onChange={(e) =>
+											setNewProduct({
+												...newProduct,
+												image_url: e.target.value,
+											})
+										}
+										className="w-full rounded-lg border px-3 py-2"
+										placeholder="https://example.com/image.jpg"
+									/>
+								</div>
+
+								<div className="md:col-span-2">
+									<label className="inline-flex items-center gap-2 cursor-pointer select-none">
+										<input
+											type="checkbox"
+											checked={newProduct.visible}
+											onChange={(e) =>
+												setNewProduct({
+													...newProduct,
+													visible: e.target.checked,
+												})
+											}
+										/>
+										<span className="text-gray-700">
+											Product visible to customers
+										</span>
+									</label>
+								</div>
+							</div>
+							<div className="mt-6 flex justify-end gap-3">
+								<button
+									className="rounded-lg border px-4 py-2 hover:bg-gray-50"
+									onClick={() => setShowAddProduct(false)}>
+									Cancel
+								</button>
+								<button
+									className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+									onClick={createProduct}>
+									Create Product
 								</button>
 							</div>
 						</div>

@@ -117,10 +117,12 @@ export async function POST(req: NextRequest) {
 				pickup_time,
 				subtotal_pence,
 				total_pence,
-				bag: bag_opt_in,
+				bag_opt_in,
+				bag_fee_pence: bag_opt_in ? BAG_PENCE : 0,
 				customer_name,
 				customer_email,
 				customer_phone,
+				items: saneItems, // Use the jsonb items column
 			})
 			.select("id, order_number")
 			.single();
@@ -134,27 +136,8 @@ export async function POST(req: NextRequest) {
 
 		const order_id = orderRow.id as string;
 
-		// Insert items
-		const itemsPayload = saneItems.map((i) => ({
-			order_id,
-			product_id: i.product_id,
-			name: i.name,
-			price_pence: i.price_pence,
-			quantity: i.qty,
-		}));
-
-		const { error: itemsErr } = await admin
-			.from("order_items")
-			.insert(itemsPayload);
-
-		if (itemsErr) {
-			// Best-effort rollback
-			await admin.from("orders").delete().eq("id", order_id);
-			return NextResponse.json(
-				{ error: itemsErr.message || "Failed to insert order items." },
-				{ status: 500 }
-			);
-		}
+		// Items are already stored in the orders.items jsonb column
+		// No need for separate order_items table
 
 		return NextResponse.json(
 			{

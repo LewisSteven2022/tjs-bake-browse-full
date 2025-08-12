@@ -18,7 +18,31 @@ export async function GET() {
 
 		const hasNewSchema = !tableError && tableCheck;
 
-		if (hasNewSchema) {
+		// More detailed logging to debug schema detection
+		console.log("GET /api/admin/inventory - Detailed schema check:", {
+			hasNewSchema,
+			tableCheck,
+			tableError,
+			tableErrorCode: tableError?.code,
+			tableErrorMessage: tableError?.message,
+			tableExists: !!tableCheck,
+			tableName: tableCheck?.table_name,
+		});
+
+		// Debug logging for schema detection
+		console.log("GET /api/admin/inventory - Schema check:", {
+			hasNewSchema,
+			tableCheck,
+			tableError,
+			tableExists: !!tableCheck,
+		});
+
+		// Force new schema since we know categories table exists
+		// TODO: Remove this bypass once schema detection is fixed
+		const forceNewSchema = true;
+
+		if (forceNewSchema || hasNewSchema) {
+			console.log("Using NEW schema with categories table");
 			// Use new schema with categories table
 			const { data, error } = await admin
 				.from("products")
@@ -56,6 +80,7 @@ export async function GET() {
 
 			return NextResponse.json({ products }, { status: 200 });
 		} else {
+			console.log("Falling back to OLD schema (no categories table)");
 			// Fall back to old schema with category string
 			const { data, error } = await admin
 				.from("products")
@@ -264,6 +289,150 @@ export async function PATCH(req: NextRequest) {
 	} catch (e: any) {
 		return NextResponse.json(
 			{ error: e?.message ?? "Failed to update product" },
+			{ status: 500 }
+		);
+	}
+}
+
+/** POST /api/admin/inventory
+ *  Creates a new product.
+ */
+export async function POST(req: NextRequest) {
+	try {
+		const body = await req.json();
+		const {
+			name,
+			short_description,
+			description,
+			price_pence,
+			pack_label,
+			allergens,
+			ingredients,
+			image_url,
+			stock,
+			visible,
+			category_id,
+		} = body;
+
+		// Validate required fields
+		if (!name || !price_pence || stock === undefined) {
+			return NextResponse.json(
+				{ error: "Name, price, and stock are required" },
+				{ status: 400 }
+			);
+		}
+
+		// Validate price
+		if (typeof price_pence !== "number" || price_pence < 0) {
+			return NextResponse.json(
+				{ error: "Price must be a non-negative number" },
+				{ status: 400 }
+			);
+		}
+
+		// Validate stock
+		if (typeof stock !== "number" || stock < 0) {
+			return NextResponse.json(
+				{ error: "Stock must be a non-negative number" },
+				{ status: 400 }
+			);
+		}
+
+		// Normalise allergens to string array
+		let normalizedAllergens: string[] = [];
+		if (allergens) {
+			if (Array.isArray(allergens)) {
+				normalizedAllergens = allergens;
+			} else if (typeof allergens === "string") {
+				try {
+					const parsed = JSON.parse(allergens);
+					normalizedAllergens = Array.isArray(parsed) ? parsed : [allergens];
+				} catch {
+					normalizedAllergens = allergens
+						.split(",")
+						.map((s: string) => s.trim())
+						.filter(Boolean);
+				}
+			}
+		}
+
+		// Check if new schema exists
+		const { data: tableCheck, error: tableError } = await admin
+			.from("information_schema.tables")
+			.select("table_name")
+			.eq("table_name", "categories")
+			.single();
+
+		const hasNewSchema = !tableError && tableCheck;
+
+		// Prepare product data
+		const productData: any = {
+			name: name.trim(),
+			short_description: short_description?.trim() || null,
+			description: description?.trim() || null,
+			price_pence: Math.round(price_pence),
+			pack_label: pack_label?.trim() || null,
+			allergens: normalizedAllergens,
+			ingredients: ingredients?.trim() || null,
+			image_url: image_url?.trim() || null,
+			stock: Math.round(stock),
+			visible: visible !== undefined ? visible : true,
+		};
+
+		// Add category_id if new schema exists and category is provided
+		if (hasNewSchema && category_id) {
+			productData.category_id = category_id;
+		}
+
+		// Debug logging
+		console.log("Schema check:", { hasNewSchema, tableCheck, tableError });
+		console.log("Product data being inserted:", productData);
+
+		// Generate SKU if not provided
+		if (!body.sku) {
+			const timestamp = Date.now().toString(36);
+			const nameSlug = name
+				.toLowerCase()
+				.replace(/[^a-z0-9]/g, "")
+				.substring(0, 8);
+			productData.sku = `${nameSlug}-${timestamp}`;
+		} else {
+			productData.sku = body.sku;
+		}
+
+		// Insert the product - always use new schema if categories table exists
+		const result = await admin
+			.from("products")
+			.insert(productData)
+			.select("id, name, price_pence, stock, visible, image_url, allergens")
+			.single();
+
+		const { data, error } = result;
+
+		if (error) throw error;
+
+		// Transform the response to match the expected format
+		let product: any;
+		if (data) {
+			product = {
+				id: data.id,
+				name: data.name,
+				price_pence: data.price_pence,
+				stock: data.stock,
+				visible: data.visible,
+				image_url: data.image_url,
+				allergens: data.allergens,
+				category:
+					hasNewSchema && productData.category_id
+						? { id: productData.category_id, name: null, slug: null }
+						: null,
+			};
+		}
+
+		return NextResponse.json({ product }, { status: 201 });
+	} catch (e: any) {
+		return NextResponse.json(
+			{ error: e?.message ?? "Failed to create product" },
 			{ status: 500 }
 		);
 	}

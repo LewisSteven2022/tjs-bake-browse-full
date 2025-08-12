@@ -1,0 +1,32 @@
+use the below prompt as a template and generate me a solid prompt that I can pass to a new conversation. This prompt will be ver concise, allowing the converstaion to be picked up straight away and knows where we are in the project. It should advsie the agent to read the core documents, look at the todos and then plan its next steps.
+
+"I'm continuing development on TJ's Bake & Browse, a Next.js bakery website with Supabase backend.
+
+CRITICAL: Use these files as source of truth:
+
+- to-dos.md - Main task list (17/35 completed, 48.6% complete)
+- Logs/02_BUG_TRACKING_LOG.md - Bug tracking & recent implementations
+- IMPLEMENTATION_PLAN.md - Development phases & strategy
+
+PROJECT CONTEXT:
+
+- Bakery website with admin inventory, customer ordering, time slot booking
+- Next.js App Router, Supabase, TailwindCSS, TypeScript
+- Test pages in /test-styling/ directory for design review
+- Recent: Suggestions form, admin orders time filtering, site-wide button styling
+
+DEVELOPMENT APPROACH:
+
+- Read core documents to understand current state
+- Check to-dos.md for next priority tasks
+- Follow existing file structure and UK English conventions
+- Test pages first, then apply to live site
+
+IMMEDIATE ACTION:
+
+1. Review the three core documents
+2. Identify next priority task from to-dos.md
+3. Plan and execute next development step
+4. Update tracking files as work progresses
+
+Start by reading the core documents, then proceed with the next priority task.""
