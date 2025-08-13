@@ -11,7 +11,7 @@ export async function GET() {
 		const items = await getCart();
 		return NextResponse.json({ items }, { status: 200 });
 	} catch (error) {
-		console.error("Cart GET error:", error);
+		// silent
 		return NextResponse.json({ items: [] }, { status: 200 });
 	}
 }
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 		await addItem({ product_id, name, price_pence, qty });
 		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (error) {
-		console.error("Cart POST error:", error);
+		// silent
 		return NextResponse.json(
 			{ error: "Failed to add item to cart" },
 			{ status: 500 }
@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest) {
 		await setQty(product_id, qty);
 		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (error) {
-		console.error("Cart PATCH error:", error);
+		// silent
 		return NextResponse.json(
 			{ error: "Failed to update cart item" },
 			{ status: 500 }
@@ -85,7 +85,7 @@ export async function DELETE(req: NextRequest) {
 
 		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (error) {
-		console.error("Cart DELETE error:", error);
+		// silent
 		return NextResponse.json(
 			{ error: "Failed to remove item from cart" },
 			{ status: 500 }

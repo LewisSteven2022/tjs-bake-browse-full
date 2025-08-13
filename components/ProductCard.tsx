@@ -27,13 +27,11 @@ export default function ProductCard({ product }: { product: Product }) {
 			});
 
 			// Success feedback
-			console.log(`Added ${product.name} to basket`);
 			setIsAdded(true);
 
 			// Reset success state after 2 seconds
 			setTimeout(() => setIsAdded(false), 2000);
 		} catch (err: any) {
-			console.error("Failed to add to basket:", err);
 			setError(err?.message || "Failed to add to basket. Please try again.");
 		} finally {
 			setIsAdding(false);

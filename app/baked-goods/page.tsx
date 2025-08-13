@@ -21,29 +21,44 @@ type Product = {
 		name: string;
 		slug: string;
 		description: string | null;
-	};
+	}[];
 };
 
 async function fetchBakedGoods(): Promise<Product[]> {
 	try {
-		const response = await fetch("/api/products");
+		const response = await fetch(`/api/products?t=${Date.now()}`, {
+			cache: "no-store",
+		});
+
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
+
 		const data = await response.json();
+
 		const products = data.products || [];
 
-		// Get the baked goods category ID
-		const bakedGoodsCategoryId = "baked_goods"; // This should match your category slug
+		// Filter products by category slug (not UUID)
+		const bakedGoodsProducts = products.filter((product: Product) => {
+			// Normalise categories to array
+			const cats = product?.categories
+				? Array.isArray(product.categories)
+					? product.categories
+					: [product.categories]
+				: [];
 
-		// Filter products by category (using the new schema category_id field)
-		return products.filter(
-			(product: Product) =>
-				product.category_id === bakedGoodsCategoryId ||
-				product.category === "baked_goods" // Fallback for different category formats
-		);
+			// Check if product has categories array with matching slug
+			if (cats.length > 0) {
+				const hasBakedGoods = cats.some((cat) => cat.slug === "baked_goods");
+				return hasBakedGoods;
+			}
+
+			// Fallback: check if category_id matches (though this won't work without proper mapping)
+			return false;
+		});
+
+		return bakedGoodsProducts;
 	} catch (error) {
-		console.error("Error fetching baked goods:", error);
 		throw error;
 	}
 }

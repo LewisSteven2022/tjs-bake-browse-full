@@ -76,10 +76,29 @@ export async function PATCH(req: NextRequest) {
 			// Map old schema to new schema
 			stock_quantity: updates.stock !== undefined ? updates.stock : undefined,
 			is_visible: updates.visible !== undefined ? updates.visible : undefined,
+			// Handle category updates - ensure category_id is passed through
+			category_id:
+				updates.category_id !== undefined ? updates.category_id : undefined,
+			// Handle other fields that might be updated
+			name: updates.name !== undefined ? updates.name : undefined,
+			price_pence:
+				updates.price_pence !== undefined ? updates.price_pence : undefined,
+			pack_label:
+				updates.pack_label !== undefined ? updates.pack_label : undefined,
+			allergens:
+				updates.allergens !== undefined ? updates.allergens : undefined,
 			// Remove old schema fields
 			stock: undefined,
 			visible: undefined,
+			category: undefined, // Remove old category field if present
 		};
+
+		// Remove undefined values to avoid overwriting with null
+		Object.keys(updateData).forEach((key) => {
+			if (updateData[key] === undefined) {
+				delete updateData[key];
+			}
+		});
 
 		const { data, error } = await admin
 			.from("products")
@@ -100,7 +119,10 @@ export async function PATCH(req: NextRequest) {
 			)
 			.single();
 
-		if (error) throw error;
+		if (error) {
+			// silent
+			throw error;
+		}
 
 		// Transform response for backward compatibility
 		const product = {
@@ -121,6 +143,7 @@ export async function PATCH(req: NextRequest) {
 
 		return NextResponse.json({ product }, { status: 200 });
 	} catch (e: any) {
+		// silent
 		return NextResponse.json(
 			{ error: e?.message ?? "Failed to update inventory" },
 			{ status: 500 }
@@ -219,8 +242,7 @@ export async function POST(req: NextRequest) {
 		}
 
 		// Debug logging
-		console.log("Schema check:", { hasNewSchema, tableCheck, tableError });
-		console.log("Product data being inserted:", productData);
+		// silent
 
 		// Generate SKU if not provided
 		if (!body.sku) {

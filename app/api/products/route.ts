@@ -2,6 +2,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
 	try {
 		const supabase = createClient(
@@ -10,8 +12,8 @@ export async function GET() {
 			{ auth: { persistSession: false } }
 		);
 
-		// Use the EXACT column names that exist in your database
-		const { data, error } = await supabase
+		// First, try to get products with categories
+		let { data, error } = await supabase
 			.from("products")
 			.select(
 				`
@@ -29,7 +31,7 @@ export async function GET() {
 				category_id,
 				created_at,
 				updated_at,
-				categories!inner (
+				categories (
 					id,
 					name,
 					slug,
@@ -38,11 +40,48 @@ export async function GET() {
 			`
 			)
 			.eq("is_visible", true)
-			.gt("stock_quantity", 0)
+			// .gt("stock_quantity", 0)  // TEMPORARILY COMMENTED OUT FOR DEBUGGING
 			.order("name");
 
-		if (error) {
-			console.error("Supabase error:", error);
+		// If categories join fails, fall back to products only
+		if (error && error.message.includes("categories")) {
+			const { data: productsOnly, error: productsError } = await supabase
+				.from("products")
+				.select(
+					`
+					id,
+					name,
+					sku,
+					short_description,
+					price_pence,
+					pack_label,
+					allergens,
+					ingredients,
+					image_url,
+					stock_quantity,
+					is_visible,
+					category_id,
+					created_at,
+					updated_at
+				`
+				)
+				.eq("is_visible", true)
+				.order("name");
+
+			if (productsError) {
+				// silently handle error in response
+				return NextResponse.json(
+					{ error: "Failed to fetch products", details: productsError.message },
+					{ status: 500 }
+				);
+			}
+
+			// Add categories property to match expected structure
+			data = (productsOnly || []).map((product) => ({
+				...product,
+				categories: [],
+			}));
+		} else if (error) {
 			return NextResponse.json(
 				{ error: "Failed to fetch products", details: error.message },
 				{ status: 500 }
@@ -51,26 +90,31 @@ export async function GET() {
 
 		// Transform products to include backward compatibility
 		const normalizedProducts = (data || []).map((product) => {
-			return {
+			// Normalise categories to always be an array for frontend filtering
+			const categoriesArray = product?.categories
+				? Array.isArray(product.categories)
+					? product.categories
+					: [product.categories]
+				: [];
+
+			const transformed = {
 				...product,
 				// Backward compatibility mapping for components that expect old names
 				stock: product.stock_quantity,
 				visible: product.is_visible,
 				category: product.category_id,
 				description: product.short_description,
-				// Ensure categories object exists
-				categories: product.categories || {
-					id: product.category_id,
-					name: "Category",
-					slug: "category",
-					description: null,
-				},
+				// Ensure categories is always an array
+				categories: categoriesArray,
 			};
+			return transformed;
 		});
 
-		return NextResponse.json({ products: normalizedProducts });
+		return NextResponse.json(
+			{ products: normalizedProducts },
+			{ headers: { "Cache-Control": "no-store" } }
+		);
 	} catch (error) {
-		console.error("Unexpected error:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
 			{ status: 500 }

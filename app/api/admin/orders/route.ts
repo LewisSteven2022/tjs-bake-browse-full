@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
 						break;
 				}
 			} catch (error) {
-				console.warn("Error applying time filter:", error);
+				// silent
 				// Continue without time filtering if there's an error
 			}
 		}

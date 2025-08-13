@@ -26,7 +26,7 @@ function saveCartToStorage(items: CartItem[]): void {
 	try {
 		localStorage.setItem(CART_KEY, JSON.stringify(items));
 	} catch {
-		console.warn("Failed to save cart to localStorage");
+		// silent
 	}
 }
 

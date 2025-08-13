@@ -47,6 +47,7 @@
 
 - Orders API handles missing `order_items` table gracefully
 - Products API works with various column name combinations
+- Products API temporarily removed `stock_quantity > 0` filter to surface out-of-stock items while validating category filtering and visibility rules
 - System remains functional even with partial schema implementations
 
 ## **Technical Architecture Decisions**
@@ -92,6 +93,7 @@
 - Automated schema checks in CI/CD pipeline
 - Database migration scripts with rollback capability
 - Regular schema documentation updates
+- Include data policy checks in automated tests (e.g., verify that category pages render expected products given various `stock_quantity` and `is_visible` combinations)
 
 ### **Development Workflow**
 

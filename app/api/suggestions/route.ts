@@ -90,7 +90,7 @@ Time: ${new Date().toLocaleString("en-GB", { timeZone: "Europe/London" })}
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Error submitting suggestion:", error);
+		// silent
 
 		return NextResponse.json(
 			{

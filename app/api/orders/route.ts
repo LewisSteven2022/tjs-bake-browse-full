@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
 			.single();
 
 		if (orderErr || !orderRow) {
-			console.error("Failed to create order:", orderErr);
+			// silent
 			return NextResponse.json(
 				{ error: orderErr?.message || "Failed to create order." },
 				{ status: 500 }
@@ -136,10 +136,6 @@ export async function POST(req: NextRequest) {
 		}
 
 		const order_id = orderRow.id as string;
-		console.log("Order created successfully:", {
-			order_id,
-			order_number: orderRow.order_number,
-		});
 
 		// Check if order_items table exists before trying to insert
 		try {
@@ -154,18 +150,15 @@ export async function POST(req: NextRequest) {
 				total_price_pence: item.price_pence * item.qty,
 			}));
 
-			console.log("Attempting to insert order items:", orderItems);
+			/* inserting items */
 
 			const { error: itemsErr } = await admin
 				.from("order_items")
 				.insert(orderItems);
 
 			if (itemsErr) {
-				console.error("Failed to insert order items:", itemsErr);
-
 				// Fallback: Try to store items in the orders table directly (for old schema)
 				try {
-					console.log("Attempting fallback: storing items in orders table");
 					const { error: updateErr } = await admin
 						.from("orders")
 						.update({
@@ -174,34 +167,18 @@ export async function POST(req: NextRequest) {
 						})
 						.eq("id", order_id);
 
-					if (updateErr) {
-						console.error("Fallback also failed:", updateErr);
-						console.warn(
-							"Order created but items failed to save. Order ID:",
-							order_id
-						);
-					} else {
-						console.log("Items stored in orders table as fallback");
-					}
-				} catch (fallbackError) {
-					console.error("Fallback storage failed:", fallbackError);
-					console.warn(
-						"Order created but items failed to save. Order ID:",
-						order_id
-					);
+					// Ignore updateErr here; order is created regardless
+				} catch {
+					// Ignore fallback failures
 				}
 			} else {
-				console.log("Order items inserted successfully");
+				// Items inserted successfully
 			}
 		} catch (itemsTableError) {
-			console.error(
-				"Error with order_items table (table may not exist):",
-				itemsTableError
-			);
+			// If order_items table is missing, fallback to storing items on the order
 
 			// Fallback: Try to store items in the orders table directly
 			try {
-				console.log("Attempting fallback: storing items in orders table");
 				const { error: updateErr } = await admin
 					.from("orders")
 					.update({
@@ -210,21 +187,9 @@ export async function POST(req: NextRequest) {
 					})
 					.eq("id", order_id);
 
-				if (updateErr) {
-					console.error("Fallback also failed:", updateErr);
-					console.warn(
-						"Order created but items failed to save. Order ID:",
-						order_id
-					);
-				} else {
-					console.log("Items stored in orders table as fallback");
-				}
-			} catch (fallbackError) {
-				console.error("Fallback storage failed:", fallbackError);
-				console.warn(
-					"Order created but items failed to save. Order ID:",
-					order_id
-				);
+				// Ignore updateErr; order is created regardless
+			} catch {
+				// Ignore fallback failures
 			}
 		}
 
@@ -241,7 +206,7 @@ export async function POST(req: NextRequest) {
 			{ status: 201 }
 		);
 	} catch (err: any) {
-		console.error("Unexpected error in orders API:", err);
+		// silent
 		return NextResponse.json(
 			{ error: err?.message || "Unexpected error." },
 			{ status: 500 }

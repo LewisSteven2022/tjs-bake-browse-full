@@ -19,7 +19,7 @@ export default function BasketPage() {
 			await setQty(product_id, newQty);
 			await refreshCart();
 		} catch (error) {
-			console.error("Failed to update quantity:", error);
+			// silent
 		} finally {
 			setUpdating(null);
 		}
@@ -31,7 +31,7 @@ export default function BasketPage() {
 			await removeItem(product_id);
 			await refreshCart();
 		} catch (error) {
-			console.error("Failed to remove item:", error);
+			// silent
 		} finally {
 			setUpdating(null);
 		}
@@ -42,7 +42,7 @@ export default function BasketPage() {
 			await clearCart();
 			await refreshCart();
 		} catch (error) {
-			console.error("Failed to clear cart:", error);
+			// silent
 		}
 	};
 

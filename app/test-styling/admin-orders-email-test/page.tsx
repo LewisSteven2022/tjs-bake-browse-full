@@ -108,7 +108,7 @@ export default function AdminOrdersEmailTestPage() {
 			const data = await res.json();
 			setRows(data.orders || []);
 		} catch (error) {
-			console.error("Failed to load orders:", error);
+			// silent
 			showErrorNotification(
 				showNotification,
 				"Load Failed",
@@ -473,7 +473,7 @@ function OrdersTable({
 			return pickupDateTime <= twoHoursFromNow && pickupDateTime >= now;
 		} catch (error) {
 			// If anything goes wrong, don't mark as urgent
-			console.warn("Error checking if order is urgent:", error);
+			// silent
 			return false;
 		}
 	};

@@ -532,7 +532,7 @@ function OrdersTable({
 			return pickupDateTime <= twoHoursFromNow && pickupDateTime >= now;
 		} catch (error) {
 			// If anything goes wrong, don't mark as urgent
-			console.warn("Error checking if order is urgent:", error);
+			// silent
 			return false;
 		}
 	};

@@ -19,6 +19,27 @@
 - [x] Fix basket page layout (center title, move clear basket button)
 - [x] Make bag fee dynamic and configurable from database
 - [x] Update bag fee wording to be dynamic based on product name
+- [ ] Confirm product visibility policy: hide out-of-stock items vs show with label. If hiding, re-enable `stock_quantity > 0` filter in `app/api/products/route.ts`; if showing, add "Out of stock" badge in UI.
+
+### **4. Cart & Account Enhancements** ⭐ **HIGH PRIORITY**
+
+- [ ] Migrate cart from localStorage to database-backed persistent cart (per-user)
+- [ ] Create a ‘My Account’ page for logged-in users with profile update (sync to DB)
+- [ ] Checkout to prompt for phone number; capture mobile at signup and prefill at checkout
+
+### **5. Admin Productivity** ⭐ **MEDIUM PRIORITY**
+
+- [ ] Bulk update: select multiple products and update category and allergens at once
+
+### **6. UI Polish** ⭐ **MEDIUM PRIORITY**
+
+- [ ] Product card: fix "Add to Basket" button position to a fixed offset (~3mm) from bottom so all cards align
+
+### **7. Disclaimer Page** ⭐ **LOWER PRIORITY**
+
+- [ ] Center section titles within their divs (e.g., "Ordering & collection")
+- [ ] Center-align all text inside coloured divs
+- [ ] Remove the “contact us for phone number” button and center the email button in that div
 
 ### **3. Checkout Process Fixes** ⭐ **HIGH PRIORITY**
 

@@ -43,7 +43,7 @@ async function fetchBakedGoods(): Promise<Product[]> {
 		.order("name", { ascending: true });
 
 	if (error) {
-		console.error("fetchBakedGoods:", error);
+		// silent
 		return [];
 	}
 

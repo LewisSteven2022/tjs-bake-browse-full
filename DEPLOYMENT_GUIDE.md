@@ -92,16 +92,16 @@ ON CONFLICT (id) DO NOTHING;
 ### **3.2 Insert Sample Products**
 
 ```sql
--- Baked Goods
-INSERT INTO public.products (name, price_pence, image_url, pack_label, allergens, sku, stock, visible, category) VALUES
-    ('Gluten-Free Sourdough Bread', 450, '/images/products/sourdough.jpg', '500g', '["none"]', 'GF-SOUR-001', 15, true, 'a435f3b9-6a3c-4bdc-ba45-b2ca2ccf500b'),
-    ('Chocolate Chip Cookies', 250, '/images/products/chocolate-cookies.jpg', '6-pack', '["milk","eggs"]', 'COOK-CHOC-001', 25, true, 'a435f3b9-6a3c-4bdc-ba45-b2ca2ccf500b'),
-    ('Blueberry Muffins', 300, '/images/products/blueberry-muffins.jpg', '4-pack', '["eggs","tree_nuts"]', 'MUFF-BLUE-001', 20, true, 'a435f3b9-6a3c-4bdc-ba45-b2ca2ccf500b');
+-- Baked Goods (corrected columns)
+INSERT INTO public.products (name, price_pence, image_url, pack_label, allergens, sku, stock_quantity, is_visible, category_id) VALUES
+    ('Gluten-Free Sourdough Bread', 450, '/images/products/sourdough.jpg', '500g', ARRAY['none'], 'GF-SOUR-001', 15, true, 'a435f3b9-6a3c-4bdc-ba45-b2ca2ccf500b'),
+    ('Chocolate Chip Cookies', 250, '/images/products/chocolate-cookies.jpg', '6-pack', ARRAY['milk','eggs'], 'COOK-CHOC-001', 25, true, 'a435f3b9-6a3c-4bdc-ba45-b2ca2ccf500b'),
+    ('Blueberry Muffins', 300, '/images/products/blueberry-muffins.jpg', '4-pack', ARRAY['eggs','tree_nuts'], 'MUFF-BLUE-001', 20, true, 'a435f3b9-6a3c-4bdc-ba45-b2ca2ccf500b');
 
--- Groceries
-INSERT INTO public.products (name, price_pence, image_url, pack_label, allergens, sku, stock, visible, category) VALUES
-    ('Organic Almond Flour', 800, '/images/products/almond-flour.jpg', '500g', '["tree_nuts"]', 'FLOUR-ALM-001', 30, true, '3c27609f-cbb5-4ad0-a88f-ef619be670d6'),
-    ('Coconut Sugar', 450, '/images/products/coconut-sugar.jpg', '500g', '["none"]', 'SUGAR-COCO-001', 25, true, '3c27609f-cbb5-4ad0-a88f-ef619be670d6');
+-- Groceries (corrected columns)
+INSERT INTO public.products (name, price_pence, image_url, pack_label, allergens, sku, stock_quantity, is_visible, category_id) VALUES
+    ('Organic Almond Flour', 800, '/images/products/almond-flour.jpg', '500g', ARRAY['tree_nuts'], 'FLOUR-ALM-001', 30, true, '3c27609f-cbb5-4ad0-a88f-ef619be670d6'),
+    ('Coconut Sugar', 450, '/images/products/coconut-sugar.jpg', '500g', ARRAY['none'], 'SUGAR-COCO-001', 25, true, '3c27609f-cbb5-4ad0-a88f-ef619be670d6');
 ```
 
 ### **3.3 Set Bag Fee**
@@ -167,7 +167,7 @@ npm start
 ### **5.3 Post-Deployment Verification**
 
 1. Check all pages load correctly
-2. Test product browsing
+2. Test product browsing (note: `/api/products` currently returns all visible products regardless of `stock_quantity` until product visibility policy is finalised)
 3. Test cart functionality
 4. Test order creation
 5. Verify RLS policies work

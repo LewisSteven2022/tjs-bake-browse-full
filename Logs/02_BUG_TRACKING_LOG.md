@@ -5,7 +5,7 @@
 - **Last Updated**: [Current Date]
 - **Status**: ACTIVE DEVELOPMENT
 - **Critical Issues**: 0
-- **Known Issues**: 0
+- **Known Issues**: 1
 
 ## **CRITICAL ISSUES RESOLVED**
 
@@ -36,7 +36,7 @@
 - **Issue**: Products not displaying on `/groceries` and `/baked-goods` pages
 - **Root Cause**: Schema mismatch between API queries and actual database columns
 - **Impact**: Empty product pages, no items visible
-- **Resolution**: Fixed products API to use correct column names and added fallback logic
+- **Resolution**: Fixed products API to use correct column names and added fallback logic. Identified that a stock filter was hiding out-of-stock products; temporarily disabled stock filter in API while deciding product visibility policy.
 - **Date Resolved**: [Current Date]
 
 ## **RECENT IMPLEMENTATIONS**
@@ -55,14 +55,14 @@
 
 ## **KNOWN ISSUES**
 
-- None currently identified
+- 1. Product visibility policy decision pending: decide whether out-of-stock products should be hidden or shown with an "Out of stock" label. API currently returns all visible products regardless of stock due to temporary removal of the `stock_quantity > 0` filter.
 
 ## **NEXT STEPS**
 
 1. ✅ **COMPLETED**: Fix database schema mismatches
 2. ✅ **COMPLETED**: Update API endpoints for correct schema
 3. ✅ **COMPLETED**: Add fallback logic for schema compatibility
-4. 🔄 **IN PROGRESS**: Update documentation to reflect actual schema
+4. 🔄 **IN PROGRESS**: Update documentation to reflect actual schema and API behaviour (temporary stock filter removal)
 5. 📋 **PENDING**: Test all functionality end-to-end
 6. 📋 **PENDING**: Add sample data to database
 
@@ -92,6 +92,7 @@
 - ✅ **COMPLETED**: Bug Tracking Log (this file)
 - 📋 **PENDING**: Update other schema documentation files
 - 📋 **PENDING**: Update implementation guides
+- ✅ **ADDED**: Debug endpoint `GET /api/debug` for database and schema inspection during development
 
 ## **TESTING STATUS**
 

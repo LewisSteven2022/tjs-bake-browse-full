@@ -15,7 +15,7 @@ export async function GET() {
 			.eq("is_active", true);
 
 		if (error) {
-			console.error("Failed to fetch fees:", error);
+			// silent
 			return NextResponse.json(
 				{ error: "Failed to fetch fees" },
 				{ status: 500 }
@@ -24,7 +24,7 @@ export async function GET() {
 
 		return NextResponse.json({ fees: data || [] });
 	} catch (error) {
-		console.error("Error fetching fees:", error);
+		// silent
 		return NextResponse.json(
 			{ error: "Internal server error" },
 			{ status: 500 }

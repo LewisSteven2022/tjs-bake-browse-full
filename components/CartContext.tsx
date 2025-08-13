@@ -22,7 +22,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 			const cartItems = await getCart();
 			setItems(cartItems);
 		} catch (error) {
-			console.error("Failed to refresh cart:", error);
+			// silent
 			setItems([]);
 		} finally {
 			setLoading(false);

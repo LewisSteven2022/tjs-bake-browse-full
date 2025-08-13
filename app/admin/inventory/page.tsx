@@ -133,13 +133,7 @@ export default function AdminInventoryPage() {
 				allergens: p.allergens,
 				...(hasNewSchema && { category_id: p.category?.id || null }),
 			};
-			console.log("Saving product with payload:", payload);
-			console.log(
-				"Price in pence:",
-				p.price_pence,
-				"Price in pounds:",
-				(p.price_pence / 100).toFixed(2)
-			);
+			// saving product
 
 			const res = await fetch("/api/admin/inventory", {
 				method: "PATCH",
@@ -297,9 +291,6 @@ export default function AdminInventoryPage() {
 		const numericPrice = parseFloat(cleanPrice);
 		if (isNaN(numericPrice) || numericPrice < 0) return 0;
 		const pence = Math.round(numericPrice * 100);
-		console.log(
-			`Converting ${pounds} -> ${cleanPrice} -> ${numericPrice} -> ${pence} pence`
-		);
 		return pence;
 	};
 

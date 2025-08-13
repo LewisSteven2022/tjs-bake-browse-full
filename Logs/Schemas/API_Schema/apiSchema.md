@@ -266,6 +266,8 @@ CREATE POLICY "Public read access" ON public.configurable_fees FOR SELECT USING 
 - **Authentication**: Not required
 - **RLS**: Public read access
 
+Note: As of 2025-08-13, the endpoint temporarily returns all products with `is_visible = true` regardless of `stock_quantity` to assist validation of category filtering and UI. The previous filter `stock_quantity > 0` has been commented out pending a product visibility policy decision.
+
 **Response Format:**
 
 ```json

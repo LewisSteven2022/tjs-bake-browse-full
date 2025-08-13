@@ -16,11 +16,11 @@ export default function SuggestionsPage() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	// Debug logging
-	console.log("SuggestionsPage render - status:", status, "session:", session);
+	// silent
 
 	// Redirect if not logged in
 	if (status === "loading") {
-		console.log("Loading state");
+		// silent
 		return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
 				<div className="text-center">
@@ -32,7 +32,7 @@ export default function SuggestionsPage() {
 	}
 
 	if (status === "unauthenticated") {
-		console.log("Unauthenticated, redirecting to login");
+		// silent
 		router.push("/login?callbackUrl=/suggestions");
 		return (
 			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -91,7 +91,7 @@ export default function SuggestionsPage() {
 		}));
 	};
 
-	console.log("Rendering main form");
+	// silent
 
 	return (
 		<div className="min-h-screen bg-gray-50 py-12">
