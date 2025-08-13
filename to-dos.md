@@ -21,6 +21,14 @@
 - [x] Update bag fee wording to be dynamic based on product name
 - [ ] Confirm product visibility policy: hide out-of-stock items vs show with label. If hiding, re-enable `stock_quantity > 0` filter in `app/api/products/route.ts`; if showing, add "Out of stock" badge in UI.
 
+### **3. Quick Wins (Immediate)** ⭐ **HIGH PRIORITY**
+
+- [x] Update About page content and layout per new copy (clean, professional)
+- [ ] Add modern social links for Instagram and Facebook (header/footer)
+- [ ] Remove Export CSV / Import CSV options from inventory and related code
+- [ ] Fix admin orders: add support for "Rejected" status (or adjust UI to allowed statuses)
+- [ ] Update quick mark buttons to match allowed statuses (remove/replace "Set Unpaid")
+
 ### **4. Cart & Account Enhancements** ⭐ **HIGH PRIORITY**
 
 - [ ] Migrate cart from localStorage to database-backed persistent cart (per-user)

@@ -31,21 +31,52 @@ export default function AboutPage() {
 					whileInView={{ opacity: 1, x: 0 }}
 					viewport={{ once: true }}
 					transition={{ duration: 0.6 }}>
-					<h2 className="text-3xl font-bold mb-4 text-primaryDark">
-						Our Story
+					<h2 className="text-3xl font-bold mb-4 text-primaryDark text-center md:text-left">
+						Welcome to TJ’s Bake and Browse
 					</h2>
-					<p className="mb-4 text-gray-700 leading-relaxed">
-						TJ&apos;s Bake &amp; Browse began with a simple mission: to create
-						delicious, freshly baked goods that everyone can enjoy — including
-						those with food intolerances and allergies. From gluten-free cakes
-						to dairy-free muffins, we believe no one should miss out on the joy
-						of a good bake.
-					</p>
-					<p className="text-gray-700 leading-relaxed">
-						Operating from our fully licensed commercial kitchen, we prioritise
-						safety, transparency, and taste. Every item we make is crafted with
-						love, care, and the highest quality ingredients.
-					</p>
+					<div className="space-y-4 text-gray-700 leading-relaxed">
+						<p>
+							Welcome to TJ’s Bake and Browse – Jersey’s own gluten-free grocery
+							store and home-baked treat haven!
+						</p>
+						<p>
+							We’re Tom and Jess – the "T" and "J" behind the name. Our journey
+							started nearly a decade ago when Tom was diagnosed with coeliac
+							disease at 18. Not long after, we discovered Jess also had
+							allergies to both gluten and dairy. From that moment on, our lives
+							changed — and so did our kitchen.
+						</p>
+						<p>
+							For the past nine years, we’ve lived a completely gluten-free
+							lifestyle in a fully gluten-free home. We know firsthand how tough
+							it can be to find safe, delicious food when you’re dealing with
+							allergies, intolerances, autoimmune conditions, or even just
+							making dietary choices. That’s why everything we stock or bake at
+							TJ’s is created with care, passion, and a whole lot of
+							understanding.
+						</p>
+						<p>
+							Our signature home-baked goodies are made right in our kitchen
+							with love and zero compromise on taste. We believe that just
+							because you have dietary needs doesn’t mean you should miss out on
+							the joy of your favourite treats.
+						</p>
+						<p>
+							Over the years, we’ve found inspiration in gluten-free shops we
+							visited on our travels. Each one left us dreaming about bringing
+							something similar back to the little island we call home. And now,
+							that dream is a reality.
+						</p>
+						<p>
+							TJ’s Bake and Browse is more than a shop. It’s a safe space for
+							the gluten-free community (and beyond) to enjoy food that’s
+							inclusive, indulgent, and made with heart.
+						</p>
+						<p className="italic text-primaryDark">
+							We’re so excited to share it with you.
+						</p>
+						<p className="font-semibold">– Tom & Jess</p>
+					</div>
 				</motion.div>
 				<motion.div
 					initial={{ opacity: 0, x: 50 }}
