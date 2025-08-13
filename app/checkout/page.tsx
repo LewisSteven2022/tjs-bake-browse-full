@@ -25,7 +25,6 @@ import {
 type Customer = {
 	name: string;
 	email: string;
-	phone: string;
 };
 
 export default function CheckoutPage() {
@@ -57,7 +56,6 @@ export default function CheckoutPage() {
 	const [customer, setCustomer] = useState<Customer>({
 		name: "",
 		email: "",
-		phone: "",
 	});
 
 	const [date, setDate] = useState<string>("");
@@ -92,7 +90,6 @@ export default function CheckoutPage() {
 		setCustomer((c) => ({
 			name: c.name || (session.user?.name ?? ""),
 			email: c.email || (session.user?.email ?? ""),
-			phone: c.phone || "",
 		}));
 	}, [session]);
 
@@ -122,7 +119,6 @@ export default function CheckoutPage() {
 		if (!items.length) return "Your basket is empty.";
 		if (!customer.name.trim()) return "Please enter your full name.";
 		if (!customer.email.trim()) return "Please enter your email.";
-		if (!customer.phone.trim()) return "Please enter your phone number.";
 		const dateErr = validateDate(date);
 		if (dateErr) return dateErr;
 		if (!time) return "Please choose a pickup time.";
@@ -158,7 +154,6 @@ export default function CheckoutPage() {
 				pickup_time: time, // "HH:mm"
 				customer_name: customer.name,
 				customer_email: customer.email,
-				customer_phone: customer.phone,
 			};
 
 			const res = await fetch("/api/orders", {
@@ -274,18 +269,6 @@ export default function CheckoutPage() {
 										}
 										className="mt-1 w-full rounded-full border px-3 py-2"
 										placeholder={session?.user?.email || "jane@example.com"}
-									/>
-								</div>
-								<div>
-									<label className="block text-sm text-gray-600">Phone</label>
-									<input
-										type="tel"
-										value={customer.phone}
-										onChange={(e) =>
-											setCustomer({ ...customer, phone: e.target.value })
-										}
-										className="mt-1 w-full rounded-full border px-3 py-2"
-										placeholder="07700 900000"
 									/>
 								</div>
 							</div>

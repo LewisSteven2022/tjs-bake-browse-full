@@ -5,17 +5,12 @@ import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { addItem } from "@/lib/cart";
-import {
-	useNotifications,
-	showBasketNotification,
-} from "./NotificationManager";
 import type { Product } from "./ProductGrid";
 
 export default function ProductCard({ product }: { product: Product }) {
 	const [isAdding, setIsAdding] = useState(false);
 	const [isAdded, setIsAdded] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const { showNotification } = useNotifications();
 
 	const addToBasket = async () => {
 		if (isAdding) return;
@@ -30,19 +25,6 @@ export default function ProductCard({ product }: { product: Product }) {
 				price_pence: product.price_pence,
 				qty: 1,
 			});
-
-			// Show premium notification
-			showBasketNotification(
-				showNotification,
-				product.name,
-				() => {
-					// Navigate to basket page
-					window.location.href = "/basket";
-				},
-				() => {
-					// Continue shopping - just close notification
-				}
-			);
 
 			// Success feedback
 			console.log(`Added ${product.name} to basket`);

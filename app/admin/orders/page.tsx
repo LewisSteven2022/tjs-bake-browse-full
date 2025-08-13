@@ -17,7 +17,6 @@ type Order = {
 	total_pence: number;
 	customer_name?: string | null;
 	customer_email?: string | null;
-	customer_phone?: string | null;
 	created_at: string; // ISO
 };
 
@@ -602,9 +601,7 @@ function OrdersTable({
 								</td>
 								<td className="p-3">
 									<div>{o.customer_name || "—"}</div>
-									<div className="text-gray-500">
-										{o.customer_email || o.customer_phone || "—"}
-									</div>
+									<div className="text-gray-500">{o.customer_email || "—"}</div>
 								</td>
 								<td className="p-3">{GBP(o.total_pence)}</td>
 								<td className="p-3">

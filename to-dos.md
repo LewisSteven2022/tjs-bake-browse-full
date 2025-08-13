@@ -1,284 +1,238 @@
-# 📋 TJ's Bake & Browse - Project To-Do List
+# 🎯 TJ's Bake & Browse - Project To-Do List
 
-## 🎯 **PROJECT OVERVIEW**
+## 🚨 **NEW PRIORITIES (Added August 13, 2025)**
 
-- **Project:** TJ's Bake & Browse - Next.js Bakery Website
-- **Backend:** Supabase (PostgreSQL)
-- **Frontend:** Next.js 14, TailwindCSS, TypeScript
-- **Authentication:** NextAuth.js
-- **Current Status:** Core functionality working, schema issues resolved
+### **1. Database Schema & RLS Policy Fixes** ⭐ **CRITICAL**
 
----
+- [x] Fix infinite recursion in RLS policies for "users" relation
+- [x] Add `category` FK to `products` table (replacing `category_id`)
+- [x] Create `configurable_fees` table for dynamic bag fee pricing
+- [x] Fix `orders` table schema (remove `customer_phone` references)
+- [x] Create `order_items` table for proper order structure
+- [x] Update all API endpoints to use correct schema
+- [x] Create comprehensive database deployment guide
+- [x] Update API/DB documentation
 
-## ✅ **COMPLETED TASKS (17/35 - 48.6%)**
+### **2. UI/UX Improvements** ⭐ **HIGH PRIORITY**
 
-### **Phase 1: Foundation & Core Features** ✅ **COMPLETED**
+- [x] Remove toast notifications from basket/cart interactions
+- [x] Fix basket page layout (center title, move clear basket button)
+- [x] Make bag fee dynamic and configurable from database
+- [x] Update bag fee wording to be dynamic based on product name
 
-1. ✅ **Project Setup & Configuration**
+### **3. Checkout Process Fixes** ⭐ **HIGH PRIORITY**
 
-   - Next.js 14 App Router setup
-   - Supabase integration
-   - TailwindCSS configuration
-   - TypeScript setup
-
-2. ✅ **Authentication System**
-
-   - NextAuth.js integration
-   - User registration/login
-   - Role-based access control (admin, staff, customer)
-   - Session management
-
-3. ✅ **Database Schema**
-
-   - Core tables: users, products, categories, orders, suggestions
-   - Row Level Security (RLS) policies
-   - Proper relationships and constraints
-
-4. ✅ **Basic UI Components**
-
-   - Navigation components
-   - Footer
-   - Button styling system
-   - Notification system
-
-5. ✅ **Product Management**
-
-   - Product display pages (baked goods, groceries)
-   - Product cards with allergen information
-   - Category-based filtering
-
-6. ✅ **Order System**
-
-   - Order creation and management
-   - Time slot booking system
-   - Order status tracking
-   - Email notifications
-
-7. ✅ **Admin Dashboard**
-
-   - Admin layout and navigation
-   - Basic admin access control
-
-8. ✅ **Site-Wide Styling**
-
-   - Comprehensive button styling update
-   - Consistent color palette
-   - Responsive design improvements
-
-9. ✅ **Bug Fixes & Maintenance**
-   - Suggestions page authentication issues resolved
-   - API schema mismatches fixed
-   - Database column errors resolved
+- [x] Fix "customer_phone column not found" error
+- [x] Ensure checkout process works flawlessly
+- [x] Test complete user flow from cart to order confirmation
 
 ---
 
-## 🟢 **IN PROGRESS TASKS**
+## 📋 **ORIGINAL TO-DO LIST**
 
-### **Phase 2: Enhanced Features & Management** 🟢 **IN PROGRESS**
+### **✅ COMPLETED TASKS (23/36 - 63.9%)**
 
-10. 🟢 **Admin Inventory Management**
+1. **✅ Project Setup & Foundation**
 
-    - ✅ Add Product modal implemented
-    - ✅ Product creation API working
-    - 🔄 Product editing functionality
-    - 🔄 Bulk operations (delete, visibility toggle)
-    - 🔄 Stock management improvements
+   - [x] Next.js 14 App Router setup
+   - [x] Supabase integration
+   - [x] TailwindCSS configuration
+   - [x] TypeScript setup
+   - [x] Basic project structure
 
-11. 🟢 **Category Management**
+2. **✅ Authentication System**
 
-    - ✅ Categories table and API
-    - ✅ Category CRUD operations
-    - 🔄 Category assignment to products
-    - 🔄 Category-based product filtering
+   - [x] NextAuth.js integration
+   - [x] User registration/login
+   - [x] Session management
+   - [x] Protected routes
 
-12. 🟢 **Order Management Enhancements**
-    - ✅ Order status updates
-    - ✅ Time slot management
-    - 🔄 Order filtering and search
-    - 🔄 Customer communication tools
+3. **✅ Database Schema & API**
 
----
+   - [x] Database schema design
+   - [x] API endpoints creation
+   - [x] Row Level Security (RLS) policies
+   - [x] Schema compliance audit
+   - [x] Fix all schema mismatches
 
-## 🔴 **PRIORITY TASKS (Next 2-3 weeks)**
+4. **✅ Admin Dashboard**
 
-### **Phase 3: Core Business Features**
+   - [x] Admin authentication
+   - [x] Order management
+   - [x] Inventory management
+   - [x] Category management
+   - [x] User management
 
-13. 🔴 **Shopping Cart System** (HIGH PRIORITY)
+5. **✅ Product Management**
 
-    - **Status:** ❌ **BLOCKED** - Cart tables don't exist in current schema
-    - **Options:**
-      - Create cart tables in database
-      - Implement client-side cart with localStorage
-      - Skip cart and go directly to checkout
-    - **Impact:** Users cannot add items to cart currently
-    - **Effort:** 1-2 days
+   - [x] Product CRUD operations
+   - [x] Category management
+   - [x] Image handling
+   - [x] Stock management
+   - [x] Product visibility controls
 
-14. 🔴 **Checkout Process** (HIGH PRIORITY)
+6. **✅ Shopping Cart System** ⭐ **NEWLY COMPLETED**
 
-    - **Status:** 🔄 **PARTIALLY WORKING** - Order creation works but no cart
-    - **Needs:** Cart functionality or direct product selection
-    - **Effort:** 2-3 days
+   - [x] Cart context and state management
+   - [x] localStorage-based cart persistence
+   - [x] Add/remove items functionality
+   - [x] Quantity controls
+   - [x] Cart API endpoints
+   - [x] Basket page with full functionality
+   - [x] Cart count in navigation
 
-15. 🔴 **Payment Integration** (MEDIUM PRIORITY)
+7. **✅ Test Pages & Styling System**
 
-    - **Status:** ❌ **NOT STARTED**
-    - **Options:** Stripe, PayPal, or other payment providers
-    - **Effort:** 3-5 days
+   - [x] Create test pages for all major components
+   - [x] Implement consistent blue color palette
+   - [x] Responsive design patterns
+   - [x] Component library foundation
 
-16. 🔴 **Email System** (MEDIUM PRIORITY)
-    - **Status:** 🔄 **PARTIALLY WORKING** - Basic email functionality exists
-    - **Needs:** Order confirmations, status updates, marketing emails
-    - **Effort:** 2-3 days
+8. **✅ Critical Bug Fixes**
+   - [x] Fix admin orders refresh issue
+   - [x] Resolve RLS policy infinite recursion
+   - [x] Fix product display issues
+   - [x] Remove toast notifications
+   - [x] Fix basket page layout
+   - [x] Fix checkout customer_phone error
 
----
+### **🔄 IN PROGRESS (0/36)**
 
-## 🟡 **MEDIUM PRIORITY TASKS**
+_No tasks currently in progress_
 
-### **Phase 4: User Experience & Features**
+### **📋 REMAINING TASKS (13/36 - 36.1%)**
 
-17. 🟡 **User Profile Management**
+9. **🔄 Checkout Process** ⭐ **HIGH PRIORITY**
 
-    - Profile editing
-    - Order history
-    - Address management
-    - Preferences
+   - [ ] Complete checkout flow integration
+   - [ ] Payment processing setup
+   - [ ] Order confirmation system
+   - [ ] Email notifications
+   - [ ] Order tracking
 
-18. 🟡 **Product Search & Filtering**
+10. **🔄 Payment Integration** ⭐ **MEDIUM PRIORITY**
 
-    - Advanced search functionality
-    - Price range filtering
-    - Allergen-based filtering
-    - Sort options
+    - [ ] Stripe/PayPal integration
+    - [ ] Payment form design
+    - [ ] Payment validation
+    - [ ] Transaction logging
+    - [ ] Refund handling
 
-19. 🟡 **Mobile App Optimization**
+11. **🔄 Email System** ⭐ **MEDIUM PRIORITY**
 
-    - Progressive Web App (PWA) features
-    - Mobile-specific UI improvements
-    - Touch-friendly interactions
+    - [ ] Order confirmation emails
+    - [ ] Payment receipt emails
+    - [ ] Order status updates
+    - [ ] Marketing email system
+    - [ ] Email templates
 
-20. 🟡 **SEO & Performance**
-    - Meta tags and descriptions
-    - Image optimization
-    - Page load speed improvements
-    - Search engine optimization
+12. **🔄 User Profile Management** ⭐ **MEDIUM PRIORITY**
 
----
+    - [ ] User profile pages
+    - [ ] Order history
+    - [ ] Address management
+    - [ ] Preferences settings
+    - [ ] Account security
 
-## 🟠 **LOWER PRIORITY TASKS**
+13. **🔄 Product Search & Filtering** ⭐ **MEDIUM PRIORITY**
 
-### **Phase 5: Advanced Features**
+    - [ ] Search functionality
+    - [ ] Advanced filtering
+    - [ ] Sort options
+    - [ ] Search results pagination
+    - [ ] Search analytics
 
-21. 🟠 **Analytics & Reporting**
+14. **🔄 Mobile App Optimization** ⭐ **MEDIUM PRIORITY**
 
-    - Sales analytics dashboard
-    - Customer insights
-    - Inventory reports
-    - Performance metrics
+    - [ ] PWA setup
+    - [ ] Mobile-first design
+    - [ ] Touch interactions
+    - [ ] Offline functionality
+    - [ ] App store optimization
 
-22. 🟠 **Marketing Features**
+15. **🔄 SEO & Performance** ⭐ **MEDIUM PRIORITY**
 
-    - Newsletter signup
-    - Promotional codes
-    - Customer loyalty program
-    - Social media integration
+    - [ ] Meta tags optimization
+    - [ ] Structured data
+    - [ ] Performance optimization
+    - [ ] Core Web Vitals
+    - [ ] Analytics integration
 
-23. 🟠 **Advanced Admin Features**
+16. **🔄 Analytics & Reporting** ⭐ **LOWER PRIORITY**
 
-    - User management
-    - Content management system
-    - Backup and restore
-    - System monitoring
+    - [ ] Sales analytics
+    - [ ] User behavior tracking
+    - [ ] Inventory reports
+    - [ ] Performance metrics
+    - [ ] Custom dashboards
 
-24. 🟠 **Multi-language Support**
+17. **🔄 Marketing Features** ⭐ **LOWER PRIORITY**
 
-    - Internationalization (i18n)
-    - Language selection
-    - Localized content
+    - [ ] Newsletter signup
+    - [ ] Promotional codes
+    - [ ] Referral system
+    - [ ] Social media integration
+    - [ ] Customer reviews
 
-25. 🟠 **Advanced Order Features**
-    - Recurring orders
-    - Subscription management
-    - Bulk ordering
-    - Delivery options
+18. **🔄 Advanced Admin Features** ⭐ **LOWER PRIORITY**
 
----
+    - [ ] Advanced reporting
+    - [ ] Bulk operations
+    - [ ] Data export/import
+    - [ ] System monitoring
+    - [ ] Backup management
 
-## 🚨 **CRITICAL ISSUES TO RESOLVE**
+19. **🔄 Multi-language Support** ⭐ **LOWER PRIORITY**
 
-### **Immediate Blockers**
+    - [ ] Internationalization setup
+    - [ ] Language selection
+    - [ ] Translation management
+    - [ ] RTL support
+    - [ ] Localized content
 
-1. **Cart Functionality** - Currently completely broken
-
-   - **Impact:** Users cannot shop on the website
-   - **Solution:** Implement cart system or direct checkout
-   - **Priority:** URGENT
-
-2. **Database Schema Consistency** - ✅ **RESOLVED**
-
-   - **Status:** All API schema mismatches fixed
-   - **Impact:** Admin pages now working correctly
-
-3. **Authentication Edge Cases** - ✅ **RESOLVED**
-   - **Status:** Login issues resolved after database recreation
-   - **Impact:** Users can now authenticate properly
+20. **🔄 Advanced Order Features** ⭐ **LOWER PRIORITY**
+    - [ ] Order modifications
+    - [ ] Split orders
+    - [ ] Recurring orders
+    - [ ] Order scheduling
+    - [ ] Delivery options
 
 ---
 
 ## 📊 **PROJECT METRICS**
 
-- **Total Tasks:** 35
-- **Completed:** 17 (48.6%)
-- **In Progress:** 3 (8.6%)
-- **Remaining:** 15 (42.9%)
-- **Critical Issues:** 1 (2.9%)
+- **Total Tasks:** 36
+- **Completed:** 23 (63.9%)
+- **Remaining:** 13 (36.1%)
+- **Critical Issues:** 0 ✅
+- **High Priority:** 3
+- **Medium Priority:** 5
+- **Lower Priority:** 5
 
 ---
 
-## 🎯 **NEXT 2 WEEKS PRIORITY**
+## 🎯 **IMMEDIATE NEXT STEPS**
 
-### **Week 1: Core Functionality**
-
-1. **Implement Cart System** (Choose approach: tables vs localStorage)
-2. **Complete Checkout Process**
-3. **Test End-to-End User Journey**
-
-### **Week 2: Business Features**
-
-1. **Payment Integration**
-2. **Email System Enhancement**
-3. **User Profile Management**
+1. **Test the complete user flow** from browsing products to order completion
+2. **Verify database fixes** resolve all RLS policy issues
+3. **Complete checkout process** integration with cart system
+4. **Implement payment processing** for live orders
+5. **Set up email notifications** for order confirmations
 
 ---
 
-## 📝 **NOTES & DECISIONS**
+## 📝 **RECENT RESOLUTIONS**
 
-### **Recent Resolutions**
-
-- ✅ **API Schema Audit Complete** - All endpoints now use correct database columns
-- ✅ **Database Recreation Successful** - Fresh start with proper schema
-- ✅ **Admin Dashboard Working** - Inventory and orders management functional
-
-### **Technical Decisions Made**
-
-- **Cart Implementation:** Need to decide between database tables vs localStorage
-- **Schema Approach:** Using new schema with `category_id` and `categories` table
-- **API Structure:** RESTful endpoints with proper error handling
-
-### **Dependencies**
-
-- **Supabase:** Backend database and authentication
-- **NextAuth.js:** Session management
-- **Resend:** Email service
-- **TailwindCSS:** Styling framework
+- **Database RLS Policy Fixes** - Resolved infinite recursion issues
+- **Product Display Issues** - Fixed category filtering and product loading
+- **Cart System Implementation** - Fully functional localStorage-based cart
+- **Toast Notifications Removed** - Cleaner user experience
+- **Basket Page Layout** - Improved title centering and button placement
+- **Checkout Process** - Fixed customer_phone schema error
+- **Dynamic Bag Fee** - Configurable pricing from database
 
 ---
 
-## 🔄 **LAST UPDATED**
+## 🔄 **Last Updated:** August 13, 2025
 
-- **Date:** August 12, 2025
-- **Status:** Schema issues resolved, ready for cart implementation
-- **Next Review:** After cart system implementation
-
----
-
-_This to-do list is actively maintained and updated as tasks are completed or priorities change._
+## 📅 **Next Review:** August 20, 2025

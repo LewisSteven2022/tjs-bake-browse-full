@@ -1,85 +1,79 @@
 // app/api/products/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { admin } from "@/lib/db";
+import { createClient } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
 	try {
-		const { searchParams } = new URL(req.url);
-		const category = searchParams.get("category");
-		const limitRaw = searchParams.get("limit");
-		const offsetRaw = searchParams.get("offset");
+		const supabase = createClient(
+			process.env.NEXT_PUBLIC_SUPABASE_URL!,
+			process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+			{ auth: { persistSession: false } }
+		);
 
-		const limit = Number.isFinite(Number(limitRaw))
-			? parseInt(limitRaw as string, 10)
-			: 0;
-		const offset = Number.isFinite(Number(offsetRaw))
-			? parseInt(offsetRaw as string, 10)
-			: 0;
-
-		// Base query: only visible, in‑stock products
-		let q = admin
+		// Use the EXACT column names that exist in your database
+		const { data, error } = await supabase
 			.from("products")
 			.select(
 				`
 				id,
 				name,
+				sku,
+				short_description,
 				price_pence,
-				image_url,
 				pack_label,
 				allergens,
-				sku,
+				ingredients,
+				image_url,
+				stock_quantity,
+				is_visible,
 				category_id,
-				categories!inner(id, name, slug),
-				stock,
-				visible,
-				created_at
+				created_at,
+				updated_at,
+				categories!inner (
+					id,
+					name,
+					slug,
+					description
+				)
 			`
 			)
-			.eq("visible", true)
-			.gt("stock", 0)
-			.order("created_at", { ascending: false });
-
-		if (category) {
-			// If category is provided, join with categories table to filter by slug
-			q = q.eq("categories.slug", category);
-		}
-
-		// Optional pagination
-		if (offset > 0 || limit > 0) {
-			const pageSize = limit > 0 ? limit : 50;
-			q = q.range(offset, offset + pageSize - 1);
-		}
-
-		const { data, error } = await q;
+			.eq("is_visible", true)
+			.gt("stock_quantity", 0)
+			.order("name");
 
 		if (error) {
-			console.error("GET /api/products:", error);
-			return NextResponse.json({ error: error.message }, { status: 500 });
+			console.error("Supabase error:", error);
+			return NextResponse.json(
+				{ error: "Failed to fetch products", details: error.message },
+				{ status: 500 }
+			);
 		}
 
-		// Transform the data to flatten the category info
-		const products = (data ?? []).map((product) => ({
-			...product,
-			category:
-				product.categories &&
-				Array.isArray(product.categories) &&
-				product.categories.length > 0
-					? {
-							id: product.categories[0].id,
-							name: product.categories[0].name,
-							slug: product.categories[0].slug,
-					  }
-					: null,
-		}));
+		// Transform products to include backward compatibility
+		const normalizedProducts = (data || []).map((product) => {
+			return {
+				...product,
+				// Backward compatibility mapping for components that expect old names
+				stock: product.stock_quantity,
+				visible: product.is_visible,
+				category: product.category_id,
+				description: product.short_description,
+				// Ensure categories object exists
+				categories: product.categories || {
+					id: product.category_id,
+					name: "Category",
+					slug: "category",
+					description: null,
+				},
+			};
+		});
 
+		return NextResponse.json({ products: normalizedProducts });
+	} catch (error) {
+		console.error("Unexpected error:", error);
 		return NextResponse.json(
-			{ products },
-			{
-				headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
-			}
+			{ error: "Internal server error" },
+			{ status: 500 }
 		);
-	} catch (err) {
-		console.error("GET /api/products (unhandled):", err);
-		return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
 	}
 }

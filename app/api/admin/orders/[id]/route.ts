@@ -23,7 +23,9 @@ export async function PATCH(
 			.from("orders")
 			.update({ status })
 			.eq("id", params.id)
-			.select()
+			.select(
+				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_opt_in, bag_fee_pence, customer_name, customer_email, customer_phone, created_at, updated_at"
+			)
 			.single();
 		if (error) throw error;
 		return NextResponse.json({ order: data });

@@ -1,202 +1,221 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useCart } from "@/components/CartContext";
+import { setQty, removeItem, clearCart } from "@/lib/cart";
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import {
-	getCart,
-	clearCart as clearCartApi,
-	setQty as setQtyApi,
-	removeItem as removeItemApi,
-	type CartItem,
-} from "@/lib/cart";
-import { BAG_PENCE, formatGBP, calcSubtotal } from "@/lib/checkout";
+import { useState } from "react";
+
+const GBP = (p: number) => `£${(p / 100).toFixed(2)}`;
 
 export default function BasketPage() {
-	const [items, setItems] = useState<CartItem[]>([]);
-	const [bag, setBag] = useState(false);
-	const [busyId, setBusyId] = useState<string | null>(null);
-	const [flash, setFlash] = useState<
-		Record<string, "inc" | "dec" | "remove" | null>
-	>({});
+	const { items, total, loading, refreshCart } = useCart();
+	const [updating, setUpdating] = useState<string | null>(null);
 
-	useEffect(() => {
-		(async () => {
-			await refresh();
-		})();
+	const handleQuantityChange = async (product_id: string, newQty: number) => {
+		if (newQty < 1) return;
+		setUpdating(product_id);
 		try {
-			const savedBag = localStorage.getItem("bag_opt_in");
-			setBag(savedBag ? JSON.parse(savedBag) === true : false);
-		} catch {}
-	}, []);
-
-	const refresh = async () => {
-		const cart = await getCart();
-		setItems(Array.isArray(cart) ? cart : []);
-	};
-
-	const inc = async (id: string) => {
-		const current = items.find((i) => i.product_id === id)?.qty ?? 0;
-		setBusyId(id);
-		setFlash((f) => ({ ...f, [id]: "inc" }));
-		setTimeout(() => setFlash((f) => ({ ...f, [id]: null })), 500);
-		try {
-			await setQtyApi(id, current + 1);
-			await refresh();
+			await setQty(product_id, newQty);
+			await refreshCart();
+		} catch (error) {
+			console.error("Failed to update quantity:", error);
 		} finally {
-			setBusyId(null);
+			setUpdating(null);
 		}
 	};
 
-	const dec = async (id: string) => {
-		const current = items.find((i) => i.product_id === id)?.qty ?? 0;
-		const next = current - 1;
-		setBusyId(id);
-		setFlash((f) => ({ ...f, [id]: "dec" }));
-		setTimeout(() => setFlash((f) => ({ ...f, [id]: null })), 500);
+	const handleRemoveItem = async (product_id: string) => {
+		setUpdating(product_id);
 		try {
-			if (next <= 0) {
-				await removeItemApi(id);
-			} else {
-				await setQtyApi(id, next);
-			}
-			await refresh();
+			await removeItem(product_id);
+			await refreshCart();
+		} catch (error) {
+			console.error("Failed to remove item:", error);
 		} finally {
-			setBusyId(null);
+			setUpdating(null);
 		}
 	};
 
-	const remove = async (id: string) => {
-		setBusyId(id);
-		setFlash((f) => ({ ...f, [id]: "remove" }));
-		// Briefly show the red state before removing
-		await new Promise((r) => setTimeout(r, 400));
+	const handleClearCart = async () => {
 		try {
-			await removeItemApi(id);
-			await refresh();
-		} finally {
-			setBusyId(null);
+			await clearCart();
+			await refreshCart();
+		} catch (error) {
+			console.error("Failed to clear cart:", error);
 		}
 	};
 
-	const clearAll = async () => {
-		setBusyId("__all__");
-		try {
-			await clearCartApi();
-			await refresh();
-		} finally {
-			setBusyId(null);
-		}
-	};
+	if (loading) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="text-center">
+					<div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+					<p className="text-gray-600">Loading your basket...</p>
+				</div>
+			</div>
+		);
+	}
 
-	const subtotal = useMemo(() => calcSubtotal(items), [items]);
-	const total = bag ? subtotal + BAG_PENCE : subtotal;
+	if (items.length === 0) {
+		return (
+			<div className="min-h-screen">
+				<div className="max-w-4xl mx-auto px-4 py-8">
+					{/* Header */}
+					<div className="mb-8">
+						<Link
+							href="/"
+							className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors mb-4">
+							<ArrowLeft className="w-4 h-4" />
+							Continue Shopping
+						</Link>
+						<h1 className="text-3xl font-bold text-gray-800 text-center">
+							Your Basket
+						</h1>
+					</div>
+
+					{/* Empty State */}
+					<div className="text-center max-w-md mx-auto">
+						<ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+						<h1 className="text-2xl font-bold text-gray-800 mb-2">
+							Your basket is empty
+						</h1>
+						<p className="text-gray-600 mb-6">
+							Looks like you haven't added any items to your basket yet.
+						</p>
+						<Link
+							href="/baked-goods"
+							className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+							<ShoppingBag className="w-5 h-5" />
+							Start Shopping
+						</Link>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
-		<main className="mx-auto max-w-4xl p-6">
-			<h1 className="mb-4 text-2xl font-semibold">Your basket</h1>
-
-			{items.length === 0 ? (
-				<div className="rounded-2xl border p-6 bg-white text-gray-600">
-					<p>
-						Your basket is empty.{" "}
-						<Link href="/baked-goods" className="text-blue-600 hover:underline">
-							Browse products
-						</Link>
-						.
-					</p>
+		<div className="min-h-screen">
+			<div className="max-w-4xl mx-auto px-4 py-8">
+				{/* Header */}
+				<div className="mb-8">
+					<Link
+						href="/"
+						className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors mb-4">
+						<ArrowLeft className="w-4 h-4" />
+						Continue Shopping
+					</Link>
+					<div className="flex items-center justify-between">
+						<h1 className="text-3xl font-bold text-gray-800">Your Basket</h1>
+						<button
+							onClick={handleClearCart}
+							disabled={updating === "clear"}
+							className="inline-flex items-center gap-2 text-red-600 hover:text-red-800 transition-colors disabled:opacity-50">
+							<Trash2 className="w-4 h-4" />
+							Clear Basket
+						</button>
+					</div>
 				</div>
-			) : (
-				<div className="space-y-4">
-					{items.map((i) => (
+
+				{/* Basket Items */}
+				<div className="space-y-4 mb-8">
+					{items.map((item) => (
 						<div
-							key={i.product_id}
-							className="flex items-center rounded-2xl border p-3 bg-white">
-							<div className="flex-1 min-w-0 pr-4">
-								<div className="font-medium truncate leading-6">{i.name}</div>
-								<div className="text-sm opacity-70">
-									{formatGBP(i.price_pence)} each
+							key={item.product_id}
+							className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+							<div className="flex items-center gap-4">
+								{/* Product Image */}
+								<div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+									{item.image_url ? (
+										<img
+											src={item.image_url}
+											alt={item.name}
+											className="w-full h-full object-cover rounded-lg"
+										/>
+									) : (
+										<ShoppingBag className="w-8 h-8 text-gray-400" />
+									)}
 								</div>
-							</div>
-							<div className="flex items-center gap-3">
+
+								{/* Product Info */}
+								<div className="flex-1">
+									<h3 className="font-semibold text-gray-800 text-lg">
+										{item.name}
+									</h3>
+									<p className="text-gray-600">{GBP(item.price_pence)} each</p>
+								</div>
+
+								{/* Quantity Controls */}
 								<div className="flex items-center gap-2">
 									<button
-										className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border transition ${
-											flash[i.product_id] === "dec"
-												? "bg-red-600 text-white border-red-600"
-												: "hover:bg-gray-50"
-										}`}
-										onClick={() => dec(i.product_id)}
-										disabled={busyId === i.product_id}
-										aria-label={`Decrease ${i.name}`}>
-										−
+										onClick={() =>
+											handleQuantityChange(item.product_id, item.qty - 1)
+										}
+										disabled={updating === item.product_id || item.qty <= 1}
+										className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+										<Minus className="w-4 h-4" />
 									</button>
-									<span className="w-9 text-center tabular-nums">{i.qty}</span>
+									<span className="w-12 text-center font-medium">
+										{item.qty}
+									</span>
 									<button
-										className={`h-9 w-9 inline-flex items-center justify-center rounded-lg border transition ${
-											flash[i.product_id] === "inc"
-												? "bg-green-600 text-white border-green-600"
-												: "hover:bg-gray-50"
-										}`}
-										onClick={() => inc(i.product_id)}
-										disabled={busyId === i.product_id}
-										aria-label={`Increase ${i.name}`}>
-										+
+										onClick={() =>
+											handleQuantityChange(item.product_id, item.qty + 1)
+										}
+										disabled={updating === item.product_id}
+										className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-50">
+										<Plus className="w-4 h-4" />
 									</button>
 								</div>
-								<div className="w-24 text-right tabular-nums font-medium">
-									{formatGBP(i.price_pence * i.qty)}
+
+								{/* Item Total */}
+								<div className="text-right min-w-[80px]">
+									<p className="font-semibold text-gray-800">
+										{GBP(item.price_pence * item.qty)}
+									</p>
 								</div>
+
+								{/* Remove Button */}
 								<button
-									className={`h-9 inline-flex items-center justify-center rounded-lg border px-3 transition ${
-										flash[i.product_id] === "remove"
-											? "bg-red-600 text-white border-red-600"
-											: "hover:bg-gray-50"
-									}`}
-									onClick={() => remove(i.product_id)}
-									disabled={busyId === i.product_id}
-									aria-label={`Remove ${i.name}`}>
-									Remove
+									onClick={() => handleRemoveItem(item.product_id)}
+									disabled={updating === item.product_id}
+									className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50">
+									<Trash2 className="w-4 h-4" />
 								</button>
 							</div>
 						</div>
 					))}
+				</div>
 
-					<label className="flex w-fit cursor-pointer select-none items-center gap-2 rounded-full border px-3 py-2 hover:bg-gray-50 bg-white">
-						<input
-							type="checkbox"
-							className="h-4 w-4"
-							checked={bag}
-							onChange={() => {
-								const next = !bag;
-								setBag(next);
-								try {
-									localStorage.setItem("bag_opt_in", JSON.stringify(next));
-								} catch {}
-							}}
-						/>
-						Add a bag (+{formatGBP(BAG_PENCE)})
-					</label>
-
-					<div className="mt-4 flex items-center justify-between border-t pt-4">
-						<span className="font-semibold">Total</span>
-						<span className="font-semibold">{formatGBP(total)}</span>
+				{/* Order Summary */}
+				<div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+					<div className="flex items-center justify-between mb-6">
+						<h2 className="text-xl font-semibold text-gray-800">
+							Order Summary
+						</h2>
 					</div>
 
-					<div className="grid sm:grid-cols-2 gap-2">
-						<button
-							onClick={clearAll}
-							className="w-full rounded-full border px-4 py-2 hover:bg-gray-50 disabled:opacity-60"
-							disabled={busyId === "__all__"}>
-							Clear basket
-						</button>
+					<div className="space-y-3 mb-6">
+						<div className="flex justify-between text-gray-600">
+							<span>
+								Subtotal ({items.reduce((sum, item) => sum + item.qty, 0)}{" "}
+								items)
+							</span>
+							<span>{GBP(total)}</span>
+						</div>
+					</div>
+
+					{/* Checkout Button */}
+					<div className="flex gap-4">
 						<Link
 							href="/checkout"
-							className="block w-full rounded-full bg-blue-800 px-4 py-2 text-center text-white hover:bg-blue-700">
-							Checkout
+							className="flex-1 bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+							Proceed to Checkout
 						</Link>
 					</div>
 				</div>
-			)}
-		</main>
+			</div>
+		</div>
 	);
 }

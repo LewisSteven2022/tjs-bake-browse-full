@@ -1,74 +1,14 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-type CartItem = { product_id: string; qty: number };
-
-// Simple guest cart fallback - TODO: Implement proper guest cart functionality
-function getGuestCart(): CartItem[] {
-	if (typeof window === "undefined") return [];
-	try {
-		const stored = localStorage.getItem("guest-cart");
-		return stored ? JSON.parse(stored) : [];
-	} catch {
-		return [];
-	}
-}
-
-async function fetchCount(): Promise<number> {
-	try {
-		const res = await fetch("/api/cart", { cache: "no-store" });
-		if (!res.ok) {
-			// If not authenticated, get count from guest cart
-			if (res.status === 401) {
-				const guestItems = getGuestCart();
-				return guestItems.reduce(
-					(s: number, i: CartItem) => s + (Number(i.qty) || 0),
-					0
-				);
-			}
-			return 0;
-		}
-		const j = await res.json();
-		const items: CartItem[] = Array.isArray(j.items) ? j.items : [];
-		return items.reduce(
-			(s: number, i: CartItem) => s + (Number(i.qty) || 0),
-			0
-		);
-	} catch {
-		// On error, fall back to guest cart
-		const guestItems = getGuestCart();
-		return guestItems.reduce(
-			(s: number, i: CartItem) => s + (Number(i.qty) || 0),
-			0
-		);
-	}
-}
+import { useCart } from "./CartContext";
 
 export default function NavBasket() {
-	const [count, setCount] = useState(0);
-
-	useEffect(() => {
-		let mounted = true;
-		const update = async () => {
-			const c = await fetchCount();
-			if (mounted) setCount(c);
-		};
-		update();
-		const handler = async () => {
-			// Always re-fetch to avoid any drift and ensure exact count
-			await update();
-		};
-		window.addEventListener("cart:changed", handler as any);
-		return () => {
-			mounted = false;
-			window.removeEventListener("cart:changed", handler as any);
-		};
-	}, []);
+	const { itemCount, loading } = useCart();
 
 	return (
 		<Link
 			href="/basket"
-			aria-label={`Basket with ${count} item${count === 1 ? "" : "s"}`}
+			aria-label={`Basket with ${itemCount} item${itemCount === 1 ? "" : "s"}`}
 			className="relative inline-flex items-center gap-2">
 			<span className="relative inline-flex">
 				<svg
@@ -83,9 +23,11 @@ export default function NavBasket() {
 					<path d="M6 7l-2 4v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V11l-2-4H6z" />
 					<path d="M9 11V7a3 3 0 0 1 6 0v4" />
 				</svg>
-				<span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full bg-blue-600 px-1 text-[10px] leading-[18px] text-center text-white">
-					{Math.max(0, count)}
-				</span>
+				{!loading && (
+					<span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full bg-blue-600 px-1 text-[10px] leading-[18px] text-center text-white">
+						{Math.max(0, itemCount)}
+					</span>
+				)}
 			</span>
 			<span className="hidden sm:inline">Basket</span>
 		</Link>

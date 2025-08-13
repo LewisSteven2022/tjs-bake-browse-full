@@ -3,12 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { admin } from "@/lib/db";
 
 const ALLOWED_STATUSES = [
-	"unpaid",
+	"pending",
+	"confirmed",
 	"preparing",
 	"ready",
 	"collected",
 	"cancelled",
-	"rejected",
 ] as const;
 type OrderStatus = (typeof ALLOWED_STATUSES)[number];
 
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 		let q = admin
 			.from("orders")
 			.select(
-				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_opt_in, bag_fee_pence, customer_name, customer_email, customer_phone, created_at"
+				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_fee_pence, customer_name, customer_email, customer_phone, created_at"
 			)
 			.order("pickup_date", { ascending: true })
 			.order("pickup_time", { ascending: true })
@@ -37,9 +37,7 @@ export async function GET(req: NextRequest) {
 			if (!ALLOWED_STATUSES.includes(status as OrderStatus)) {
 				return NextResponse.json(
 					{
-						error: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(
-							", "
-						)}, or 'all'`,
+						error: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(", ")}`,
 					},
 					{ status: 400 }
 				);
@@ -113,18 +111,21 @@ export async function GET(req: NextRequest) {
 // (Admin access enforced by middleware)
 export async function PATCH(req: NextRequest) {
 	try {
-		const body = await req.json().catch(() => null);
-		const { id, status } = body || {};
+		const body = await req.json();
+		const { id, status } = body;
 
 		if (!id || !status) {
 			return NextResponse.json(
-				{ error: "Both 'id' and 'status' are required" },
+				{ error: "id and status are required" },
 				{ status: 400 }
 			);
 		}
+
 		if (!ALLOWED_STATUSES.includes(status as OrderStatus)) {
 			return NextResponse.json(
-				{ error: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(", ")}` },
+				{
+					error: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(", ")}`,
+				},
 				{ status: 400 }
 			);
 		}
@@ -133,16 +134,10 @@ export async function PATCH(req: NextRequest) {
 			.from("orders")
 			.update({ status })
 			.eq("id", id)
-			.select("*")
+			.select("id, status, updated_at")
 			.single();
 
 		if (error) throw error;
-		if (!data) {
-			return NextResponse.json(
-				{ error: `Order with ID ${id} not found` },
-				{ status: 404 }
-			);
-		}
 
 		return NextResponse.json({ order: data }, { status: 200 });
 	} catch (e: any) {
