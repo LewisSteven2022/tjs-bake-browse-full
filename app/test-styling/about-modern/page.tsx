@@ -1,6 +1,7 @@
 "use client";
 
 import Head from "next/head";
+import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import TestNavbar from "@/components/test/TestNavbar";
@@ -10,6 +11,15 @@ import fudgeJpg from "@/app/test-styling/images/fudge.jpg";
 import oreoBrownie from "@/app/test-styling/images/oreoBrownie.jpg";
 
 export default function AboutModernTestPage() {
+	// Hide the global header only on this test page
+	useEffect(() => {
+		const hdr = document.querySelector("header") as HTMLElement | null;
+		const prevDisplay = hdr?.style.display;
+		if (hdr) hdr.style.display = "none";
+		return () => {
+			if (hdr) hdr.style.display = prevDisplay || "";
+		};
+	}, []);
 	return (
 		<main className="min-h-screen bg-gradient-to-br from-[#F0F3FA] via-white to-[#D5DEEF] text-gray-800">
 			<Head>

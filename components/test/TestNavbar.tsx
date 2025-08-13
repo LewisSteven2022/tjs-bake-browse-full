@@ -5,20 +5,20 @@ import { useEffect, useRef, useState } from "react";
 
 export default function TestNavbar() {
 	return (
-		<div className="w-full flex items-center justify-center pt-4 pb-2">
-			<nav className="backdrop-blur bg-white/80 border border-[#D5DEEF] shadow-sm rounded-full px-2 sm:px-3 py-2 w-[min(1100px,95%)] flex items-center justify-between gap-2 sm:gap-3 overflow-visible relative z-50">
+		<div className="w-full flex items-center justify-center pt-0 pb-0.5 sm:pt-3 sm:pb-2">
+			<nav className="bg-transparent shadow-sm rounded-full px-0.5 sm:px-3 py-0.5 sm:py-2 w-[min(1100px,95%)] flex items-center gap-1 sm:gap-3 overflow-visible relative z-50">
 				{/* Left: Brand + Nav items */}
-				<div className="flex items-center gap-1 sm:gap-2 overflow-visible">
+				<div className="flex items-center gap-1 sm:gap-2 overflow-visible flex-1">
 					<Link
 						href="/"
-						className="px-2 sm:px-3 py-1 rounded-md md:rounded-full text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-[#1E40AF] hover:bg-[#F0F3FA]">
+						className="pl-2 pr-1 sm:px-3 py-0 sm:py-1 rounded-md md:rounded-full text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-[#1E40AF] hover:bg-[#F0F3FA]">
 						TJ's Bake &amp; Browse
 					</Link>
 					<ul className="hidden md:flex items-center gap-1">
 						<li>
 							<Link
 								href="/about"
-								className="px-2 sm:px-3 md:px-4 py-1.5 md:py-2 rounded-md md:rounded-full text-xs sm:text-sm font-medium text-[#395B86] hover:bg-[#F0F3FA] focus:outline-none focus:ring-2 focus:ring-[#B1C9EF]">
+								className="px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-md md:rounded-full text-xs sm:text-sm font-medium text-[#395B86] hover:bg-[#F0F3FA] focus:outline-none focus:ring-2 focus:ring-[#B1C9EF]">
 								About us
 							</Link>
 						</li>
@@ -26,14 +26,14 @@ export default function TestNavbar() {
 						<li>
 							<Link
 								href="/contact-us"
-								className="px-2 sm:px-3 md:px-4 py-1.5 md:py-2 rounded-md md:rounded-full text-xs sm:text-sm font-medium text-[#395B86] hover:bg-[#F0F3FA] focus:outline-none focus:ring-2 focus:ring-[#B1C9EF]">
+								className="px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-md md:rounded-full text-xs sm:text-sm font-medium text-[#395B86] hover:bg-[#F0F3FA] focus:outline-none focus:ring-2 focus:ring-[#B1C9EF]">
 								Contact Us
 							</Link>
 						</li>
 					</ul>
 
 					{/* Mobile trigger */}
-					<div className="md:hidden">
+					<div className="md:hidden ml-auto pr-2 mr-1">
 						<MobileMenu />
 					</div>
 				</div>
@@ -62,7 +62,7 @@ function MobileMenu() {
 		<div className="relative">
 			<button
 				onClick={() => setOpen((v) => !v)}
-				className="px-3 py-2 rounded-full text-sm font-semibold text-[#395B86] border border-[#D5DEEF] bg-white hover:bg-[#F0F3FA]">
+				className="px-3 py-2 rounded-md text-sm font-semibold text-[#395B86] bg-transparent hover:bg-transparent">
 				Menu ▾
 			</button>
 			<div
