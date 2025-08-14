@@ -93,6 +93,7 @@ Time: ${new Date().toLocaleString("en-GB", { timeZone: "Europe/London" })}
 				category,
 				message,
 			})
+			.select()
 			.single();
 		if (insertError) {
 			return NextResponse.json(

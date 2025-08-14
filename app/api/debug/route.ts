@@ -46,7 +46,7 @@ export async function GET() {
 	} catch (error) {
 		// silent
 		return NextResponse.json(
-			{ error: "Debug endpoint failed", details: error?.message },
+			{ error: "Debug endpoint failed", details: error instanceof Error ? error.message : 'Unknown error' },
 			{ status: 500 }
 		);
 	}

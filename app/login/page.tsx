@@ -1,7 +1,7 @@
 // app/login/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -27,7 +27,7 @@ function mapNextAuthError(code?: string | null): string {
 	}
 }
 
-export default function LoginPage() {
+function LoginForm() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [email, setEmail] = useState("");
@@ -148,5 +148,13 @@ export default function LoginPage() {
 				</Link>
 			</p>
 		</main>
+	);
+}
+
+export default function LoginPage() {
+	return (
+		<Suspense fallback={<div className="mx-auto max-w-md p-6">Loading...</div>}>
+			<LoginForm />
+		</Suspense>
 	);
 }

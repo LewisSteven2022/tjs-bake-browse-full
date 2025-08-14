@@ -8,22 +8,44 @@
 
 @layer utilities {
 	.text-textbody {
-		@apply text-slate-700;
+		@apply text-gray-800;
 	}
 	.text-heading {
 		@apply text-primaryDark;
 	}
     .btn-primary {
-        @apply bg-primary text-white hover:bg-primaryDark transition;
+        @apply px-4 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-primary to-primaryDark shadow hover:from-primaryLight hover:to-primaryDark transition-all duration-200;
+    }
+    .btn-secondary {
+        @apply px-4 py-2 rounded-lg font-semibold text-primaryDark bg-white hover:bg-surface border border-surfaceAlt transition-all duration-200;
     }
     .btn-outline {
-        @apply bg-white text-primary border border-surfaceAlt hover:bg-surface transition;
+        @apply px-4 py-2 rounded-lg font-semibold text-primaryDark bg-white hover:bg-surface border border-surfaceAlt transition-all duration-200;
+    }
+    .container-modern {
+        @apply w-[min(1100px,95%)] mx-auto px-4;
+    }
+    .bg-modern {
+        @apply bg-gradient-to-br from-surface via-white to-surfaceAlt;
+    }
+    .card-modern {
+        @apply bg-white border border-surfaceAlt rounded-xl shadow-sm;
     }
 }
 
 body {
-    @apply bg-surface text-textbody;
+    @apply bg-modern text-textbody min-h-screen;
 }
+
 a {
-	@apply text-primary;
+	@apply text-primary hover:text-primaryDark transition-colors;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    @apply outline-none ring-2 ring-ringBrand ring-opacity-50;
 }
