@@ -52,6 +52,8 @@
 - Added comprehensive error logging in orders API
 - Fallback mechanisms for missing database tables
 - Better error messages for debugging
+- New test navbar and modern About page prototype under `app/test-styling/` to iterate on design without impacting prod pages
+- Footer updated with Instagram and Facebook links (icons added)
 
 ## **KNOWN ISSUES**
 

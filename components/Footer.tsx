@@ -1,5 +1,6 @@
 // components/Footer.tsx
 import Link from "next/link";
+import { Instagram, Facebook } from "lucide-react";
 
 export default function Footer() {
 	return (
@@ -33,6 +34,26 @@ export default function Footer() {
 						className="text-gray-700 hover:text-blue-800 transition">
 						Cookie Policy
 					</Link>
+				</nav>
+
+				{/* Social links */}
+				<nav className="flex items-center gap-4 sm:gap-6">
+					<a
+						href="https://instagram.com/tjsbakeandbrowse"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Instagram"
+						className="text-[#395B86] hover:text-[#1E40AF] transition">
+						<Instagram size={20} />
+					</a>
+					<a
+						href="https://facebook.com/tjsbakeandbrowse"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Facebook"
+						className="text-[#395B86] hover:text-[#1E40AF] transition">
+						<Facebook size={20} />
+					</a>
 				</nav>
 
 				{/* Contact */}

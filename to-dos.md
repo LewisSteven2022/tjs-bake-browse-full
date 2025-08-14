@@ -24,7 +24,10 @@
 ### **3. Quick Wins (Immediate)** ⭐ **HIGH PRIORITY**
 
 - [x] Update About page content and layout per new copy (clean, professional)
+- [ ] Change sitewide colour theme and button layout to match `test-styling/about-modern` (propagate palette and component styles)
+- [ ] Put new navbar into global header so it is used site-wide (replace current header with `components/test/TestNavbar` variant)
 - [ ] Add modern social links for Instagram and Facebook (header/footer)
+  - [x] Footer icons/links added (Instagram, Facebook)
 - [ ] Remove Export CSV / Import CSV options from inventory and related code
 - [ ] Fix admin orders: add support for "Rejected" status (or adjust UI to allowed statuses)
 - [ ] Update quick mark buttons to match allowed statuses (remove/replace "Set Unpaid")
