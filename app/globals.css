@@ -7,9 +7,6 @@
 }
 
 @layer utilities {
-    .bg-surface {
-        @apply bg-surface;
-    }
 	.text-textbody {
 		@apply text-slate-700;
 	}

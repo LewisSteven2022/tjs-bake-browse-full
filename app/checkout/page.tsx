@@ -41,7 +41,7 @@ export default function CheckoutPage() {
 					<p className="mb-3">Please sign in to place your order.</p>
 					<a
 						href={`/login?callbackUrl=${encodeURIComponent("/checkout")}`}
-                        className="inline-block rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
+						className="inline-block rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
 						Sign in
 					</a>
 				</div>
@@ -70,15 +70,25 @@ export default function CheckoutPage() {
 	const [maxDate, setMaxDate] = useState<string>(initialMaxDate);
 	const slots = useMemo(() => buildSlots("09:00", "17:30", 30), []);
 
-	// Load basket and bag
+  // Load basket and bag
 	useEffect(() => {
 		(async () => {
 			const cart = await getCart();
 			setItems(Array.isArray(cart) ? cart : []);
 		})();
 		try {
-			const savedBag = localStorage.getItem("bag_opt_in");
-			setBag(savedBag ? JSON.parse(savedBag) === true : false);
+      const savedBag = localStorage.getItem("bag_opt_in");
+      if (savedBag != null) {
+        setBag(JSON.parse(savedBag) === true);
+      } else {
+        // If no local preference, try user preference from server
+        fetch("/api/user/preferences", { cache: "no-store" })
+          .then((r) => r.ok ? r.json() : Promise.resolve({}))
+          .then((j) => {
+            if (typeof j?.bag_pref === "boolean") setBag(j.bag_pref);
+          })
+          .catch(() => {});
+      }
 		} catch {}
 		// Default the selected date to the earliest allowed date
 		setDate(initialMinDate);
@@ -171,8 +181,16 @@ export default function CheckoutPage() {
 				"Your order has been confirmed. You'll receive a confirmation email shortly."
 			);
 			try {
-				localStorage.setItem("bag_opt_in", JSON.stringify(bag));
+                localStorage.setItem("bag_opt_in", JSON.stringify(bag));
 				localStorage.setItem("last_customer", JSON.stringify(customer));
+                // Persist preference for signed-in users
+                if (session) {
+                  fetch("/api/user/preferences", {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bag_pref: bag }),
+                  }).catch(() => {});
+                }
 			} catch {}
 
 			const orderId = data?.order_id;
@@ -312,7 +330,7 @@ export default function CheckoutPage() {
 
 						<button
 							onClick={placeOrder}
-                            className="mt-4 w-full rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
+							className="mt-4 w-full rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
 							Place order
 						</button>
 					</aside>

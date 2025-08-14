@@ -273,7 +273,7 @@ export default function AdminOrdersPage() {
 			</div>
 
 			{/* Quick Filter Buttons */}
-            <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-surfaceAlt/40 p-3">
+			<div className="flex flex-wrap items-center gap-2 rounded-lg border bg-surfaceAlt/40 p-3">
 				<span className="text-sm font-medium text-blue-800">
 					Quick Filters:
 				</span>
@@ -294,7 +294,7 @@ export default function AdminOrdersPage() {
 						setFromDate("");
 						setToDate("");
 					}}
-                    className="rounded-full bg-primary px-3 py-1.5 text-white text-sm font-medium hover:bg-primaryDark transition-colors">
+					className="rounded-full bg-primary px-3 py-1.5 text-white text-sm font-medium hover:bg-primaryDark transition-colors">
 					📅 Today's Orders
 				</button>
 				<button
@@ -369,7 +369,7 @@ export default function AdminOrdersPage() {
 				<div className="ml-auto flex items-center gap-2">
 					<button
 						onClick={handleRefresh}
-                        className="rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary"
+						className="rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary"
 						disabled={loading}>
 						{loading ? "Refreshing…" : "Refresh"}
 					</button>
@@ -439,17 +439,17 @@ export default function AdminOrdersPage() {
 					<div className="font-medium">{selected.size} selected</div>
 					<div className="h-5 w-px bg-gray-300" />
 					<button
-                        className="rounded-full border border-surfaceAlt px-3 py-1 text-primaryDark hover:bg-surfaceAlt/40"
+						className="rounded-full border border-surfaceAlt px-3 py-1 text-primaryDark hover:bg-surfaceAlt/40"
 						onClick={() => bulkUpdateStatus("preparing")}>
 						Mark Preparing
 					</button>
 					<button
-                        className="rounded-full border border-surfaceAlt px-3 py-1 text-primaryDark hover:bg-surfaceAlt/40"
+						className="rounded-full border border-surfaceAlt px-3 py-1 text-primaryDark hover:bg-surfaceAlt/40"
 						onClick={() => bulkUpdateStatus("ready")}>
 						Mark Ready
 					</button>
 					<button
-                        className="rounded-full border border-surfaceAlt px-3 py-1 text-primaryDark hover:bg-surfaceAlt/40"
+						className="rounded-full border border-surfaceAlt px-3 py-1 text-primaryDark hover:bg-surfaceAlt/40"
 						onClick={() => bulkUpdateStatus("collected")}>
 						Mark Collected
 					</button>

@@ -205,7 +205,7 @@ const PremiumNotification: React.FC<NotificationProps> = ({
 								{onViewBasket && (
 									<button
 										onClick={onViewBasket}
-                                        className="flex-1 bg-primaryDark text-white px-4 py-2.5 rounded-full font-semibold text-sm hover:bg-primary transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0">
+										className="flex-1 bg-primaryDark text-white px-4 py-2.5 rounded-full font-semibold text-sm hover:bg-primary transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0">
 										View Basket
 									</button>
 								)}

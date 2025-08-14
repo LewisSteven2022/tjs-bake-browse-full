@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
+import { admin } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
 	try {
@@ -81,10 +82,30 @@ Time: ${new Date().toLocaleString("en-GB", { timeZone: "Europe/London" })}
 			text: emailBody,
 		});
 
+		// Record suggestion in database
+		const { data: inserted, error: insertError } = await admin
+			.from("suggestions")
+			.insert({
+				user_id: (session.user as any).id ?? null,
+				user_name: session.user.name ?? null,
+				user_email: session.user.email ?? null,
+				subject,
+				category,
+				message,
+			})
+			.single();
+		if (insertError) {
+			return NextResponse.json(
+				{ error: "Failed to save suggestion" },
+				{ status: 500 }
+			);
+		}
+
 		// Return success response
 		return NextResponse.json(
 			{
 				message: "Suggestion submitted successfully",
+				suggestion_id: inserted?.id,
 				timestamp: new Date().toISOString(),
 			},
 			{ status: 200 }

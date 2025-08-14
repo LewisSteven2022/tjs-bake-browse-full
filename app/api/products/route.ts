@@ -88,6 +88,10 @@ export async function GET() {
 			);
 		}
 
+		// DEBUG: Log raw data from database
+		console.log("🔍 PRODUCTS API DEBUG - Raw data from DB (first 2 products):");
+		console.log(JSON.stringify((data || []).slice(0, 2), null, 2));
+
 		// Transform products to include backward compatibility
 		const normalizedProducts = (data || []).map((product) => {
 			// Normalise categories to always be an array for frontend filtering
@@ -104,11 +108,18 @@ export async function GET() {
 				visible: product.is_visible,
 				category: product.category_id,
 				description: product.short_description,
+				// Explicitly preserve critical fields to ensure they're not lost
+				image_url: product.image_url,
+				price_pence: product.price_pence,
 				// Ensure categories is always an array
 				categories: categoriesArray,
 			};
 			return transformed;
 		});
+
+		// DEBUG: Log transformed data
+		console.log("🔍 PRODUCTS API DEBUG - Transformed data (first 2 products):");
+		console.log(JSON.stringify(normalizedProducts.slice(0, 2), null, 2));
 
 		return NextResponse.json(
 			{ products: normalizedProducts },

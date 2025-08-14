@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { admin } from "@/lib/db";
 
 const ALLOWED = [
+	// Expanded to align with UI while keeping backwards compatibility
+	"unpaid",
 	"pending",
 	"preparing",
 	"ready",
@@ -24,7 +26,7 @@ export async function PATCH(
 			.update({ status })
 			.eq("id", params.id)
 			.select(
-				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_opt_in, bag_fee_pence, customer_name, customer_email, customer_phone, created_at, updated_at"
+				"id, order_number, status, pickup_date, pickup_time, subtotal_pence, total_pence, bag_fee_pence, customer_name, customer_email, customer_phone, created_at, updated_at"
 			)
 			.single();
 		if (error) throw error;

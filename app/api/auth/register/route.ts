@@ -1,23 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { admin } from "@/lib/db";
+import { z } from "zod";
 
 // POST /api/auth/register
 // Body: { name, email, mobile?, password }
+const registerSchema = z.object({
+	name: z.string().trim().min(1, "name required"),
+	email: z.string().trim().toLowerCase().email("invalid email"),
+	mobile: z.string().trim().optional().default(""),
+	password: z.string().min(8, "password must be at least 8 characters"),
+});
+
 export async function POST(req: NextRequest) {
 	try {
-		const body = await req.json().catch(() => null);
-		const name = (body?.name || "").toString().trim();
-		const email = (body?.email || "").toString().trim().toLowerCase();
-		const mobile = (body?.mobile || "").toString().trim();
-		const password = (body?.password || "").toString();
-
-		if (!name || !email || !password) {
-			return NextResponse.json(
-				{ error: "name, email, password are required" },
-				{ status: 400 }
-			);
+		const raw = await req.json().catch(() => null);
+		const parsed = registerSchema.safeParse(raw || {});
+		if (!parsed.success) {
+			const msg = parsed.error.issues?.[0]?.message || "Invalid input";
+			return NextResponse.json({ error: msg }, { status: 400 });
 		}
+		const { name, email, mobile, password } = parsed.data;
 
 		// Check existing
 		const { data: existing, error: exErr } = await admin
@@ -40,7 +43,7 @@ export async function POST(req: NextRequest) {
 			.insert({
 				name,
 				email,
-				mobile: mobile || null,
+				phone: mobile || null,
 				password_hash: hash,
 				role: "customer",
 			})

@@ -1,6 +1,13 @@
 // app/api/orders/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import {
+	countActiveOrdersAtSlot,
+	insertOrder,
+	insertOrderItems,
+	updateOrderWithItemsJson,
+} from "@/lib/repos/ordersRepo";
 import { admin } from "@/lib/db";
+import { getBagFeePence } from "@/lib/repos/feesRepo";
 
 type CartItem = {
 	product_id: string;
@@ -9,7 +16,6 @@ type CartItem = {
 	qty: number;
 };
 
-const BAG_PENCE = 70;
 // Keep your chosen GST rate; change here if policy changes
 const GST_RATE = 0.06;
 
@@ -85,22 +91,14 @@ export async function POST(req: NextRequest) {
 
 		// Compute money server-side (authoritative)
 		const subtotal_pence = calcSubtotal(saneItems);
-		const bag_fee_pence = bag_opt_in ? BAG_PENCE : 0;
+		const dynamicBagFee = await getBagFeePence();
+		const bag_fee_pence = bag_opt_in ? dynamicBagFee : 0;
 		const gst_pence = calcGstPence(subtotal_pence, bag_fee_pence);
 		const total_pence = subtotal_pence + bag_fee_pence + gst_pence;
 
-		// --- Capacity check (exclude cancelled) ---
+		// --- Capacity check (exclude cancelled/rejected) ---
 		const CAPACITY = Number(process.env.NEXT_PUBLIC_SLOT_CAPACITY || 5);
-		const { count, error: cErr } = await admin
-			.from("orders")
-			.select("id", { count: "exact", head: true })
-			.eq("pickup_date", pickup_date)
-			.eq("pickup_time", pickup_time)
-			.not("status", "in", '("cancelled")');
-
-		if (cErr) {
-			return NextResponse.json({ error: cErr.message }, { status: 500 });
-		}
+		const count = await countActiveOrdersAtSlot(pickup_date, pickup_time);
 		if ((count ?? 0) >= CAPACITY) {
 			return NextResponse.json(
 				{ error: "That time slot is full. Please choose another." },
@@ -108,34 +106,21 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		// Insert order using new schema with CORRECT status value
-		const { data: orderRow, error: orderErr } = await admin
-			.from("orders")
-			.insert({
-				status: "pending", // Changed from "unpaid" to "pending" to match DB constraint
-				pickup_date,
-				pickup_time,
-				subtotal_pence,
-				tax_pence: gst_pence, // Map GST to tax_pence in new schema
-				total_pence,
-				bag_fee_pence, // Use calculated bag fee directly
-				customer_name,
-				customer_email,
-				customer_phone,
-				// Note: bag_opt_in column not available in new schema
-			})
-			.select("id, order_number")
-			.single();
-
-		if (orderErr || !orderRow) {
-			// silent
-			return NextResponse.json(
-				{ error: orderErr?.message || "Failed to create order." },
-				{ status: 500 }
-			);
-		}
-
-		const order_id = orderRow.id as string;
+		// Insert order using repo
+		const orderInserted = await insertOrder({
+			status: "unpaid",
+			pickup_date,
+			pickup_time,
+			subtotal_pence,
+			tax_pence: gst_pence,
+			total_pence,
+			bag_fee_pence,
+			bag_opt_in,
+			customer_name,
+			customer_email,
+			customer_phone,
+		});
+		const order_id = orderInserted.id;
 
 		// Check if order_items table exists before trying to insert
 		try {
@@ -152,27 +137,11 @@ export async function POST(req: NextRequest) {
 
 			/* inserting items */
 
-			const { error: itemsErr } = await admin
-				.from("order_items")
-				.insert(orderItems);
-
-			if (itemsErr) {
-				// Fallback: Try to store items in the orders table directly (for old schema)
-				try {
-					const { error: updateErr } = await admin
-						.from("orders")
-						.update({
-							items: saneItems, // Store items as JSONB in orders table
-							updated_at: new Date().toISOString(),
-						})
-						.eq("id", order_id);
-
-					// Ignore updateErr here; order is created regardless
-				} catch {
-					// Ignore fallback failures
-				}
-			} else {
-				// Items inserted successfully
+			try {
+				await insertOrderItems(orderItems);
+			} catch {
+				// Fallback: Try to store items JSON on order for legacy schema
+				await updateOrderWithItemsJson(order_id, saneItems);
 			}
 		} catch (itemsTableError) {
 			// If order_items table is missing, fallback to storing items on the order
@@ -196,12 +165,12 @@ export async function POST(req: NextRequest) {
 		return NextResponse.json(
 			{
 				order_id,
-				order_number: orderRow.order_number,
+				order_number: orderInserted.order_number,
 				subtotal_pence,
 				bag_pence: bag_fee_pence,
 				gst_pence, // useful for UI display
 				total_pence,
-				status: "pending", // Changed from "unpaid" to "pending"
+				status: "unpaid",
 			},
 			{ status: 201 }
 		);

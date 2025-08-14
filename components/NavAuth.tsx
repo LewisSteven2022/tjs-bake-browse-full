@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -27,11 +28,11 @@ export default function NavAuth() {
 			<div className="flex items-center gap-3">
 				<Link
 					href="/login"
-                    className="rounded-full bg-primaryDark px-3 py-1 text-white hover:bg-primary">
+					className="rounded-full bg-primaryDark px-3 py-1 text-white hover:bg-primary">
 					Sign In
 				</Link>
 				<Link
-                    className="rounded-full bg-primaryDark px-3 py-1 text-white hover:bg-primary"
+					className="rounded-full bg-primaryDark px-3 py-1 text-white hover:bg-primary"
 					href="/register">
 					Register
 				</Link>

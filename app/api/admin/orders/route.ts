@@ -3,20 +3,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { admin } from "@/lib/db";
 
 const ALLOWED_STATUSES = [
+	// Expanded to align with UI while keeping backwards compatibility
+	"unpaid",
 	"pending",
 	"confirmed",
 	"preparing",
 	"ready",
 	"collected",
 	"cancelled",
+	"rejected",
 ] as const;
 type OrderStatus = (typeof ALLOWED_STATUSES)[number];
 
 // GET /api/admin/orders?status=...&from=YYYY-MM-DD&to=YYYY-MM-DD&time=...&limit=500
 // (Admin access enforced by middleware)
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest | Request) {
 	try {
-		const url = req.nextUrl;
+		const url: any = (req as any)?.nextUrl ?? new URL((req as Request).url);
 		const status = url.searchParams.get("status"); // one of ALLOWED_STATUSES | "all" | null
 		const from = url.searchParams.get("from"); // YYYY-MM-DD
 		const to = url.searchParams.get("to"); // YYYY-MM-DD

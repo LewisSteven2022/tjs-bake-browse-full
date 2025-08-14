@@ -17,8 +17,9 @@ function buildSlots() {
 	return out;
 }
 
-export async function GET(req: NextRequest) {
-	const date = req.nextUrl.searchParams.get("date"); // YYYY-MM-DD
+export async function GET(req: NextRequest | Request) {
+	const urlObj: any = (req as any)?.nextUrl ?? new URL((req as Request).url);
+	const date = urlObj.searchParams.get("date"); // YYYY-MM-DD
 	if (!date)
 		return NextResponse.json({ error: "date required" }, { status: 400 });
 

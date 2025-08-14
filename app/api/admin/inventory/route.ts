@@ -21,7 +21,7 @@ export async function GET() {
 				image_url,
 				category_id,
 				allergens,
-				categories!inner(id, name, slug)
+				categories:categories!products_category_id_fkey(id, name, slug)
 			`
 			)
 			.order("name", { ascending: true });
@@ -29,22 +29,19 @@ export async function GET() {
 		if (error) throw error;
 
 		// Transform the data to flatten the category info and provide backward compatibility
-		const products = (data ?? []).map((product) => ({
-			...product,
-			// Backward compatibility mapping
-			stock: product.stock_quantity,
-			visible: product.is_visible,
-			category:
-				product.categories &&
-				Array.isArray(product.categories) &&
-				product.categories.length > 0
-					? {
-							id: product.categories[0].id,
-							name: product.categories[0].name,
-							slug: product.categories[0].slug,
-					  }
+		const products = (data ?? []).map((product) => {
+			const cat = (product as any).categories;
+			const catObj = Array.isArray(cat) ? cat[0] : cat;
+			return {
+				...product,
+				// Backward compatibility mapping
+				stock: (product as any).stock_quantity,
+				visible: (product as any).is_visible,
+				category: catObj
+					? { id: catObj.id, name: catObj.name, slug: catObj.slug }
 					: null,
-		}));
+			};
+		});
 
 		return NextResponse.json({ products }, { status: 200 });
 	} catch (e: any) {
@@ -87,6 +84,8 @@ export async function PATCH(req: NextRequest) {
 				updates.pack_label !== undefined ? updates.pack_label : undefined,
 			allergens:
 				updates.allergens !== undefined ? updates.allergens : undefined,
+			image_url:
+				updates.image_url !== undefined ? updates.image_url : undefined,
 			// Remove old schema fields
 			stock: undefined,
 			visible: undefined,
@@ -99,6 +98,11 @@ export async function PATCH(req: NextRequest) {
 				delete updateData[key];
 			}
 		});
+
+		// DEBUG: Log what we're about to update
+		console.log("🔍 PATCH DEBUG - Product ID:", id);
+		console.log("🔍 PATCH DEBUG - Updates received:", updates);
+		console.log("🔍 PATCH DEBUG - Update data to send:", updateData);
 
 		const { data, error } = await admin
 			.from("products")
@@ -114,31 +118,29 @@ export async function PATCH(req: NextRequest) {
 				image_url,
 				category_id,
 				allergens,
-				categories!inner(id, name, slug)
+				categories:categories!products_category_id_fkey(id, name, slug)
 			`
 			)
 			.single();
 
 		if (error) {
-			// silent
+			console.log("🚨 PATCH ERROR:", error);
 			throw error;
 		}
 
+		// DEBUG: Log what the database returned
+		console.log("✅ PATCH SUCCESS - Data returned from DB:", data);
+
 		// Transform response for backward compatibility
+		const cat = (data as any).categories;
+		const catObj = Array.isArray(cat) ? cat[0] : cat;
 		const product = {
 			...data,
-			stock: data.stock_quantity,
-			visible: data.is_visible,
-			category:
-				data.categories &&
-				Array.isArray(data.categories) &&
-				data.categories.length > 0
-					? {
-							id: data.categories[0].id,
-							name: data.categories[0].name,
-							slug: data.categories[0].slug,
-					  }
-					: null,
+			stock: (data as any).stock_quantity,
+			visible: (data as any).is_visible,
+			category: catObj
+				? { id: catObj.id, name: catObj.name, slug: catObj.slug }
+				: null,
 		};
 
 		return NextResponse.json({ product }, { status: 200 });
