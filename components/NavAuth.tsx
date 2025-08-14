@@ -27,11 +27,11 @@ export default function NavAuth() {
 			<div className="flex items-center gap-3">
 				<Link
 					href="/login"
-					className="rounded-full bg-blue-800 px-3 py-1 text-white hover:bg-blue-700">
+                    className="rounded-full bg-primaryDark px-3 py-1 text-white hover:bg-primary">
 					Sign In
 				</Link>
 				<Link
-					className="rounded-full bg-blue-800 px-3 py-1 text-white hover:bg-blue-700"
+                    className="rounded-full bg-primaryDark px-3 py-1 text-white hover:bg-primary"
 					href="/register">
 					Register
 				</Link>

@@ -41,7 +41,7 @@ export default function CheckoutPage() {
 					<p className="mb-3">Please sign in to place your order.</p>
 					<a
 						href={`/login?callbackUrl=${encodeURIComponent("/checkout")}`}
-						className="inline-block rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700">
+                        className="inline-block rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
 						Sign in
 					</a>
 				</div>
@@ -312,7 +312,7 @@ export default function CheckoutPage() {
 
 						<button
 							onClick={placeOrder}
-							className="mt-4 w-full rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700">
+                            className="mt-4 w-full rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
 							Place order
 						</button>
 					</aside>

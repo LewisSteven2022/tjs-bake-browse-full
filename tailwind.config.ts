@@ -7,9 +7,13 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				primary: "#3b82f6", // main blue
-				primaryDark: "#1e40af", // deeper blue
-				primaryLight: "#93c5fd", // lighter blue
+				// Brand palette (from test-styling/about-modern)
+				primary: "#638ECB", // brand blue
+				primaryDark: "#395B86", // deep brand blue
+				primaryLight: "#8AAEE0", // light brand blue
+				surface: "#F0F3FA", // light surface
+				surfaceAlt: "#D5DEEF", // alt surface / borders
+				ringBrand: "#B1C9EF", // focus ring / accents
 			},
 		},
 	},

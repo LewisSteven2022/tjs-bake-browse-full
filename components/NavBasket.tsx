@@ -24,7 +24,7 @@ export default function NavBasket() {
 					<path d="M9 11V7a3 3 0 0 1 6 0v4" />
 				</svg>
 				{!loading && (
-					<span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full bg-blue-600 px-1 text-[10px] leading-[18px] text-center text-white">
+                    <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full bg-primary px-1 text-[10px] leading-[18px] text-center text-white">
 						{Math.max(0, itemCount)}
 					</span>
 				)}

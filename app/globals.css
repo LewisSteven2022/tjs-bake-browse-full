@@ -7,25 +7,25 @@
 }
 
 @layer utilities {
-	.bg-surface {
-		@apply bg-white;
-	}
+    .bg-surface {
+        @apply bg-surface;
+    }
 	.text-textbody {
 		@apply text-slate-700;
 	}
 	.text-heading {
 		@apply text-primaryDark;
 	}
-	.btn-primary {
-		@apply bg-primary text-white hover:bg-primaryDark transition;
-	}
-	.btn-outline {
-		@apply bg-white text-primary border border-primary hover:bg-primaryLight transition;
-	}
+    .btn-primary {
+        @apply bg-primary text-white hover:bg-primaryDark transition;
+    }
+    .btn-outline {
+        @apply bg-white text-primary border border-surfaceAlt hover:bg-surface transition;
+    }
 }
 
 body {
-	@apply bg-surface text-textbody;
+    @apply bg-surface text-textbody;
 }
 a {
 	@apply text-primary;

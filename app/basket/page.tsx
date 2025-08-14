@@ -85,7 +85,7 @@ export default function BasketPage() {
 						</p>
 						<Link
 							href="/baked-goods"
-							className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                            className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primaryDark transition-colors">
 							<ShoppingBag className="w-5 h-5" />
 							Start Shopping
 						</Link>
@@ -102,7 +102,7 @@ export default function BasketPage() {
 				<div className="mb-8">
 					<Link
 						href="/"
-						className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors mb-4">
+                        className="inline-flex items-center gap-2 text-primary hover:text-primaryDark transition-colors mb-4">
 						<ArrowLeft className="w-4 h-4" />
 						Continue Shopping
 					</Link>
@@ -210,7 +210,7 @@ export default function BasketPage() {
 					<div className="flex gap-4">
 						<Link
 							href="/checkout"
-							className="flex-1 bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                            className="flex-1 bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primaryDark transition-colors font-medium">
 							Proceed to Checkout
 						</Link>
 					</div>
