@@ -73,6 +73,7 @@
 - Added comprehensive error logging in all API endpoints
 - User-friendly error messages with actionable information
 - Proper HTTP status codes for different error types
+- Prototype safely: Build new UI/UX in test routes and isolated components (`app/test-styling/**`, `components/test/**`) so production pages remain stable. Once validated, promote to global layout.
 
 ### **Type Safety**
 
@@ -108,6 +109,7 @@
 - Database migration tooling
 - Automated schema documentation generation
 - Schema versioning and compatibility tracking
+- Theme/system design rollout plan: define a single source of truth for colours, spacings, and button styles; migrate incrementally sitewide to match `test-styling/about-modern`.
 
 ### **API Evolution**
 
