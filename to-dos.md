@@ -28,7 +28,7 @@
 - [ ] Put new navbar into global header so it is used site-wide (replace current header with `components/test/TestNavbar` variant)
 - [ ] Add modern social links for Instagram and Facebook (header/footer)
   - [x] Footer icons/links added (Instagram, Facebook)
-- [ ] Remove Export CSV / Import CSV options from inventory and related code
+  - [x] Removed Export/Import CSV controls from inventory toolbar
 - [ ] Fix admin orders: add support for "Rejected" status (or adjust UI to allowed statuses)
 - [ ] Update quick mark buttons to match allowed statuses (remove/replace "Set Unpaid")
 

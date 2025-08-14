@@ -327,7 +327,7 @@ export default function AdminInventoryPage() {
 		<div className="max-w-6xl mx-auto">
 			<h1 className="mb-4 text-2xl font-semibold">Inventory</h1>
 
-			{/* Toolbar: Add Product, Export / Import */}
+			{/* Toolbar: Add Product */}
 			<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3">
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
 					<button
@@ -335,52 +335,7 @@ export default function AdminInventoryPage() {
 						className="rounded border px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-center">
 						+ Add Product
 					</button>
-					<a
-						href="/api/admin/inventory/export"
-						className="rounded border px-3 py-2 hover:bg-gray-50 w-full sm:w-auto text-center">
-						Export CSV
-					</a>
 				</div>
-
-				<form
-					onSubmit={async (e) => {
-						e.preventDefault();
-						const fd = new FormData(e.currentTarget as HTMLFormElement);
-						const res = await fetch("/api/admin/inventory/import", {
-							method: "POST",
-							body: fd,
-						});
-						if (res.ok) {
-							showSuccessNotification(
-								showNotification,
-								"Import Complete",
-								"Products have been imported successfully."
-							);
-							(e.currentTarget as HTMLFormElement).reset();
-							load();
-						} else {
-							const j = await res.json().catch(() => ({}));
-							showErrorNotification(
-								showNotification,
-								"Import Failed",
-								j?.error || "Import failed"
-							);
-						}
-					}}
-					className="flex items-center gap-2">
-					<input
-						name="file"
-						type="file"
-						accept=".csv"
-						className="border rounded px-2 py-1"
-						required
-					/>
-					<button
-						className="rounded border px-3 py-2 hover:bg-gray-50"
-						type="submit">
-						Import CSV
-					</button>
-				</form>
 			</div>
 
 			{/* Table */}

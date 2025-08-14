@@ -54,6 +54,7 @@
 - Better error messages for debugging
 - New test navbar and modern About page prototype under `app/test-styling/` to iterate on design without impacting prod pages
 - Footer updated with Instagram and Facebook links (icons added)
+- Admin inventory: removed legacy CSV Export/Import controls from toolbar (not needed yet)
 
 ## **KNOWN ISSUES**
 
