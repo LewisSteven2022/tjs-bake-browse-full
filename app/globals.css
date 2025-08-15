@@ -8,33 +8,39 @@
 
 @layer utilities {
 	.text-textbody {
-		@apply text-gray-800;
+		@apply text-textPrimary;
 	}
 	.text-heading {
 		@apply text-primaryDark;
 	}
-    .btn-primary {
-        @apply px-4 py-2 rounded-lg font-semibold text-white bg-gradient-to-r from-primary to-primaryDark shadow hover:from-primaryLight hover:to-primaryDark transition-all duration-200;
-    }
-    .btn-secondary {
-        @apply px-4 py-2 rounded-lg font-semibold text-primaryDark bg-white hover:bg-surface border border-surfaceAlt transition-all duration-200;
-    }
-    .btn-outline {
-        @apply px-4 py-2 rounded-lg font-semibold text-primaryDark bg-white hover:bg-surface border border-surfaceAlt transition-all duration-200;
-    }
-    .container-modern {
-        @apply w-[min(1100px,95%)] mx-auto px-4;
-    }
-    .bg-modern {
-        @apply bg-gradient-to-br from-surface via-white to-surfaceAlt;
-    }
-    .card-modern {
-        @apply bg-white border border-surfaceAlt rounded-xl shadow-sm;
-    }
+	.btn-primary {
+		@apply px-4 py-2 rounded-full font-semibold text-white bg-gradient-to-r from-primary to-primaryDark shadow-md hover:shadow-lg hover:from-primaryLight hover:to-primary transition-all duration-200;
+	}
+	.btn-secondary {
+		@apply px-4 py-2 rounded-full font-semibold text-textPrimary bg-cardBg hover:bg-surface border border-surfaceAlt transition-all duration-200;
+	}
+	.btn-outline {
+		@apply px-4 py-2 rounded-full font-semibold text-textPrimary bg-cardBg hover:bg-surface border border-surfaceAlt transition-all duration-200;
+	}
+	.container-modern {
+		@apply w-[min(1100px,95%)] mx-auto px-4;
+	}
+	.bg-modern {
+		@apply bg-gradient-to-br from-surface via-white to-surfaceAlt;
+	}
+	.card-modern {
+		@apply bg-cardBg border border-surfaceAlt rounded-xl shadow-sm;
+	}
+	.text-bakery-primary {
+		@apply text-textPrimary;
+	}
+	.text-bakery-secondary {
+		@apply text-textSecondary;
+	}
 }
 
 body {
-    @apply bg-modern text-textbody min-h-screen;
+	@apply bg-modern text-textbody min-h-screen;
 }
 
 a {
@@ -47,5 +53,5 @@ a:focus,
 input:focus,
 select:focus,
 textarea:focus {
-    @apply outline-none ring-2 ring-ringBrand ring-opacity-50;
+	@apply outline-none ring-2 ring-ringBrand ring-opacity-50;
 }

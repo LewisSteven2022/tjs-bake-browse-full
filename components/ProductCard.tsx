@@ -5,7 +5,16 @@ import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { addItem } from "@/lib/cart";
-import type { Product } from "./ProductGrid";
+import AllergenIcons from "@/components/AllergenIcons";
+// Remove ProductGrid import and define Product type locally
+type Product = {
+	id: string;
+	name: string;
+	price_pence: number;
+	image_url?: string | null;
+	pack_label?: string | null;
+	allergens?: string[] | null;
+};
 
 export default function ProductCard({ product }: { product: Product }) {
 	const [isAdding, setIsAdding] = useState(false);
@@ -87,24 +96,15 @@ export default function ProductCard({ product }: { product: Product }) {
 					</p>
 
 					{/* Optional elements container with consistent height */}
-					<div className="min-h-[60px] flex flex-col items-center justify-center space-y-2">
+					<div className="min-h-[80px] flex flex-col items-center justify-center space-y-2">
 						{product.pack_label && (
 							<span className="text-sm text-gray-600 italic bg-gray-50 px-3 py-1 rounded-full">
 								{product.pack_label}
 							</span>
 						)}
 
-						{product.allergens && product.allergens.length > 0 && (
-							<div className="flex flex-wrap justify-center gap-2">
-								{product.allergens.map((allergen) => (
-									<span
-										key={allergen}
-										className="bg-primaryLight text-primaryDark text-xs px-3 py-1.5 rounded-full font-medium">
-										{allergen}
-									</span>
-								))}
-							</div>
-						)}
+						{/* New Clean Allergen Icons */}
+						<AllergenIcons allergens={product.allergens} variant="default" />
 					</div>
 
 					{error && (

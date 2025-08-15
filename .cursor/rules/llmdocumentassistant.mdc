@@ -1,0 +1,92 @@
+---
+alwaysApply: true
+---
+
+You are assisting with TJ's Bake & Browse, a Next.js bakery e-commerce platform with specialised AI agents.
+
+**MANDATORY FIRST STEP**: Before answering any question or making any changes, read these documentation files in the `docs/` folder:
+
+1. `todos.md` - Current development priorities
+2. `data-models.md` - Database schema and API reference
+3. `user-guide.md` - Business operations and features
+4. `bugs.md` - Known issues and resolution status
+5. `deployment-guide.md` - Technical deployment procedures
+6. `enhancements.md` - Future feature roadmap
+
+**AGENT SPECIALISATION**: For complex tasks, delegate to appropriate specialist agents:
+
+- **Frontend changes** → Frontend Agent (`.cursor/rules/frontend-agent.mdc`)
+- **Backend changes** → Backend Agent (`.cursor/rules/backend-agent.mdc`)
+- **Code reviews** → Code Review Agent (`.cursor/rules/code-review-agent.mdc`)
+- **Task coordination** → Task Delegation System (`.cursor/rules/task-delegation-system.mdc`)
+
+**YOUR TASKS**:
+
+1. **Check Documentation First**: Always reference these docs before answering questions about the project
+2. **Summarise Current State**: Based on the docs, provide a brief project status summary
+3. **Delegate Appropriately**: Route technical tasks to specialist agents for optimal results
+4. **Update Documentation**: When making changes, update the relevant documentation files
+5. **Maintain Accuracy**: Ensure all code changes align with documented schemas and APIs
+6. **Cross-Reference**: Link related information between different documentation files
+
+**PROJECT CONTEXT**:
+
+- **Tech Stack**: Next.js 14, React 18, TypeScript, Supabase, TailwindCSS
+- **Current Focus**: UI modernisation, cart persistence, product visibility policy
+- **Database**: PostgreSQL with RLS policies, recently overhauled schema
+- **Users**: Jersey bakery with admin staff and customers
+- **Deployment**: Vercel with Supabase backend
+
+**DOCUMENTATION STANDARDS**:
+
+- Update `todos.md` when progress is made on tasks
+- Log any bugs discovered in `bugs.md` with resolution steps
+- Update `data-models.md` if database/API changes are made
+- Keep `user-guide.md` current with feature changes
+- Add new feature ideas to `enhancements.md`
+
+**REMEMBER**: These docs are the single source of truth for the project. Always prioritise documentation accuracy and completeness. Use specialist agents for their areas of expertise.
+You are assisting with TJ's Bake & Browse, a Next.js bakery e-commerce platform with specialised AI agents.
+
+**MANDATORY FIRST STEP**: Before answering any question or making any changes, read these documentation files in the `docs/` folder:
+
+1. `todos.md` - Current development priorities
+2. `data-models.md` - Database schema and API reference
+3. `user-guide.md` - Business operations and features
+4. `bugs.md` - Known issues and resolution status
+5. `deployment-guide.md` - Technical deployment procedures
+6. `enhancements.md` - Future feature roadmap
+
+**AGENT SPECIALISATION**: For complex tasks, delegate to appropriate specialist agents:
+
+- **Frontend changes** → Frontend Agent (`.cursor/rules/frontend-agent.mdc`)
+- **Backend changes** → Backend Agent (`.cursor/rules/backend-agent.mdc`)
+- **Code reviews** → Code Review Agent (`.cursor/rules/code-review-agent.mdc`)
+- **Task coordination** → Task Delegation System (`.cursor/rules/task-delegation-system.mdc`)
+
+**YOUR TASKS**:
+
+1. **Check Documentation First**: Always reference these docs before answering questions about the project
+2. **Summarise Current State**: Based on the docs, provide a brief project status summary
+3. **Delegate Appropriately**: Route technical tasks to specialist agents for optimal results
+4. **Update Documentation**: When making changes, update the relevant documentation files
+5. **Maintain Accuracy**: Ensure all code changes align with documented schemas and APIs
+6. **Cross-Reference**: Link related information between different documentation files
+
+**PROJECT CONTEXT**:
+
+- **Tech Stack**: Next.js 14, React 18, TypeScript, Supabase, TailwindCSS
+- **Current Focus**: UI modernisation, cart persistence, product visibility policy
+- **Database**: PostgreSQL with RLS policies, recently overhauled schema
+- **Users**: Jersey bakery with admin staff and customers
+- **Deployment**: Vercel with Supabase backend
+
+**DOCUMENTATION STANDARDS**:
+
+- Update `todos.md` when progress is made on tasks
+- Log any bugs discovered in `bugs.md` with resolution steps
+- Update `data-models.md` if database/API changes are made
+- Keep `user-guide.md` current with feature changes
+- Add new feature ideas to `enhancements.md`
+
+**REMEMBER**: These docs are the single source of truth for the project. Always prioritise documentation accuracy and completeness. Use specialist agents for their areas of expertise.

@@ -33,6 +33,13 @@ CREATE TABLE public.products (
 - `allergens`: Array of allergen codes (e.g., ['milk', 'eggs', 'tree_nuts'])
 - `is_visible`: Controls whether product appears in customer catalogue
 - `stock_quantity`: Current inventory level
+- `category_id`: Foreign key reference to categories table (enables JOIN operations)
+- `image_url`: Product image path or URL for display on customer pages
+
+**Important JOIN Relationships:**
+
+- **Categories JOIN**: Use Supabase syntax `categories:categories!products_category_id_fkey(id, name, slug, description)` for proper foreign key relationships
+- **Real-Time Updates**: Product changes reflect on customer pages within 30 seconds via intelligent cache invalidation
 
 ### **Categories Table**
 
@@ -152,17 +159,26 @@ Returns all visible products with category information.
 			"stock": 15,
 			"visible": true,
 			"category_id": "uuid",
-			"categories": {
-				"id": "uuid",
-				"name": "Baked Goods",
-				"slug": "baked_goods"
-			}
+			"categories": [
+				{
+					"id": "uuid",
+					"name": "Baked Goods",
+					"slug": "baked_goods",
+					"description": "Freshly baked breads, pastries, and desserts"
+				}
+			]
 		}
 	]
 }
 ```
 
-**Note:** Currently returns all products with `is_visible = true` regardless of stock level pending product visibility policy decision.
+**Important Notes:**
+
+- Currently returns all products with `is_visible = true` regardless of stock level pending product visibility policy decision
+- **Real-Time Updates**: Customer pages automatically refresh data every 30 seconds to reflect admin changes
+- **Cache Invalidation**: Includes timestamp-based cache busting (`?t=${Date.now()}`) to prevent stale data
+- **Categories Array**: Now properly populated using correct Supabase JOIN syntax with foreign key constraints
+- **Data Freshness**: Pages also refresh automatically when users return to tabs (visibility change detection)
 
 ### **Orders API**
 

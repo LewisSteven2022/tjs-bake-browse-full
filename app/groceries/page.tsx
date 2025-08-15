@@ -80,6 +80,22 @@ export default function GroceriesPage() {
 		};
 
 		loadProducts();
+
+		// Add interval to refresh data every 30 seconds for real-time updates
+		const interval = setInterval(loadProducts, 30000);
+
+		// Listen for visibility change to refresh when user returns to tab
+		const handleVisibilityChange = () => {
+			if (!document.hidden) {
+				loadProducts();
+			}
+		};
+		document.addEventListener("visibilitychange", handleVisibilityChange);
+
+		return () => {
+			clearInterval(interval);
+			document.removeEventListener("visibilitychange", handleVisibilityChange);
+		};
 	}, []);
 
 	if (loading) {

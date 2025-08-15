@@ -26,14 +26,10 @@ export default function NavAuth() {
 	if (!session) {
 		return (
 			<div className="flex items-center gap-2">
-				<Link
-					href="/login"
-					className="btn-secondary text-sm">
+				<Link href="/login" className="btn-secondary text-sm">
 					Sign In
 				</Link>
-				<Link
-					className="btn-primary text-sm"
-					href="/register">
+				<Link className="btn-primary text-sm" href="/register">
 					Register
 				</Link>
 			</div>
@@ -42,26 +38,19 @@ export default function NavAuth() {
 
 	return (
 		<div className="flex items-center gap-2">
-			{isAdmin && (
-				<Link
-					className="btn-secondary text-sm"
-					href="/admin">
-					Admin
-				</Link>
-			)}
-			<Link
-				href="/suggestions"
-				className="btn-outline text-sm">
-				💡 Suggestions
-			</Link>
-			<span className="hidden sm:inline text-sm text-primaryDark">
-				{session.user?.name || session.user?.email}
-			</span>
 			<button
 				onClick={() => signOut({ callbackUrl: "/" })}
 				className="btn-outline text-sm">
 				Sign Out
 			</button>
+			<Link href="/suggestions" className="btn-outline text-sm">
+				Suggestions
+			</Link>
+			{isAdmin && (
+				<Link className="btn-secondary text-sm" href="/admin">
+					Admin
+				</Link>
+			)}
 		</div>
 	);
 }

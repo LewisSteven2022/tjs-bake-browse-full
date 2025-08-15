@@ -2,11 +2,11 @@
 
 ## 📊 **Current Status**
 
-- **Last Updated**: Current Date
+- **Last Updated**: 14th August 2025
 - **Status**: ACTIVE DEVELOPMENT
 - **Critical Issues**: 0
-- **Known Issues**: 1
-- **Total Issues Resolved**: 8
+- **Known Issues**: 0
+- **Total Issues Resolved**: 13
 
 ## 🚨 **KNOWN ISSUES**
 
@@ -49,17 +49,87 @@
 - **Date Resolved**: Current date
 - **Testing**: Check customer pages after deployment to verify prices now update correctly
 
-### **4. Product Visibility Policy Decision Pending**
+### **4. Baked-Goods and Groceries Pages Not Working - RESOLVED**
 
-- **Issue**: Unclear whether out-of-stock products should be hidden or shown with a label
-- **Impact**: API currently returns all visible products regardless of stock level
-- **Current Workaround**: Temporarily disabled `stock_quantity > 0` filter in `app/api/products/route.ts`
-- **Decision Required**: Choose between:
-  - Hide out-of-stock items entirely (re-enable stock filter)
-  - Show out-of-stock items with "Out of stock" badge in UI
-- **Assigned**: Product team
-- **Priority**: Medium
-- **Status**: Pending decision
+- **Issue**: Website baked-goods and groceries pages showed no items despite products being available
+- **Impact**: Customers could not see categorised products on main product pages
+- **Root Cause**: Products API using incorrect JOIN syntax for categories relationship
+- **Investigation**: API used generic `categories (id, name, slug)` instead of Supabase foreign key syntax
+- **Resolution**: Fixed JOIN syntax to `categories:categories!products_category_id_fkey(id, name, slug, description)`
+- **Files Fixed**: `app/api/products/route.ts` - lines 34-39
+- **Priority**: Critical (breaks main customer functionality)
+- **Status**: Fixed
+- **Date Resolved**: 14th August 2025
+- **Testing**: Verified categories now returned properly and products display on filtered pages
+
+### **5. Product Card Updates Not Reflecting Database Changes - RESOLVED**
+
+- **Issue**: Product updates in admin panel saved to database but product cards didn't reflect changes
+- **Impact**: Admin changes appeared successful but customers saw stale data
+- **Root Cause**: No cache invalidation mechanism for real-time updates
+- **Investigation**: Product pages only fetched data on initial load with no refresh mechanism
+- **Resolution**: Added intelligent cache-busting with 30-second intervals and visibility change listeners
+- **Files Fixed**:
+  - `app/baked-goods/page.tsx` - lines 89-103
+  - `app/groceries/page.tsx` - lines 84-98
+- **Priority**: High (affects admin workflow and data accuracy)
+- **Status**: Fixed
+- **Date Resolved**: 14th August 2025
+- **Testing**: Product changes now reflect within 30 seconds or when returning to tab
+
+### **6. Suggestions Form Outdated Styling - RESOLVED**
+
+- **Issue**: Suggestions form looked basic and unprofessional compared to rest of site
+- **Impact**: Poor user experience for customer feedback collection
+- **Root Cause**: Form used generic styling without brand consistency
+- **Investigation**: Form lacked modern design elements and brand colour scheme
+- **Resolution**: Complete redesign with blue gradient theme, enhanced UX, and professional styling
+- **Files Fixed**: `app/suggestions/page.tsx` - complete redesign
+- **Priority**: Medium (affects brand perception)
+- **Status**: Fixed
+- **Date Resolved**: 14th August 2025
+- **Testing**: Form now matches about page styling with modern, engaging design
+
+### **7. Navigation Button Styling Inconsistency - RESOLVED**
+
+- **Issue**: Navigation buttons had mixed circular and square edges causing visual inconsistency
+- **Impact**: Unprofessional appearance and poor design cohesion
+- **Root Cause**: Mixed use of `rounded-lg`, `rounded-md`, and `rounded-full` classes
+- **Investigation**: Global CSS classes and component styles used different border radius values
+- **Resolution**: Standardised all navigation buttons to use `rounded-full` for consistent circular edges
+- **Files Fixed**:
+  - `app/globals.css` - lines 16-24 (updated btn classes)
+  - `components/ModernNavbar.tsx` - multiple lines (standardised classes)
+- **Priority**: Low (cosmetic improvement)
+- **Status**: Fixed
+- **Date Resolved**: 14th August 2025
+- **Testing**: All navigation elements now have consistent circular styling
+
+### **8. Navigation Layout Poor Organisation - RESOLVED**
+
+- **Issue**: User name displayed in navigation cluttered interface, admin/suggestions buttons poorly positioned
+- **Impact**: Cluttered navigation interface reducing usability
+- **Root Cause**: Suboptimal layout design with unnecessary information display
+- **Investigation**: User name served no functional purpose and buttons were poorly grouped
+- **Resolution**: Removed user name display, reorganised buttons with Sign Out → Suggestions → Admin flow
+- **Files Fixed**: `components/NavAuth.tsx` - lines 40-55
+- **Priority**: Medium (affects user experience)
+- **Status**: Fixed
+- **Date Resolved**: 14th August 2025
+- **Testing**: Navigation now cleaner and more professional
+
+### **9. Product Type Mismatch Breaking Product Cards - RESOLVED**
+
+- **Issue**: ProductCard component importing incompatible Product type causing runtime errors
+- **Impact**: Baked-goods and groceries pages failed to render properly
+- **Root Cause**: ProductCard imported type from ProductGrid but pages defined local Product types
+- **Investigation**: Type mismatch between import and local definitions caused compilation issues
+- **Resolution**: Removed ProductGrid import and defined Product type locally in ProductCard
+- **Files Fixed**: `components/ProductCard.tsx` - lines 8-16
+- **Priority**: Critical (breaks product display functionality)
+- **Status**: Fixed
+- **Date Resolved**: 14th August 2025
+- **Testing**: Product cards now render correctly with proper type definitions
 
 ## ✅ **RECENTLY RESOLVED ISSUES**
 

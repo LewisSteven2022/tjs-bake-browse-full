@@ -432,9 +432,10 @@ npm run build
 
 ### **3. Database Schema Mismatches**
 
-- **Issue**: API using old column names
-- **Prevention**: Always update documentation with schema changes
-- **Fix**: Run schema audit, update all references
+- **Issue**: API using old column names or incorrect JOIN syntax
+- **Prevention**: Always update documentation with schema changes, verify Supabase foreign key relationships
+- **Fix**: Run schema audit, update all references, check foreign key constraint names
+- **Common Example**: Use `categories:categories!products_category_id_fkey(...)` for Supabase JOINs, not generic `categories(...)`
 
 ### **4. NextAuth Configuration**
 
@@ -453,6 +454,20 @@ npm run build
 - **Issue**: Emails not being sent or going to spam
 - **Prevention**: Complete domain verification, use consistent from addresses
 - **Fix**: Check Resend dashboard, verify API key and domain setup
+
+### **7. Product Display and Cache Issues**
+
+- **Issue**: Product updates not reflecting on customer pages despite database changes
+- **Prevention**: Implement cache invalidation strategies, use timestamp-based cache busting
+- **Fix**: Check for 30-second refresh intervals, verify visibility change detection working
+- **Common Cause**: Missing real-time synchronisation between admin updates and customer views
+
+### **8. Supabase JOIN Syntax Issues**
+
+- **Issue**: Category-based filtering not working, products not displaying on category pages
+- **Prevention**: Use proper Supabase foreign key JOIN syntax with constraint names
+- **Fix**: Replace generic `table(columns)` with `table:table!foreign_key_constraint(columns)`
+- **Testing**: Verify API responses include expected nested data structures
 
 ## 📞 **Support & Escalation**
 

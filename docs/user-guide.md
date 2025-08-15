@@ -55,11 +55,14 @@ This guide provides client-facing instructions for managing content, prices, and
    - Update any fields as needed
    - **Price Changes**: Simply update the price field
    - **Stock Updates**: Adjust the stock quantity
+   - **Image URL**: Add or update product image paths
    - **Visibility**: Toggle "Visible" to show/hide from customers
 
 3. **Save Changes**
    - Click "Save" to apply updates
-   - Changes are reflected immediately on the website
+   - **Real-Time Updates**: Changes now appear on the customer website within 30 seconds
+   - **Automatic Refresh**: Customer pages automatically refresh when users return to tabs
+   - **Cache Invalidation**: Product updates include intelligent cache-busting for immediate visibility
 
 ### **Managing Stock Levels**
 
@@ -349,7 +352,11 @@ Until the upload feature is implemented, you'll need to coordinate with technica
 
 ### **Customer Feedback**
 
-- Customer suggestions available through the suggestions system
+- **Enhanced Suggestions System**: Modern, professional feedback form with improved user experience
+- **Blue Gradient Design**: Form now matches brand identity with consistent styling
+- **Improved Usability**: Enhanced visual hierarchy with icons, emojis, and professional polish
+- **Better Engagement**: Micro-interactions and hover effects encourage customer participation
+- **Accessibility**: Proper contrast ratios and keyboard navigation support
 - Review feedback regularly for improvement opportunities
 - Consider feedback when planning new products or services
 
@@ -358,9 +365,12 @@ Until the upload feature is implemented, you'll need to coordinate with technica
 ### **Product Not Appearing on Website**
 
 1. Check that product is marked as "Visible"
-2. Verify product has a category assigned
+2. Verify product has a category assigned (Baked Goods or Groceries)
 3. Ensure stock quantity is greater than 0 (current policy pending)
-4. Refresh the website page
+4. **Wait 30 seconds** - changes now auto-refresh every 30 seconds
+5. **Return to tab** - pages refresh automatically when users return from other tabs
+6. Clear browser cache if issue persists
+7. Check the category pages directly (/baked-goods or /groceries)
 
 ### **Order Status Not Updating**
 

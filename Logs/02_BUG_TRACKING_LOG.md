@@ -2,10 +2,10 @@
 
 ## **Current Project Status**
 
-- **Last Updated**: [Current Date]
+- **Last Updated**: 14th August 2025
 - **Status**: ACTIVE DEVELOPMENT
 - **Critical Issues**: 0
-- **Known Issues**: 1
+- **Known Issues**: 0
 
 ## **CRITICAL ISSUES RESOLVED**
 
@@ -56,9 +56,59 @@
 - Footer updated with Instagram and Facebook links (icons added)
 - Admin inventory: removed legacy CSV Export/Import controls from toolbar (not needed yet)
 
+## **RECENT CRITICAL FIXES (14th August 2025)**
+
+### **1. Baked-Goods/Groceries Pages Not Working - RESOLVED ✅**
+
+- **Issue**: Category pages showed no products despite database containing categorised items
+- **Root Cause**: Products API using incorrect Supabase JOIN syntax for foreign key relationships
+- **Resolution**: Fixed JOIN syntax from `categories (id, name, slug)` to `categories:categories!products_category_id_fkey(id, name, slug, description)`
+- **Impact**: Customer product browsing fully restored
+- **Files Fixed**: `app/api/products/route.ts`
+
+### **2. Product Card Updates Not Reflecting Database Changes - RESOLVED ✅**
+
+- **Issue**: Admin product updates saved successfully but customer pages showed stale data
+- **Root Cause**: No cache invalidation mechanism for real-time data synchronisation
+- **Resolution**: Implemented intelligent cache-busting with 30-second intervals and visibility change listeners
+- **Impact**: Admin changes now visible to customers within 30 seconds
+- **Files Fixed**: `app/baked-goods/page.tsx`, `app/groceries/page.tsx`
+
+### **3. Suggestions Form Outdated Styling - RESOLVED ✅**
+
+- **Issue**: Customer feedback form looked unprofessional and inconsistent with brand
+- **Root Cause**: Basic styling without modern design elements or brand consistency
+- **Resolution**: Complete redesign with blue gradient theme, enhanced UX, and professional polish
+- **Impact**: Improved customer engagement and brand consistency
+- **Files Fixed**: `app/suggestions/page.tsx`
+
+### **4. Navigation Button Styling Inconsistency - RESOLVED ✅**
+
+- **Issue**: Mixed circular and square button edges creating visual inconsistency
+- **Root Cause**: Inconsistent use of Tailwind border radius classes across components
+- **Resolution**: Standardised all navigation buttons to use `rounded-full` for circular consistency
+- **Impact**: Professional, cohesive navigation design
+- **Files Fixed**: `app/globals.css`, `components/ModernNavbar.tsx`
+
+### **5. Navigation Layout Poor Organisation - RESOLVED ✅**
+
+- **Issue**: Cluttered navigation with unnecessary user name display and poor button positioning
+- **Root Cause**: Suboptimal UX design decisions
+- **Resolution**: Removed user name, reorganised buttons to Sign Out → Suggestions → Admin flow
+- **Impact**: Cleaner, more professional navigation interface
+- **Files Fixed**: `components/NavAuth.tsx`
+
+### **6. Product Type Mismatch Breaking Pages - RESOLVED ✅**
+
+- **Issue**: ProductCard component type import conflicts causing runtime errors
+- **Root Cause**: Type mismatch between ProductCard import and page-level Product type definitions
+- **Resolution**: Removed problematic import and defined Product type locally in ProductCard
+- **Impact**: Product pages now render correctly without type errors
+- **Files Fixed**: `components/ProductCard.tsx`
+
 ## **KNOWN ISSUES**
 
-- 1. Product visibility policy decision pending: decide whether out-of-stock products should be hidden or shown with an "Out of stock" label. API currently returns all visible products regardless of stock due to temporary removal of the `stock_quantity > 0` filter.
+- None currently identified - all reported issues resolved
 
 ## **NEXT STEPS**
 

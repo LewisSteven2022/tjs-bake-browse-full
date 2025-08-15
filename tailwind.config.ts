@@ -7,13 +7,17 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				// Brand palette (from test-styling/about-modern)
-				primary: "#638ECB", // brand blue
-				primaryDark: "#395B86", // deep brand blue
-				primaryLight: "#8AAEE0", // light brand blue
-				surface: "#F0F3FA", // light surface
-				surfaceAlt: "#D5DEEF", // alt surface / borders
-				ringBrand: "#B1C9EF", // focus ring / accents
+				// Modern Blue-Focused Palette
+				primary: "#4EA1D3", // sky blue
+				primaryDark: "#6474E5", // royal blue
+				primaryLight: "#9AA4EC", // lavender blue
+				surface: "#F8FAFB", // very light blue-tinted background
+				surfaceAlt: "#EDF4F7", // light blue-grey
+				ringBrand: "#9AA4EC", // focus ring / accents
+				textPrimary: "#2D3748", // dark blue-grey
+				textSecondary: "#4A5568", // medium blue-grey
+				cardBg: "#FFFFFF", // pure white
+				accent: "#F4A4A4", // minimal pink accent (sparingly used)
 			},
 		},
 	},
