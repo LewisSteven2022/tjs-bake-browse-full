@@ -26,7 +26,7 @@ type Product = {
 
 async function fetchBakedGoods(): Promise<Product[]> {
 	try {
-		const response = await fetch(`/api/products?t=${Date.now()}`, {
+		const response = await fetch(`/api/products?category=baked_goods&t=${Date.now()}`, {
 			cache: "no-store",
 		});
 
@@ -36,32 +36,7 @@ async function fetchBakedGoods(): Promise<Product[]> {
 
 		const data = await response.json();
 
-		const products = data.products || [];
-
-		// Filter products by category slug AND visibility
-		const bakedGoodsProducts = products.filter((product: Product) => {
-			// First check visibility - only show visible products
-			const isVisible = product.is_visible === true || product.visible === true;
-			if (!isVisible) return false;
-
-			// Normalise categories to array
-			const cats = product?.categories
-				? Array.isArray(product.categories)
-					? product.categories
-					: [product.categories]
-				: [];
-
-			// Check if product has categories array with matching slug
-			if (cats.length > 0) {
-				const hasBakedGoods = cats.some((cat) => cat.slug === "baked_goods");
-				return hasBakedGoods;
-			}
-
-			// Fallback: check if category_id matches (though this won't work without proper mapping)
-			return false;
-		});
-
-		return bakedGoodsProducts;
+		return data.products || [];
 	} catch (error) {
 		throw error;
 	}
