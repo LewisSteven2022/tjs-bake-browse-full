@@ -26,9 +26,12 @@ type Product = {
 
 async function fetchBakedGoods(): Promise<Product[]> {
 	try {
-		const response = await fetch(`/api/products?category=baked_goods&t=${Date.now()}`, {
-			cache: "no-store",
-		});
+		const response = await fetch(
+			`/api/products?category=baked_goods&t=${Date.now()}`,
+			{
+				cache: "no-store",
+			}
+		);
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);

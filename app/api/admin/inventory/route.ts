@@ -215,15 +215,6 @@ export async function POST(req: NextRequest) {
 			}
 		}
 
-		// Check if new schema exists
-		const { data: tableCheck, error: tableError } = await admin
-			.from("information_schema.tables")
-			.select("table_name")
-			.eq("table_name", "categories")
-			.single();
-
-		const hasNewSchema = !tableError && tableCheck;
-
 		// Prepare product data
 		const productData: any = {
 			name: name.trim(),
@@ -238,9 +229,9 @@ export async function POST(req: NextRequest) {
 			is_visible: visible !== undefined ? visible : true,
 		};
 
-		// Add category_id if new schema exists and category is provided
-		if (hasNewSchema && category_id) {
-			productData.category_id = category_id;
+		// Add category_id if provided (avoid empty string)
+		if (typeof category_id === "string" && category_id.trim().length > 0) {
+			productData.category_id = category_id.trim();
 		}
 
 		// Debug logging
@@ -282,10 +273,9 @@ export async function POST(req: NextRequest) {
 				visible: data.is_visible,
 				image_url: data.image_url,
 				allergens: data.allergens,
-				category:
-					hasNewSchema && productData.category_id
-						? { id: productData.category_id, name: null, slug: null }
-						: null,
+				category: productData.category_id
+					? { id: productData.category_id, name: null, slug: null }
+					: null,
 			};
 		}
 
