@@ -10,7 +10,7 @@ export default function NavBasket() {
 		<Link
 			href="/basket"
 			aria-label={`Basket with ${itemCount} item${itemCount === 1 ? "" : "s"}`}
-			className="btn-primary text-sm relative inline-flex items-center gap-2">
+			className="nav-elegance-link relative inline-flex items-center space-x-2">
 			<span className="relative inline-flex">
 				<svg
 					className="h-4 w-4"
@@ -25,7 +25,7 @@ export default function NavBasket() {
 					<path d="M9 11V7a3 3 0 0 1 6 0v4" />
 				</svg>
 				{!loading && itemCount > 0 && (
-					<span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] rounded-full bg-white text-primary px-1 text-[10px] leading-[18px] text-center font-semibold">
+					<span className="absolute -top-2 -right-2 min-w-[16px] h-[16px] rounded-full bg-neutral-900 text-white px-1 text-[10px] leading-[16px] text-center font-light">
 						{Math.max(0, itemCount)}
 					</span>
 				)}

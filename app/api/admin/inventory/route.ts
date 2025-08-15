@@ -228,7 +228,7 @@ export async function POST(req: NextRequest) {
 		const productData: any = {
 			name: name.trim(),
 			short_description: short_description?.trim() || null,
-			description: description?.trim() || null,
+			full_description: description?.trim() || null,
 			price_pence: Math.round(price_pence),
 			pack_label: pack_label?.trim() || null,
 			allergens: normalizedAllergens,

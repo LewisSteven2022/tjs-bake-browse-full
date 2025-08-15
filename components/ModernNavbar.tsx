@@ -7,39 +7,39 @@ import NavBasket from "@/components/NavBasket";
 
 export default function ModernNavbar() {
 	return (
-		<div className="w-full flex items-center justify-center pt-0 pb-0.5 sm:pt-3 sm:pb-2">
-			<nav className="bg-transparent shadow-sm rounded-full px-0.5 sm:px-3 py-0.5 sm:py-2 container-modern flex items-center gap-1 sm:gap-3 overflow-visible relative z-50">
-				{/* Left: Brand + Nav items */}
-				<div className="flex items-center gap-1 sm:gap-2 overflow-visible flex-1">
-					<Link
-						href="/"
-						className="pl-2 pr-1 sm:px-3 py-0 sm:py-1 rounded-md md:rounded-full text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-primaryDark hover:bg-surface transition-colors">
-						TJ's Bake & Browse
-					</Link>
-					<ul className="hidden md:flex items-center gap-1">
-						<li>
-							<Link
-								href="/about"
-								className="px-2 sm:px-3 md:px-4 py-1 md:py-2 rounded-full text-xs sm:text-sm font-medium text-textPrimary hover:bg-surface focus:outline-none focus:ring-2 focus:ring-ringBrand transition-colors">
-								About us
-							</Link>
-						</li>
-						<ProductsDropdown />
-					</ul>
+		<nav className="nav-elegance sticky top-0 z-50">
+			<div className="container-elegance">
+				<div className="flex items-center justify-between h-16">
+					{/* Left: Brand + Nav items */}
+					<div className="flex items-center space-x-8">
+						<Link
+							href="/"
+							className="text-xl font-light tracking-wide text-neutral-900 hover:text-neutral-700 transition-colors duration-300">
+							TJ's Bake & Browse
+						</Link>
+						<ul className="hidden md:flex items-center space-x-8">
+							<li>
+								<Link href="/about" className="nav-elegance-link">
+									About
+								</Link>
+							</li>
+							<ProductsDropdown />
+						</ul>
 
-					{/* Mobile trigger */}
-					<div className="md:hidden ml-auto pr-2 mr-1">
-						<MobileMenu />
+						{/* Mobile trigger */}
+						<div className="md:hidden ml-auto">
+							<MobileMenu />
+						</div>
+					</div>
+
+					{/* Right: Auth actions and basket */}
+					<div className="hidden md:flex items-center space-x-4">
+						<NavAuth />
+						<NavBasket />
 					</div>
 				</div>
-
-				{/* Right: Auth actions and basket */}
-				<div className="hidden md:flex items-center gap-1 sm:gap-2 shrink-0">
-					<NavAuth />
-					<NavBasket />
-				</div>
-			</nav>
-		</div>
+			</div>
+		</nav>
 	);
 }
 
@@ -49,40 +49,36 @@ function MobileMenu() {
 		<div className="relative">
 			<button
 				onClick={() => setOpen((v) => !v)}
-				className="px-3 py-2 rounded-full text-sm font-semibold text-textPrimary bg-transparent hover:bg-surface transition-colors">
-				Menu ▾
+				className="nav-elegance-button text-sm">
+				Menu
 			</button>
 			<div
 				className={`${
 					open ? "block" : "hidden"
-				} absolute right-0 mt-2 w-56 bg-cardBg border border-surfaceAlt rounded-xl shadow-lg p-2 z-[60]`}>
+				} absolute right-0 mt-2 w-56 bg-white border border-neutral-200 shadow-lg p-4 z-[60]`}>
 				<Link
 					href="/about"
-					className="block px-3 py-2 rounded-full text-textPrimary hover:bg-surface transition-colors"
+					className="block py-2 nav-elegance-link"
 					onClick={() => setOpen(false)}>
-					About us
+					About
 				</Link>
-				<div className="px-3 py-1 text-xs font-semibold text-textSecondary opacity-60">
-					Products
-				</div>
+				<div className="py-1 text-elegance-caption">Products</div>
 				<Link
 					href="/baked-goods"
-					className="block px-3 py-2 rounded-full text-textPrimary hover:bg-surface transition-colors"
+					className="block py-2 nav-elegance-link"
 					onClick={() => setOpen(false)}>
 					Baked Goods
 				</Link>
 				<Link
 					href="/groceries"
-					className="block px-3 py-2 rounded-full text-textPrimary hover:bg-surface transition-colors"
+					className="block py-2 nav-elegance-link"
 					onClick={() => setOpen(false)}>
 					Groceries
 				</Link>
-				<div className="my-1 border-t border-surfaceAlt" />
-				<div className="p-2">
+				<div className="my-3 border-t border-neutral-200" />
+				<div className="space-y-2">
 					<NavAuth />
-					<div className="mt-2">
-						<NavBasket />
-					</div>
+					<NavBasket />
 				</div>
 			</div>
 		</div>
@@ -116,25 +112,24 @@ function ProductsDropdown() {
 				aria-haspopup="menu"
 				aria-expanded={open}
 				onClick={() => setOpen((v) => !v)}
-				className="px-4 py-2 rounded-full text-sm font-medium text-textPrimary hover:bg-surface focus:outline-none focus:ring-2 focus:ring-ringBrand transition-colors">
+				className="nav-elegance-link">
 				Products
-				<span className="ml-2 inline-block align-middle">▾</span>
 			</button>
 			<div
 				className={`${
 					open ? "block" : "hidden"
-				} absolute left-0 top-full mt-2 w-56 bg-cardBg border border-surfaceAlt rounded-xl shadow-lg overflow-hidden z-[60]`}
+				} absolute left-0 top-full mt-2 w-48 bg-white border border-neutral-200 shadow-lg overflow-hidden z-[60]`}
 				role="menu">
 				<Link
 					href="/baked-goods"
-					className="block px-4 py-2 text-sm text-textPrimary hover:bg-surface transition-colors rounded-full"
+					className="block px-4 py-3 nav-elegance-link"
 					role="menuitem"
 					onClick={() => setOpen(false)}>
 					Baked Goods
 				</Link>
 				<Link
 					href="/groceries"
-					className="block px-4 py-2 text-sm text-textPrimary hover:bg-surface transition-colors rounded-full"
+					className="block px-4 py-3 nav-elegance-link"
 					role="menuitem"
 					onClick={() => setOpen(false)}>
 					Groceries

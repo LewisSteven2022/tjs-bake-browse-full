@@ -35,15 +35,21 @@ export default function CheckoutPage() {
 	// --- Soft nudge when not signed in ---
 	if (status !== "loading" && !session) {
 		return (
-			<main className="mx-auto max-w-5xl p-6">
-				<h1 className="mb-4 text-2xl font-semibold">Checkout</h1>
-				<div className="rounded-2xl border p-6 bg-white">
-					<p className="mb-3">Please sign in to place your order.</p>
-					<a
-						href={`/login?callbackUrl=${encodeURIComponent("/checkout")}`}
-						className="inline-block rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
-						Sign in
-					</a>
+			<main className="min-h-screen bg-elegance">
+				<div className="container-elegance section-elegance">
+					<h1 className="text-3xl text-elegance-heading mb-8 text-center">
+						Checkout
+					</h1>
+					<div className="card-elegance border border-neutral-200 p-8 max-w-md mx-auto text-center">
+						<p className="text-elegance-body mb-6">
+							Please sign in to place your order.
+						</p>
+						<a
+							href={`/login?callbackUrl=${encodeURIComponent("/checkout")}`}
+							className="btn-elegance-primary">
+							Sign in
+						</a>
+					</div>
 				</div>
 			</main>
 		);
@@ -70,25 +76,25 @@ export default function CheckoutPage() {
 	const [maxDate, setMaxDate] = useState<string>(initialMaxDate);
 	const slots = useMemo(() => buildSlots("09:00", "17:30", 30), []);
 
-  // Load basket and bag
+	// Load basket and bag
 	useEffect(() => {
 		(async () => {
 			const cart = await getCart();
 			setItems(Array.isArray(cart) ? cart : []);
 		})();
 		try {
-      const savedBag = localStorage.getItem("bag_opt_in");
-      if (savedBag != null) {
-        setBag(JSON.parse(savedBag) === true);
-      } else {
-        // If no local preference, try user preference from server
-        fetch("/api/user/preferences", { cache: "no-store" })
-          .then((r) => r.ok ? r.json() : Promise.resolve({}))
-          .then((j) => {
-            if (typeof j?.bag_pref === "boolean") setBag(j.bag_pref);
-          })
-          .catch(() => {});
-      }
+			const savedBag = localStorage.getItem("bag_opt_in");
+			if (savedBag != null) {
+				setBag(JSON.parse(savedBag) === true);
+			} else {
+				// If no local preference, try user preference from server
+				fetch("/api/user/preferences", { cache: "no-store" })
+					.then((r) => (r.ok ? r.json() : Promise.resolve({})))
+					.then((j) => {
+						if (typeof j?.bag_pref === "boolean") setBag(j.bag_pref);
+					})
+					.catch(() => {});
+			}
 		} catch {}
 		// Default the selected date to the earliest allowed date
 		setDate(initialMinDate);
@@ -181,16 +187,16 @@ export default function CheckoutPage() {
 				"Your order has been confirmed. You'll receive a confirmation email shortly."
 			);
 			try {
-                localStorage.setItem("bag_opt_in", JSON.stringify(bag));
+				localStorage.setItem("bag_opt_in", JSON.stringify(bag));
 				localStorage.setItem("last_customer", JSON.stringify(customer));
-                // Persist preference for signed-in users
-                if (session) {
-                  fetch("/api/user/preferences", {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ bag_pref: bag }),
-                  }).catch(() => {});
-                }
+				// Persist preference for signed-in users
+				if (session) {
+					fetch("/api/user/preferences", {
+						method: "PATCH",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ bag_pref: bag }),
+					}).catch(() => {});
+				}
 			} catch {}
 
 			const orderId = data?.order_id;
@@ -213,129 +219,146 @@ export default function CheckoutPage() {
 	// Date selection is now driven by DateTimePicker which already hides/locks Sundays
 
 	return (
-		<main className="mx-auto max-w-5xl p-4">
-			<h1 className="mb-4 text-2xl font-semibold">Checkout</h1>
+		<main className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
+				<h1 className="text-3xl text-elegance-heading mb-12 text-center">
+					Checkout
+				</h1>
 
-			{items.length === 0 ? (
-				<div className="rounded-2xl border p-6 text-gray-600 bg-white">
-					<p>Your basket is empty. Browse items here.</p>
-				</div>
-			) : (
-				<div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-					{/* Left: Items + Form */}
-					<div className="space-y-6">
-						{/* Items */}
-						<div className="space-y-3">
-							{items.map((i) => (
-								<div
-									key={i.product_id}
-									className="flex items-center justify-between rounded-2xl border p-3 bg-white">
-									<div className="min-w-0">
-										<div className="truncate font-medium">{i.name}</div>
-										<div className="text-sm opacity-70">
-											{i.qty} × {formatGBP(i.price_pence)}
+				{items.length === 0 ? (
+					<div className="card-elegance border border-neutral-200 p-8 text-center max-w-md mx-auto">
+						<p className="text-elegance-body">
+							Your basket is empty. Browse items here.
+						</p>
+					</div>
+				) : (
+					<div className="grid gap-12 lg:grid-cols-[2fr_1fr]">
+						{/* Left: Items + Form */}
+						<div className="space-y-8">
+							{/* Items */}
+							<div className="space-y-4">
+								{items.map((i) => (
+									<div
+										key={i.product_id}
+										className="card-elegance border-b border-neutral-200 pb-4">
+										<div className="flex items-center justify-between">
+											<div className="min-w-0">
+												<div className="text-elegance-heading">{i.name}</div>
+												<div className="text-elegance-caption">
+													{i.qty} × {formatGBP(i.price_pence)}
+												</div>
+											</div>
+											<div className="text-elegance-heading">
+												{formatGBP(i.price_pence * i.qty)}
+											</div>
 										</div>
 									</div>
-									<div className="font-medium">
-										{formatGBP(i.price_pence * i.qty)}
+								))}
+
+								<label className="flex items-center space-x-3 cursor-pointer select-none py-4">
+									<input
+										type="checkbox"
+										className="h-4 w-4 border border-neutral-300"
+										checked={bag}
+										onChange={() => {
+											const next = !bag;
+											setBag(next);
+											try {
+												localStorage.setItem(
+													"bag_opt_in",
+													JSON.stringify(next)
+												);
+											} catch {}
+										}}
+									/>
+									<span className="text-elegance-body">
+										Add a bag (+{formatGBP(BAG_PENCE)})
+									</span>
+								</label>
+							</div>
+
+							{/* Customer */}
+							<section className="card-elegance border border-neutral-200 p-8">
+								<h2 className="text-elegance-subheading mb-6">Your Details</h2>
+								<div className="space-y-6">
+									<div>
+										<label className="label-elegance">Full Name</label>
+										<input
+											type="text"
+											value={customer.name}
+											onChange={(e) =>
+												setCustomer({ ...customer, name: e.target.value })
+											}
+											className="input-elegance"
+											placeholder={session?.user?.name || "Jane Doe"}
+										/>
+									</div>
+									<div>
+										<label className="label-elegance">Email</label>
+										<input
+											type="email"
+											value={customer.email}
+											onChange={(e) =>
+												setCustomer({ ...customer, email: e.target.value })
+											}
+											className="input-elegance"
+											placeholder={session?.user?.email || "jane@example.com"}
+										/>
 									</div>
 								</div>
-							))}
+							</section>
 
-							<label className="mt-3 flex w-fit cursor-pointer select-none items-center gap-2 rounded-xl border px-3 py-2 hover:bg-gray-50 bg-white">
-								<input
-									type="checkbox"
-									className="h-4 w-4"
-									checked={bag}
-									onChange={() => {
-										const next = !bag;
-										setBag(next);
-										try {
-											localStorage.setItem("bag_opt_in", JSON.stringify(next));
-										} catch {}
+							{/* Pickup */}
+							<section className="card-elegance border border-neutral-200 p-8">
+								<h2 className="text-elegance-subheading mb-6">Pickup</h2>
+								<DateTimePicker
+									onChange={(d, t) => {
+										setDate(d);
+										setTime(t);
 									}}
 								/>
-								Add a bag (+{formatGBP(BAG_PENCE)})
-							</label>
+							</section>
 						</div>
 
-						{/* Customer */}
-						<section className="rounded-2xl border p-4 bg-white">
-							<h2 className="mb-3 text-lg font-semibold">Your details</h2>
-							<div className="grid gap-3 sm:grid-cols-2">
-								<div className="sm:col-span-2">
-									<label className="block text-sm text-gray-600">
-										Full name
-									</label>
-									<input
-										type="text"
-										value={customer.name}
-										onChange={(e) =>
-											setCustomer({ ...customer, name: e.target.value })
-										}
-										className="mt-1 w-full rounded-full border px-3 py-2"
-										placeholder={session?.user?.name || "Jane Doe"}
-									/>
+						{/* Right: Summary */}
+						<aside className="card-elegance border border-neutral-200 p-8 h-fit">
+							<h2 className="text-elegance-subheading mb-6">Order Summary</h2>
+							<div className="space-y-4 text-elegance-body">
+								<div className="flex items-center justify-between">
+									<span>Subtotal</span>
+									<span className="text-elegance-heading">
+										{formatGBP(subtotal)}
+									</span>
 								</div>
-								<div>
-									<label className="block text-sm text-gray-600">Email</label>
-									<input
-										type="email"
-										value={customer.email}
-										onChange={(e) =>
-											setCustomer({ ...customer, email: e.target.value })
-										}
-										className="mt-1 w-full rounded-full border px-3 py-2"
-										placeholder={session?.user?.email || "jane@example.com"}
-									/>
+								<div className="flex items-center justify-between">
+									<span>Bag</span>
+									<span className="text-elegance-heading">
+										{bag ? `+ ${formatGBP(BAG_PENCE)}` : formatGBP(0)}
+									</span>
+								</div>
+								<div className="flex items-center justify-between">
+									<span>GST (6%)</span>
+									<span className="text-elegance-heading">
+										{formatGBP(gst)}
+									</span>
+								</div>
+								<div className="mt-6 flex items-center justify-between border-t border-neutral-200 pt-6">
+									<span className="text-elegance-heading text-lg">Total</span>
+									<span className="text-elegance-heading text-lg">
+										{formatGBP(total)}
+									</span>
 								</div>
 							</div>
-						</section>
 
-						{/* Pickup */}
-						<section className="rounded-2xl border p-4 bg-white">
-							<h2 className="mb-3 text-lg font-semibold">Pickup</h2>
-							<DateTimePicker
-								onChange={(d, t) => {
-									setDate(d);
-									setTime(t);
-								}}
-							/>
-						</section>
+							<button
+								onClick={placeOrder}
+								className="btn-elegance-primary w-full mt-8">
+								Place Order
+							</button>
+						</aside>
 					</div>
-
-					{/* Right: Summary */}
-					<aside className="rounded-2xl border p-4 bg-white">
-						<h2 className="mb-3 text-lg font-semibold">Order summary</h2>
-						<div className="space-y-2 text-sm">
-							<div className="flex items-center justify-between">
-								<span>Subtotal</span>
-								<span className="font-medium">{formatGBP(subtotal)}</span>
-							</div>
-							<div className="flex items-center justify-between">
-								<span>Bag</span>
-								<span className="font-medium">
-									{bag ? `+ ${formatGBP(BAG_PENCE)}` : formatGBP(0)}
-								</span>
-							</div>
-							<div className="flex items-center justify-between">
-								<span>GST (6%)</span>
-								<span className="font-medium">{formatGBP(gst)}</span>
-							</div>
-							<div className="mt-3 flex items-center justify-between border-t pt-3 text-base">
-								<span className="font-semibold">Total</span>
-								<span className="font-semibold">{formatGBP(total)}</span>
-							</div>
-						</div>
-
-						<button
-							onClick={placeOrder}
-							className="mt-4 w-full rounded-full bg-primaryDark px-4 py-2 text-white hover:bg-primary">
-							Place order
-						</button>
-					</aside>
-				</div>
-			)}
+				)}
+			</div>
 		</main>
 	);
 }

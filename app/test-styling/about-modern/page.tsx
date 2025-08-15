@@ -4,7 +4,7 @@ import Head from "next/head";
 import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import TestNavbar from "@/components/test/TestNavbar";
+import ModernNavbar from "@/components/ModernNavbar";
 import brownies from "@/app/test-styling/images/brownies.webp";
 import choccookie from "@/app/test-styling/images/choccookie.webp";
 import fudgeJpg from "@/app/test-styling/images/fudge.jpg";
@@ -26,7 +26,7 @@ export default function AboutModernTestPage() {
 				<title>About (Modern Test) | TJ's Bake & Browse</title>
 			</Head>
 
-			<TestNavbar />
+			<ModernNavbar />
 
 			{/* Compact hero with blended overlay to save vertical space */}
 			<section className="relative w-full h-[280px] md:h-[320px] overflow-hidden rounded-none md:rounded-2xl md:w-[min(1100px,95%)] md:mx-auto md:mt-4">

@@ -1,67 +1,58 @@
-// components/Footer.tsx
 import Link from "next/link";
 import { Instagram, Facebook } from "lucide-react";
 
 export default function Footer() {
 	return (
-		<footer className="bg-gray-100 border-t border-gray-200 mt-12">
-			<div className="max-w-6xl mx-auto px-4 py-8 flex flex-col items-center text-center gap-6">
+		<footer className="bg-neutral-50 border-t border-neutral-200 mt-12">
+			<div className="container-elegance py-12 flex flex-col items-center text-center space-y-8">
 				{/* Copyright */}
-				<p className="text-gray-600 text-sm">
+				<p className="text-elegance-caption">
 					&copy; {new Date().getFullYear()} TJ&apos;s Bake &amp; Browse. All
 					rights reserved.
 				</p>
 
 				{/* Legal Links */}
-				<nav className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm">
-					<Link
-						href="/disclaimer"
-						className="text-gray-700 hover:text-blue-800 transition">
+				<nav className="flex flex-wrap justify-center gap-6">
+					<Link href="/disclaimer" className="nav-elegance-link">
 						Disclaimer
 					</Link>
-					<Link
-						href="/legal"
-						className="text-gray-700 hover:text-blue-800 transition">
+					<Link href="/legal" className="nav-elegance-link">
 						Legal
 					</Link>
-					<Link
-						href="/legal/privacy"
-						className="text-gray-700 hover:text-blue-800 transition">
+					<Link href="/legal/privacy" className="nav-elegance-link">
 						Privacy Policy
 					</Link>
-					<Link
-						href="/legal/cookies"
-						className="text-gray-700 hover:text-blue-800 transition">
+					<Link href="/legal/cookies" className="nav-elegance-link">
 						Cookie Policy
 					</Link>
 				</nav>
 
 				{/* Social links */}
-				<nav className="flex items-center gap-4 sm:gap-6">
+				<nav className="flex items-center gap-6">
 					<a
 						href="https://instagram.com/tjsbakeandbrowse"
 						target="_blank"
 						rel="noopener noreferrer"
 						aria-label="Instagram"
-						className="text-[#395B86] hover:text-[#1E40AF] transition">
-						<Instagram size={20} />
+						className="text-neutral-600 hover:text-neutral-900 transition-colors">
+						<Instagram size={20} strokeWidth={1.5} />
 					</a>
 					<a
 						href="https://facebook.com/tjsbakeandbrowse"
 						target="_blank"
 						rel="noopener noreferrer"
 						aria-label="Facebook"
-						className="text-[#395B86] hover:text-[#1E40AF] transition">
-						<Facebook size={20} />
+						className="text-neutral-600 hover:text-neutral-900 transition-colors">
+						<Facebook size={20} strokeWidth={1.5} />
 					</a>
 				</nav>
 
 				{/* Contact */}
-				<p className="text-gray-600 text-sm">
+				<p className="text-elegance-caption">
 					Contact:{" "}
 					<a
 						href="mailto:tjsbakeandbrowse@gmail.com"
-						className="text-blue-800 hover:underline">
+						className="nav-elegance-link">
 						tjsbakeandbrowse@gmail.com
 					</a>
 				</p>

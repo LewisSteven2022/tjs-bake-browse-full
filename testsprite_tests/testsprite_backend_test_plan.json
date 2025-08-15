@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "get_all_visible_products",
+    "description": "Verify that the /api/products GET endpoint returns all visible products with correct category, stock, pricing, image, and allergen information. Ensure the response is refreshed within 30 seconds to avoid stale cache."
+  },
+  {
+    "id": "TC002",
+    "title": "create_new_order_with_validation_and_fees",
+    "description": "Test the /api/orders POST endpoint for creating new orders. Validate the request payload strictly according to the schema, ensure correct recording of orders with line items, and accurate calculation of GST and bag fees."
+  },
+  {
+    "id": "TC003",
+    "title": "get_available_pickup_slots_with_capacity_management",
+    "description": "Validate the /api/slots GET endpoint to generate pickup slots according to configured business hours, respect capacity limits, and exclude non-operating days such as Sundays."
+  },
+  {
+    "id": "TC004",
+    "title": "user_registration_with_validation",
+    "description": "Test the /api/auth/register POST endpoint for user registration. Ensure proper validation of input data, successful user creation, and appropriate response status."
+  },
+  {
+    "id": "TC005",
+    "title": "admin_product_crud_operations",
+    "description": "Verify the /api/admin/products GET and POST endpoints for retrieving all products including hidden ones and creating new products. Validate input data and ensure changes are reflected immediately."
+  },
+  {
+    "id": "TC006",
+    "title": "get_inventory_status_and_alerts",
+    "description": "Test the /api/admin/inventory GET endpoint to retrieve current inventory levels and verify low stock alerts and inventory import/export functionality."
+  },
+  {
+    "id": "TC007",
+    "title": "submit_customer_suggestion_with_email_notification",
+    "description": "Validate the /api/suggestions POST endpoint for submitting customer feedback. Ensure valid submissions are stored in the database and trigger notification emails to the business."
+  },
+  {
+    "id": "TC008",
+    "title": "get_active_fees_for_checkout",
+    "description": "Test the /api/fees GET endpoint to retrieve active fees such as bag fees for checkout calculations. Verify the correctness and completeness of the fees data."
+  },
+  {
+    "id": "TC009",
+    "title": "save_cart_data_persistence",
+    "description": "Verify the /api/cart POST endpoint for saving shopping cart data. Ensure cart persistence across user sessions and correct response status."
+  },
+  {
+    "id": "TC010",
+    "title": "system_health_check",
+    "description": "Test the /api/debug GET endpoint for system diagnostics and database connectivity checks. Verify the system status response and connectivity information."
+  }
+]

@@ -109,51 +109,69 @@ function LoginForm() {
 	}
 
 	return (
-		<main className="mx-auto max-w-md p-6">
-			<h1 className="mb-4 text-2xl font-semibold">Sign In</h1>
-			<form onSubmit={onSubmit} className="space-y-3">
-				<div>
-					<label className="block text-sm text-gray-600">Email</label>
-					<input
-						className="mt-1 w-full rounded-full border px-3 py-2"
-						type="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						autoComplete="email"
-						required
-					/>
+		<main className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
+				<div className="max-w-md mx-auto">
+					<h1 className="text-3xl text-elegance-heading mb-8 text-center">
+						Sign In
+					</h1>
+					<div className="card-elegance border border-neutral-200 p-8">
+						<form onSubmit={onSubmit} className="space-y-6">
+							<div>
+								<label className="label-elegance">Email</label>
+								<input
+									className="input-elegance"
+									type="email"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									autoComplete="email"
+									required
+								/>
+							</div>
+							<div>
+								<label className="label-elegance">Password</label>
+								<input
+									className="input-elegance"
+									type="password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									autoComplete="current-password"
+									required
+								/>
+							</div>
+							<button
+								type="submit"
+								disabled={busy}
+								className="btn-elegance-primary w-full disabled:opacity-50">
+								{busy ? "Signing in..." : "Sign In"}
+							</button>
+						</form>
+						<p className="mt-6 text-center text-elegance-body">
+							Don't have an account?{" "}
+							<Link href="/register" className="nav-elegance-link">
+								Register here
+							</Link>
+						</p>
+					</div>
 				</div>
-				<div>
-					<label className="block text-sm text-gray-600">Password</label>
-					<input
-						className="mt-1 w-full rounded-full border px-3 py-2"
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						autoComplete="current-password"
-						required
-					/>
-				</div>
-				<button
-					type="submit"
-					disabled={busy}
-					className="w-full rounded-full bg-blue-800 px-3 py-2 text-white hover:bg-blue-700 disabled:opacity-50">
-					{busy ? "Signing in..." : "Sign In"}
-				</button>
-			</form>
-			<p className="mt-4 text-center text-sm text-gray-600">
-				Don't have an account?{" "}
-				<Link href="/register" className="text-primary hover:underline">
-					Register here
-				</Link>
-			</p>
+			</div>
 		</main>
 	);
 }
 
 export default function LoginPage() {
 	return (
-		<Suspense fallback={<div className="mx-auto max-w-md p-6">Loading...</div>}>
+		<Suspense
+			fallback={
+				<div className="min-h-screen bg-elegance">
+					<div className="container-elegance section-elegance">
+						<div className="text-center">
+							<div className="animate-spin rounded-full h-8 w-8 border-b border-neutral-400 mx-auto mb-4"></div>
+							<p className="text-elegance-body">Loading...</p>
+						</div>
+					</div>
+				</div>
+			}>
 			<LoginForm />
 		</Suspense>
 	);

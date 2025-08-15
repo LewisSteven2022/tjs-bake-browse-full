@@ -1,0 +1,393 @@
+{
+	"tech_stack": [
+		"TypeScript",
+		"Next.js 14",
+		"React 18",
+		"PostgreSQL",
+		"Supabase",
+		"TailwindCSS",
+		"NextAuth.js",
+		"Vitest",
+		"Resend",
+		"Zod"
+	],
+	"features": [
+		{
+			"name": "Product Catalogue API",
+			"description": "Retrieve all visible products with categories, stock, pricing, and allergen information",
+			"files": ["app/api/products/route.ts"],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/products": {
+						"get": {
+							"summary": "Get all visible products",
+							"responses": {
+								"200": {
+									"description": "List of products with categories",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "array",
+												"items": {
+													"type": "object",
+													"properties": {
+														"id": { "type": "string" },
+														"name": { "type": "string" },
+														"sku": { "type": "string" },
+														"price_pence": { "type": "integer" },
+														"stock_quantity": { "type": "integer" },
+														"categories": { "type": "object" }
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Order Management API",
+			"description": "Handle order creation, status updates, and order retrieval with GST calculations",
+			"files": [
+				"app/api/orders/route.ts",
+				"app/api/admin/orders/route.ts",
+				"app/api/admin/orders/[id]/route.ts"
+			],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/orders": {
+						"post": {
+							"summary": "Create new order",
+							"requestBody": {
+								"content": {
+									"application/json": {
+										"schema": {
+											"type": "object",
+											"properties": {
+												"customer_name": { "type": "string" },
+												"customer_email": { "type": "string" },
+												"customer_mobile": { "type": "string" },
+												"pickup_date": { "type": "string" },
+												"pickup_time": { "type": "string" },
+												"items": { "type": "array" },
+												"bag_fee_included": { "type": "boolean" }
+											}
+										}
+									}
+								}
+							},
+							"responses": {
+								"201": {
+									"description": "Order created successfully"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Slot Availability API",
+			"description": "Generate and check pickup slot availability with capacity management",
+			"files": ["app/api/slots/route.ts", "app/api/availability/route.ts"],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/slots": {
+						"get": {
+							"summary": "Get available pickup slots",
+							"responses": {
+								"200": {
+									"description": "Available time slots with capacity",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object",
+												"properties": {
+													"slots": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"date": { "type": "string" },
+																"times": { "type": "array" }
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Authentication System",
+			"description": "User registration, login, and session management with NextAuth.js",
+			"files": [
+				"app/api/auth/[...nextauth]/route.ts",
+				"app/api/auth/register/route.ts"
+			],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/auth/register": {
+						"post": {
+							"summary": "Register new user",
+							"requestBody": {
+								"content": {
+									"application/json": {
+										"schema": {
+											"type": "object",
+											"properties": {
+												"name": { "type": "string" },
+												"email": { "type": "string" },
+												"mobile": { "type": "string" },
+												"password": { "type": "string" }
+											}
+										}
+									}
+								}
+							},
+							"responses": {
+								"201": {
+									"description": "User registered successfully"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Admin Product Management",
+			"description": "CRUD operations for products with inventory tracking and category management",
+			"files": [
+				"app/api/admin/products/route.ts",
+				"app/api/admin/products/[id]/route.ts",
+				"app/api/admin/categories/route.ts"
+			],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/admin/products": {
+						"get": {
+							"summary": "Get all products for admin",
+							"responses": {
+								"200": {
+									"description": "All products including hidden ones"
+								}
+							}
+						},
+						"post": {
+							"summary": "Create new product",
+							"requestBody": {
+								"content": {
+									"application/json": {
+										"schema": {
+											"type": "object",
+											"properties": {
+												"name": { "type": "string" },
+												"sku": { "type": "string" },
+												"price_pence": { "type": "integer" },
+												"category_id": { "type": "string" }
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Inventory Management",
+			"description": "Stock tracking, low stock alerts, and inventory import/export functionality",
+			"files": [
+				"app/api/admin/inventory/route.ts",
+				"app/api/admin/inventory/export/route.ts",
+				"app/api/admin/inventory/import/route.ts"
+			],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/admin/inventory": {
+						"get": {
+							"summary": "Get inventory status",
+							"responses": {
+								"200": {
+									"description": "Current inventory levels"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Suggestions & Feedback System",
+			"description": "Customer feedback submission with email notifications to business",
+			"files": ["app/api/suggestions/route.ts"],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/suggestions": {
+						"post": {
+							"summary": "Submit customer suggestion",
+							"requestBody": {
+								"content": {
+									"application/json": {
+										"schema": {
+											"type": "object",
+											"properties": {
+												"subject": { "type": "string" },
+												"message": { "type": "string" },
+												"category": { "type": "string" }
+											}
+										}
+									}
+								}
+							},
+							"responses": {
+								"200": {
+									"description": "Suggestion submitted successfully"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Configurable Fees API",
+			"description": "Retrieve active fees like bag fees for checkout calculations",
+			"files": ["app/api/fees/route.ts"],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/fees": {
+						"get": {
+							"summary": "Get active fees",
+							"responses": {
+								"200": {
+									"description": "List of active fees",
+									"content": {
+										"application/json": {
+											"schema": {
+												"type": "object",
+												"properties": {
+													"fees": {
+														"type": "array",
+														"items": {
+															"type": "object",
+															"properties": {
+																"name": { "type": "string" },
+																"amount_pence": { "type": "integer" }
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Shopping Cart API",
+			"description": "Cart persistence and management for user sessions",
+			"files": ["app/api/cart/route.ts"],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/cart": {
+						"post": {
+							"summary": "Save cart data",
+							"responses": {
+								"200": {
+									"description": "Cart saved successfully"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Debug & System Health",
+			"description": "System diagnostics and database connectivity checks",
+			"files": ["app/api/debug/route.ts"],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"paths": {
+					"/api/debug": {
+						"get": {
+							"summary": "System health check",
+							"responses": {
+								"200": {
+									"description": "System status and database connectivity"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "Customer Web Pages",
+			"description": "Product browsing, checkout, and account management pages",
+			"files": [
+				"app/page.tsx",
+				"app/baked-goods/page.tsx",
+				"app/groceries/page.tsx",
+				"app/basket/page.tsx",
+				"app/checkout/page.tsx",
+				"app/about/page.tsx",
+				"app/suggestions/page.tsx",
+				"app/login/page.tsx",
+				"app/register/page.tsx",
+				"app/order-success/page.tsx"
+			],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"info": {
+					"title": "Customer Pages",
+					"description": "Frontend pages for customer interactions"
+				}
+			}
+		},
+		{
+			"name": "Admin Dashboard",
+			"description": "Administrative interface for order, product, and inventory management",
+			"files": [
+				"app/admin/page.tsx",
+				"app/admin/orders/page.tsx",
+				"app/admin/products/page.tsx",
+				"app/admin/inventory/page.tsx",
+				"app/admin/layout.tsx"
+			],
+			"api_doc": {
+				"openapi": "3.0.0",
+				"info": {
+					"title": "Admin Dashboard",
+					"description": "Administrative interface pages"
+				}
+			}
+		}
+	]
+}

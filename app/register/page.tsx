@@ -71,63 +71,71 @@ export default function RegisterPage() {
 	}
 
 	return (
-		<main className="mx-auto max-w-md p-6">
-			<h1 className="mb-4 text-2xl font-semibold">Register</h1>
-			<form onSubmit={onSubmit} className="space-y-3">
-				<div>
-					<label className="block text-sm text-gray-600">Full name</label>
-					<input
-						className="mt-1 w-full rounded-full border px-3 py-2"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-						required
-					/>
+		<main className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
+				<div className="max-w-md mx-auto">
+					<h1 className="text-3xl text-elegance-heading mb-8 text-center">
+						Register
+					</h1>
+					<div className="card-elegance border border-neutral-200 p-8">
+						<form onSubmit={onSubmit} className="space-y-6">
+							<div>
+								<label className="label-elegance">Full Name</label>
+								<input
+									className="input-elegance"
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									required
+								/>
+							</div>
+							<div>
+								<label className="label-elegance">Email</label>
+								<input
+									className="input-elegance"
+									type="email"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									autoComplete="email"
+									required
+								/>
+							</div>
+							<div>
+								<label className="label-elegance">Mobile</label>
+								<input
+									className="input-elegance"
+									type="tel"
+									value={mobile}
+									onChange={(e) => setMobile(e.target.value)}
+									placeholder="07700 900000"
+								/>
+							</div>
+							<div>
+								<label className="label-elegance">Password</label>
+								<input
+									className="input-elegance"
+									type="password"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									autoComplete="new-password"
+									required
+								/>
+							</div>
+							<button
+								type="submit"
+								disabled={busy}
+								className="btn-elegance-primary w-full disabled:opacity-50">
+								{busy ? "Creating account..." : "Create Account"}
+							</button>
+						</form>
+						<p className="mt-6 text-center text-elegance-body">
+							Already have an account?{" "}
+							<Link href="/login" className="nav-elegance-link">
+								Sign in here
+							</Link>
+						</p>
+					</div>
 				</div>
-				<div>
-					<label className="block text-sm text-gray-600">Email</label>
-					<input
-						className="mt-1 w-full rounded-full border px-3 py-2"
-						type="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						autoComplete="email"
-						required
-					/>
-				</div>
-				<div>
-					<label className="block text-sm text-gray-600">Mobile</label>
-					<input
-						className="mt-1 w-full rounded-full border px-3 py-2"
-						type="tel"
-						value={mobile}
-						onChange={(e) => setMobile(e.target.value)}
-						placeholder="07700 900000"
-					/>
-				</div>
-				<div>
-					<label className="block text-sm text-gray-600">Password</label>
-					<input
-						className="mt-1 w-full rounded-full border px-3 py-2"
-						type="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						autoComplete="new-password"
-						required
-					/>
-				</div>
-				<button
-					type="submit"
-					disabled={busy}
-					className="w-full rounded-full bg-blue-800 px-3 py-2 text-white hover:bg-blue-700 disabled:opacity-50">
-					{busy ? "Creating account..." : "Create Account"}
-				</button>
-			</form>
-			<p className="mt-4 text-center text-sm text-gray-600">
-				Already have an account?{" "}
-				<Link href="/login" className="text-primary hover:underline">
-					Sign in here
-				</Link>
-			</p>
+			</div>
 		</main>
 	);
 }

@@ -22,15 +22,21 @@ export default function DebugBasket() {
 	}, []);
 
 	return (
-		<details className="mt-6 rounded-lg border p-3 bg-yellow-50 text-xs">
-			<summary className="cursor-pointer font-medium">Debug: basket_v1</summary>
-			<pre className="mt-2 whitespace-pre-wrap break-words">{raw}</pre>
-			<div className="mt-2 flex gap-2">
-				<button className="border px-2 py-1 rounded" onClick={refresh}>
+		<details className="mt-6 border border-neutral-200 p-4 bg-neutral-50">
+			<summary className="cursor-pointer text-elegance-caption">
+				Debug: basket_v1
+			</summary>
+			<pre className="mt-3 whitespace-pre-wrap break-words text-xs text-neutral-600">
+				{raw}
+			</pre>
+			<div className="mt-3 flex gap-2">
+				<button
+					className="btn-elegance-ghost text-xs py-1 px-3"
+					onClick={refresh}>
 					Refresh
 				</button>
 				<button
-					className="border px-2 py-1 rounded"
+					className="btn-elegance-ghost text-xs py-1 px-3"
 					onClick={() => {
 						localStorage.removeItem("basket_v1");
 						refresh();

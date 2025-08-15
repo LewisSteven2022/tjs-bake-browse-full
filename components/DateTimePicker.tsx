@@ -34,11 +34,11 @@ export default function DateTimePicker({
 	}, [days, date]);
 
 	return (
-		<div className="grid gap-3 md:grid-cols-2">
-			<label>
-				<span className="text-sm">Collection date</span>
+		<div className="grid gap-6 md:grid-cols-2">
+			<div>
+				<label className="label-elegance">Collection Date</label>
 				<select
-					className="w-full border rounded-xl p-2"
+					className="input-elegance"
 					value={date}
 					onChange={(e) => {
 						setDate(e.target.value);
@@ -57,11 +57,11 @@ export default function DateTimePicker({
 						);
 					})}
 				</select>
-			</label>
-			<label>
-				<span className="text-sm">Time</span>
+			</div>
+			<div>
+				<label className="label-elegance">Time</label>
 				<select
-					className="w-full border rounded-xl p-2"
+					className="input-elegance"
 					value={time}
 					onChange={(e) => setTime(e.target.value)}
 					onFocus={refresh}
@@ -77,7 +77,7 @@ export default function DateTimePicker({
 						</option>
 					))}
 				</select>
-			</label>
+			</div>
 		</div>
 	);
 }

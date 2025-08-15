@@ -46,11 +46,11 @@ export default function ParallaxHero({
 				viewport={{ once: true }}
 				transition={{ duration: 0.6 }}
 				className="relative z-10 text-center px-4">
-				<h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+				<h1 className="text-4xl md:text-5xl text-elegance-heading text-white drop-shadow-lg">
 					{title}
 				</h1>
 				{subtitle && (
-					<p className="mt-4 text-lg text-white max-w-2xl mx-auto drop-shadow">
+					<p className="mt-4 text-lg text-elegance-body text-white max-w-2xl mx-auto drop-shadow">
 						{subtitle}
 					</p>
 				)}

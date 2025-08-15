@@ -2,91 +2,174 @@
 alwaysApply: true
 ---
 
-You are assisting with TJ's Bake & Browse, a Next.js bakery e-commerce platform with specialised AI agents.
+# TJ's Bake & Browse - Documentation-Driven Development Assistant
 
-**MANDATORY FIRST STEP**: Before answering any question or making any changes, read these documentation files in the `docs/` folder:
+You are assisting with TJ's Bake & Browse, a Next.js bakery e-commerce platform with specialised AI agents and comprehensive testing processes.
 
-1. `todos.md` - Current development priorities
-2. `data-models.md` - Database schema and API reference
-3. `user-guide.md` - Business operations and features
-4. `bugs.md` - Known issues and resolution status
-5. `deployment-guide.md` - Technical deployment procedures
-6. `enhancements.md` - Future feature roadmap
+## 📚 **MANDATORY FIRST STEP**: Documentation Review
 
-**AGENT SPECIALISATION**: For complex tasks, delegate to appropriate specialist agents:
+Before answering any question or making any changes, read these documentation files in the `docs/` folder:
 
-- **Frontend changes** → Frontend Agent (`.cursor/rules/frontend-agent.mdc`)
-- **Backend changes** → Backend Agent (`.cursor/rules/backend-agent.mdc`)
-- **Code reviews** → Code Review Agent (`.cursor/rules/code-review-agent.mdc`)
-- **Task coordination** → Task Delegation System (`.cursor/rules/task-delegation-system.mdc`)
+1. **`sprints.md`** - Current sprint planning and development roadmap
+2. **`todos.md`** - Current development priorities and task breakdown
+3. **`data-models.md`** - Database schema and API reference
+4. **`user-guide.md`** - Business operations and features
+5. **`bugs.md`** - Known issues and resolution status
+6. **`deployment-guide.md`** - Technical deployment procedures
+7. **`enhancements.md`** - Future feature roadmap
 
-**YOUR TASKS**:
-
-1. **Check Documentation First**: Always reference these docs before answering questions about the project
-2. **Summarise Current State**: Based on the docs, provide a brief project status summary
-3. **Delegate Appropriately**: Route technical tasks to specialist agents for optimal results
-4. **Update Documentation**: When making changes, update the relevant documentation files
-5. **Maintain Accuracy**: Ensure all code changes align with documented schemas and APIs
-6. **Cross-Reference**: Link related information between different documentation files
-
-**PROJECT CONTEXT**:
-
-- **Tech Stack**: Next.js 14, React 18, TypeScript, Supabase, TailwindCSS
-- **Current Focus**: UI modernisation, cart persistence, product visibility policy
-- **Database**: PostgreSQL with RLS policies, recently overhauled schema
-- **Users**: Jersey bakery with admin staff and customers
-- **Deployment**: Vercel with Supabase backend
-
-**DOCUMENTATION STANDARDS**:
-
-- Update `todos.md` when progress is made on tasks
-- Log any bugs discovered in `bugs.md` with resolution steps
-- Update `data-models.md` if database/API changes are made
-- Keep `user-guide.md` current with feature changes
-- Add new feature ideas to `enhancements.md`
-
-**REMEMBER**: These docs are the single source of truth for the project. Always prioritise documentation accuracy and completeness. Use specialist agents for their areas of expertise.
-You are assisting with TJ's Bake & Browse, a Next.js bakery e-commerce platform with specialised AI agents.
-
-**MANDATORY FIRST STEP**: Before answering any question or making any changes, read these documentation files in the `docs/` folder:
-
-1. `todos.md` - Current development priorities
-2. `data-models.md` - Database schema and API reference
-3. `user-guide.md` - Business operations and features
-4. `bugs.md` - Known issues and resolution status
-5. `deployment-guide.md` - Technical deployment procedures
-6. `enhancements.md` - Future feature roadmap
-
-**AGENT SPECIALISATION**: For complex tasks, delegate to appropriate specialist agents:
+## 🤖 **AGENT SPECIALISATION**: For complex tasks, delegate to appropriate specialist agents:
 
 - **Frontend changes** → Frontend Agent (`.cursor/rules/frontend-agent.mdc`)
 - **Backend changes** → Backend Agent (`.cursor/rules/backend-agent.mdc`)
 - **Code reviews** → Code Review Agent (`.cursor/rules/code-review-agent.mdc`)
 - **Task coordination** → Task Delegation System (`.cursor/rules/task-delegation-system.mdc`)
 
-**YOUR TASKS**:
+## 🎯 **YOUR CORE RESPONSIBILITIES**:
 
-1. **Check Documentation First**: Always reference these docs before answering questions about the project
-2. **Summarise Current State**: Based on the docs, provide a brief project status summary
-3. **Delegate Appropriately**: Route technical tasks to specialist agents for optimal results
-4. **Update Documentation**: When making changes, update the relevant documentation files
-5. **Maintain Accuracy**: Ensure all code changes align with documented schemas and APIs
-6. **Cross-Reference**: Link related information between different documentation files
+### **1. Documentation-First Approach**
 
-**PROJECT CONTEXT**:
+- Always reference docs before answering questions about the project
+- Ensure all responses align with documented schemas, APIs, and processes
+- Cross-reference information between different documentation files
 
-- **Tech Stack**: Next.js 14, React 18, TypeScript, Supabase, TailwindCSS
-- **Current Focus**: UI modernisation, cart persistence, product visibility policy
-- **Database**: PostgreSQL with RLS policies, recently overhauled schema
-- **Users**: Jersey bakery with admin staff and customers
-- **Deployment**: Vercel with Supabase backend
+### **2. Sprint-Driven Development**
 
-**DOCUMENTATION STANDARDS**:
+- Align all work with current sprint goals from `sprints.md`
+- Update sprint progress when tasks are completed
+- Escalate scope changes that affect sprint commitments
+
+### **3. Quality Assurance Integration**
+
+- Follow TestSprite testing recommendations for all changes
+- Ensure security best practices are implemented (rate limiting, input sanitization, auth)
+- Validate performance implications of changes
+
+### **4. Documentation Maintenance**
 
 - Update `todos.md` when progress is made on tasks
 - Log any bugs discovered in `bugs.md` with resolution steps
 - Update `data-models.md` if database/API changes are made
 - Keep `user-guide.md` current with feature changes
 - Add new feature ideas to `enhancements.md`
+- Update `sprints.md` when sprint scope or priorities change
 
-**REMEMBER**: These docs are the single source of truth for the project. Always prioritise documentation accuracy and completeness. Use specialist agents for their areas of expertise.
+### **5. Project State Management**
+
+- Provide brief project status summary based on documentation
+- Track progress against sprint goals and KPIs
+- Identify dependencies and blockers across sprints
+
+## 🏗️ **PROJECT CONTEXT**:
+
+### **Technical Stack**
+
+- **Framework**: Next.js 14, React 18, TypeScript
+- **Database**: PostgreSQL with Supabase, RLS policies
+- **Styling**: TailwindCSS with minimal-elegance design system
+- **Authentication**: NextAuth.js
+- **Testing**: Vitest + TestSprite MCP comprehensive testing
+- **Deployment**: Vercel with Supabase backend
+
+### **Current Development Phase**
+
+- **Status**: Production-ready with TestSprite 100% pass rate
+- **Focus**: Sprint 1 - Critical Security & Bug Fixes
+- **Priority**: Security hardening and UI consistency
+- **Users**: Jersey bakery with admin staff and customers
+
+### **Quality Standards**
+
+- **Testing**: 100% API test coverage with TestSprite
+- **Security**: All endpoints secured, input sanitized, rate limited
+- **Performance**: < 500ms API responses, optimized caching
+- **Documentation**: Living docs updated with all changes
+
+## 📋 **DEVELOPMENT WORKFLOW**:
+
+### **Sprint Management Process**
+
+1. **Sprint Planning**: Review current sprint from `sprints.md`
+2. **Task Execution**: Follow sprint backlog priorities
+3. **Documentation Updates**: Update relevant docs with all changes
+4. **Quality Gates**: Ensure security, performance, and testing standards
+5. **Sprint Review**: Update progress and identify next priorities
+
+### **Code Change Protocol**
+
+1. **Pre-Change**: Review relevant documentation and sprint goals
+2. **Implementation**: Follow security and performance best practices
+3. **Testing**: Apply TestSprite recommendations for new features
+4. **Documentation**: Update all affected documentation files
+5. **Review**: Ensure alignment with project standards and sprint goals
+
+### **Bug Resolution Process**
+
+1. **Identification**: Log in `bugs.md` with impact assessment
+2. **Sprint Integration**: Add to current sprint if critical, otherwise backlog
+3. **Resolution**: Implement fix following security and testing standards
+4. **Verification**: Test fix and update documentation
+5. **Prevention**: Identify process improvements to prevent recurrence
+
+## 🔒 **SECURITY & QUALITY STANDARDS**:
+
+### **TestSprite Compliance** (Always Apply)
+
+- **Debug Endpoint Security**: Admin-only access required
+- **Input Sanitization**: Comprehensive validation on all endpoints
+- **Rate Limiting**: Protection against abuse and DoS
+- **Authentication**: Enhanced admin security beyond basic NextAuth
+
+### **Performance Requirements**
+
+- **API Response Time**: < 500ms target
+- **Pagination**: Implement for listings > 20 items
+- **Caching**: Optimize for frequently accessed data
+- **Database**: Proper indexing for query performance
+
+### **Code Quality Gates**
+
+- **TypeScript**: 100% coverage, no 'any' types
+- **Testing**: All new features require tests
+- **Documentation**: All changes reflected in docs
+- **Security**: Follow principle of least privilege
+
+## 🎨 **DESIGN SYSTEM COMPLIANCE**:
+
+- **Theme**: Minimal-elegance design system
+- **Colors**: Blue palette with minimal approach
+- **Components**: Consistent rounded-full buttons, clean spacing
+- **Accessibility**: WCAG 2.1 AA compliance
+- **Responsiveness**: Mobile-first TailwindCSS approach
+
+## 📊 **SUCCESS METRICS**:
+
+### **Sprint Success Criteria**
+
+- All sprint goals achieved (90%+ target)
+- No critical bugs introduced
+- Documentation maintained and current
+- Security and performance standards met
+
+### **Quality Indicators**
+
+- TestSprite test pass rate: 100%
+- API response times: < 500ms
+- Zero security vulnerabilities
+- Documentation accuracy: 100%
+
+## 🔄 **CONTINUOUS IMPROVEMENT**:
+
+- **Weekly Sprint Reviews**: Assess progress and adjust priorities
+- **Monthly Documentation Audits**: Ensure accuracy and completeness
+- **Quarterly Security Reviews**: Validate and enhance security measures
+- **Ongoing Performance Monitoring**: Track and optimize application performance
+
+## 📞 **ESCALATION GUIDELINES**:
+
+- **Critical Security Issues**: Immediate priority, bypass sprint planning
+- **Production Bugs**: Add to current sprint, reassess priorities
+- **Scope Changes**: Update sprint documentation and stakeholder communication
+- **Technical Blockers**: Delegate to appropriate specialist agent
+
+**REMEMBER**: This is a documentation-driven, sprint-managed, quality-first development process. Always prioritise security, performance, and documentation accuracy. Use specialist agents for their areas of expertise and maintain alignment with sprint goals and project standards.

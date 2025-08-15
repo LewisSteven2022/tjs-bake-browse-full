@@ -1,182 +1,206 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import ParallaxHero from "@/components/ParallaxHero";
+import { motion } from "framer-motion";
 
 export default function HomePage() {
 	return (
-		<main className="min-h-screen bg-modern">
-			{/* Enhanced Hero Section */}
-			<ParallaxHero
-				title="Welcome to TJ's Bake & Browse"
-				subtitle="Freshly baked, allergen-conscious treats made with love in our artisan kitchen"
-				image="/images/hero-bakery.jpg"
-				height="500px"
-			/>
-
-			{/* Enhanced Welcome Section */}
-			<section className="max-w-7xl mx-auto px-6 py-20">
-				<div className="text-center mb-16">
-					<h1 className="text-5xl font-bold bg-gradient-to-r from-primaryDark via-primary to-primaryLight bg-clip-text text-transparent mb-6">
-						Quality Bakery Excellence
-					</h1>
-					<p className="text-xl text-textSecondary max-w-4xl mx-auto leading-relaxed">
-						Discover our handcrafted selection of gluten-free and
-						allergen-conscious treats, made with premium ingredients and baked
-						fresh daily. Every product is crafted with care to ensure everyone
-						can enjoy the joy of great baking.
-					</p>
-				</div>
-
-				{/* Enhanced Feature Cards */}
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-					<div className="card-modern p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-						<div className="w-20 h-20 bg-gradient-to-r from-primary to-primaryLight rounded-full flex items-center justify-center mx-auto mb-6">
-							<svg
-								className="w-10 h-10 text-white"
-								fill="currentColor"
-								viewBox="0 0 20 20">
-								<path
-									fillRule="evenodd"
-									d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-									clipRule="evenodd"
-								/>
-							</svg>
-						</div>
-						<h3 className="text-2xl font-bold text-textPrimary mb-4">
-							Gluten-Free Excellence
-						</h3>
-						<p className="text-textSecondary">
-							Every product is carefully crafted to be gluten-free, ensuring
-							everyone can enjoy our delicious treats.
-						</p>
-					</div>
-
-					<div className="card-modern p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-						<div className="w-20 h-20 bg-gradient-to-r from-primaryLight to-primary rounded-full flex items-center justify-center mx-auto mb-6">
-							<svg
-								className="w-10 h-10 text-white"
-								fill="currentColor"
-								viewBox="0 0 20 20">
-								<path
-									fillRule="evenodd"
-									d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-									clipRule="evenodd"
-								/>
-							</svg>
-						</div>
-						<h3 className="text-2xl font-bold text-textPrimary mb-4">
-							Quality Ingredients
-						</h3>
-						<p className="text-textSecondary">
-							We use only the finest, carefully selected ingredients to ensure
-							every product meets our high standards for taste and quality.
-						</p>
-					</div>
-
-					<div className="card-modern p-8 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-						<div className="w-20 h-20 bg-gradient-to-r from-primaryDark to-primary rounded-full flex items-center justify-center mx-auto mb-6">
-							<svg
-								className="w-10 h-10 text-white"
-								fill="currentColor"
-								viewBox="0 0 20 20">
-								<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-							</svg>
-						</div>
-						<h3 className="text-2xl font-bold text-textPrimary mb-4">
-							Community Focused
-						</h3>
-						<p className="text-textSecondary">
-							Supporting our local community with friendly service and honest,
-							quality food made with care.
-						</p>
-					</div>
-				</div>
-
-				{/* Enhanced Call to Action */}
-				<div className="text-center">
-					<h2 className="text-3xl font-bold text-textPrimary mb-6">
-						Ready to Experience Our Bakes?
-					</h2>
-					<div className="flex flex-col sm:flex-row gap-4 justify-center">
-						<Link href="/baked-goods" className="group">
-							<div className="btn-primary px-8 py-4 rounded-full inline-flex items-center gap-3 transition-all duration-300 transform group-hover:-translate-y-1">
-								<svg
-									className="w-6 h-6"
-									fill="currentColor"
-									viewBox="0 0 20 20">
-									<path
-										fillRule="evenodd"
-										d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-										clipRule="evenodd"
-									/>
-								</svg>
-								<span className="font-semibold text-lg">
+		<main className="bg-elegance">
+			{/* Hero Section */}
+			<section className="bg-elegance-hero section-elegance">
+				<div className="container-elegance">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+						<motion.div
+							initial={{ opacity: 0, x: -50 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.8 }}
+							className="space-elegance-content">
+							<h1 className="text-5xl lg:text-6xl text-elegance-heading mb-6">
+								TJ's Bake & Browse
+							</h1>
+							<p className="text-elegance-subheading mb-8">
+								Freshly baked, allergen-conscious treats
+							</p>
+							<p className="text-elegance-body text-lg mb-12 leading-relaxed">
+								Discover our handcrafted selection of gluten-free and
+								allergen-conscious treats, made with premium ingredients and
+								baked fresh daily. Every product is crafted with care to ensure
+								everyone can enjoy the joy of great baking.
+							</p>
+							<div className="flex flex-col sm:flex-row gap-4">
+								<Link href="/baked-goods" className="btn-elegance-primary">
 									Browse Baked Goods
-								</span>
+								</Link>
+								<Link href="/groceries" className="btn-elegance-secondary">
+									Shop Groceries
+								</Link>
 							</div>
-						</Link>
-						<Link href="/groceries" className="group">
-							<div className="btn-secondary px-8 py-4 rounded-full inline-flex items-center gap-3 transition-all duration-300 transform group-hover:-translate-y-1">
-								<svg
-									className="w-6 h-6"
-									fill="currentColor"
-									viewBox="0 0 20 20">
-									<path
-										fillRule="evenodd"
-										d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-										clipRule="evenodd"
-									/>
-								</svg>
-								<span className="font-semibold text-lg">Shop Groceries</span>
-							</div>
-						</Link>
+						</motion.div>
+						<motion.div
+							initial={{ opacity: 0, x: 50 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ duration: 0.8, delay: 0.2 }}
+							className="relative h-96 lg:h-[500px]">
+							<Image
+								src="/images/hero-bakery.jpg"
+								alt="Fresh baked goods at TJ's Bake & Browse"
+								fill
+								className="img-elegance-hero"
+								priority
+							/>
+						</motion.div>
 					</div>
 				</div>
 			</section>
 
-			{/* Enhanced About Preview Section */}
-			<section className="bg-surface py-20">
-				<div className="max-w-6xl mx-auto px-6">
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-						<div>
-							<h2 className="text-4xl font-bold mb-6 text-primaryDark">
-								Our Story
-							</h2>
-							<p className="text-xl text-textSecondary leading-relaxed mb-6">
+			{/* Features Section */}
+			<section className="section-elegance">
+				<div className="container-elegance">
+					<motion.div
+						initial={{ opacity: 0, y: 50 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.8 }}
+						className="text-center mb-16">
+						<h2 className="text-3xl text-elegance-heading mb-4">
+							Why Choose TJ's
+						</h2>
+						<p className="text-elegance-body max-w-2xl mx-auto">
+							Quality, care, and community are at the heart of everything we do
+						</p>
+					</motion.div>
+
+					<div className="grid-elegance-features">
+						<motion.div
+							initial={{ opacity: 0, y: 50 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.8, delay: 0.1 }}
+							className="text-center space-elegance-compact">
+							<div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6">
+								<svg
+									className="w-8 h-8 text-neutral-600"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={1.5}
+										d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
+							</div>
+							<h3 className="text-elegance-subheading mb-3">
+								Gluten-Free Excellence
+							</h3>
+							<p className="text-elegance-body">
+								Every product is carefully crafted to be gluten-free, ensuring
+								everyone can enjoy our delicious treats.
+							</p>
+						</motion.div>
+
+						<motion.div
+							initial={{ opacity: 0, y: 50 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.8, delay: 0.2 }}
+							className="text-center space-elegance-compact">
+							<div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6">
+								<svg
+									className="w-8 h-8 text-neutral-600"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={1.5}
+										d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+									/>
+								</svg>
+							</div>
+							<h3 className="text-elegance-subheading mb-3">
+								Quality Ingredients
+							</h3>
+							<p className="text-elegance-body">
+								We use only the finest, carefully selected ingredients to ensure
+								every product meets our high standards for taste and quality.
+							</p>
+						</motion.div>
+
+						<motion.div
+							initial={{ opacity: 0, y: 50 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.8, delay: 0.3 }}
+							className="text-center space-elegance-compact">
+							<div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-6">
+								<svg
+									className="w-8 h-8 text-neutral-600"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={1.5}
+										d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+									/>
+								</svg>
+							</div>
+							<h3 className="text-elegance-subheading mb-3">
+								Community Focused
+							</h3>
+							<p className="text-elegance-body">
+								Supporting our local community with friendly service and honest,
+								quality food made with care.
+							</p>
+						</motion.div>
+					</div>
+				</div>
+			</section>
+
+			{/* About Preview Section */}
+			<section className="bg-elegance-neutral section-elegance">
+				<div className="container-elegance">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+						<motion.div
+							initial={{ opacity: 0, x: -50 }}
+							whileInView={{ opacity: 1, x: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.8 }}
+							className="space-elegance-content">
+							<h2 className="text-3xl text-elegance-heading mb-6">Our Story</h2>
+							<p className="text-elegance-body text-lg leading-relaxed mb-6">
 								TJ's Bake & Browse began with a simple mission: to create
 								delicious, freshly baked goods that everyone can enjoy —
 								including those with food intolerances and allergies.
 							</p>
-							<p className="text-lg text-textSecondary leading-relaxed mb-8">
+							<p className="text-elegance-body leading-relaxed mb-8">
 								Operating from our fully licensed commercial kitchen, we
 								prioritise safety, transparency, and taste. Every item we make
 								is crafted with love, care, and the highest quality ingredients.
 							</p>
-							<Link
-								href="/about"
-								className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-full">
-								<span>Learn More About Us</span>
-								<svg
-									className="w-4 h-4"
-									fill="currentColor"
-									viewBox="0 0 20 20">
-									<path
-										fillRule="evenodd"
-										d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-										clipRule="evenodd"
-									/>
-								</svg>
+							<Link href="/about" className="btn-elegance-ghost">
+								Learn More About Us →
 							</Link>
-						</div>
-						<div className="relative w-full h-80 rounded-lg overflow-hidden shadow-lg">
+						</motion.div>
+						<motion.div
+							initial={{ opacity: 0, x: 50 }}
+							whileInView={{ opacity: 1, x: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.8, delay: 0.2 }}
+							className="relative h-80 lg:h-96">
 							<Image
 								src="/images/baking-team.jpg"
 								alt="TJ's Bake & Browse kitchen"
 								fill
-								style={{ objectFit: "cover" }}
+								className="img-elegance-hero"
 							/>
-						</div>
+						</motion.div>
 					</div>
 				</div>
 			</section>

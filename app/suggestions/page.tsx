@@ -22,10 +22,10 @@ export default function SuggestionsPage() {
 	if (status === "loading") {
 		// silent
 		return (
-			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+			<div className="min-h-screen bg-elegance flex items-center justify-center">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800 mx-auto"></div>
-					<p className="mt-4 text-gray-600">Loading...</p>
+					<div className="animate-spin rounded-full h-8 w-8 border-b border-neutral-400 mx-auto mb-4"></div>
+					<p className="text-elegance-body">Loading...</p>
 				</div>
 			</div>
 		);
@@ -35,9 +35,9 @@ export default function SuggestionsPage() {
 		// silent
 		router.push("/login?callbackUrl=/suggestions");
 		return (
-			<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+			<div className="min-h-screen bg-elegance flex items-center justify-center">
 				<div className="text-center">
-					<p className="text-gray-600">Redirecting to login...</p>
+					<p className="text-elegance-body">Redirecting to login...</p>
 				</div>
 			</div>
 		);
@@ -94,11 +94,11 @@ export default function SuggestionsPage() {
 	// silent
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12">
-			<div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+		<main className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
 				{/* Header */}
 				<div className="text-center mb-12">
-					<div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-6">
+					<div className="inline-flex items-center justify-center w-16 h-16 bg-neutral-900 mb-6">
 						<svg
 							className="w-8 h-8 text-white"
 							fill="none"
@@ -107,57 +107,51 @@ export default function SuggestionsPage() {
 							<path
 								strokeLinecap="round"
 								strokeLinejoin="round"
-								strokeWidth={2}
+								strokeWidth={1.5}
 								d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
 							/>
 						</svg>
 					</div>
-					<h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
+					<h1 className="text-4xl text-elegance-heading mb-6">
 						Share Your Ideas
 					</h1>
-					<p className="text-xl text-blue-700 max-w-2xl mx-auto leading-relaxed">
+					<p className="text-lg text-elegance-body max-w-2xl mx-auto">
 						Your feedback shapes our future. Help us create the perfect bakery
 						experience for our community.
 					</p>
 				</div>
 
 				{/* Form Card */}
-				<div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-blue-100 p-8 md:p-12 relative overflow-hidden">
-					{/* Decorative background elements */}
-					<div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-l from-blue-100 to-transparent rounded-full -translate-y-32 translate-x-32 opacity-50"></div>
-					<div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-r from-indigo-100 to-transparent rounded-full translate-y-24 -translate-x-24 opacity-50"></div>
+				<div className="card-elegance border border-neutral-200 p-8 md:p-12 relative">
+					{/* Decorative background elements removed for minimal elegance */}
 
 					<div className="relative z-10">
 						<form onSubmit={handleSubmit} className="space-y-8">
 							{/* Category Selection */}
 							<div className="space-y-3">
-								<label
-									htmlFor="category"
-									className="block text-lg font-semibold text-blue-900 mb-3">
-									💡 Feedback Category
+								<label htmlFor="category" className="label-elegance">
+									Feedback Category
 								</label>
 								<select
 									id="category"
 									name="category"
 									value={formData.category}
 									onChange={handleChange}
-									className="w-full rounded-2xl border-2 border-blue-200 bg-blue-50/50 px-6 py-4 text-blue-900 font-medium focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-200 transition-all duration-200 shadow-sm hover:shadow-md"
+									className="input-elegance"
 									required>
-									<option value="general">🌟 General Feedback</option>
-									<option value="product">🥖 Product Suggestions</option>
-									<option value="service">⭐ Service Improvements</option>
-									<option value="website">💻 Website Experience</option>
-									<option value="ordering">🛒 Ordering Process</option>
-									<option value="other">💭 Other</option>
+									<option value="general">General Feedback</option>
+									<option value="product">Product Suggestions</option>
+									<option value="service">Service Improvements</option>
+									<option value="website">Website Experience</option>
+									<option value="ordering">Ordering Process</option>
+									<option value="other">Other</option>
 								</select>
 							</div>
 
 							{/* Subject */}
 							<div className="space-y-3">
-								<label
-									htmlFor="subject"
-									className="block text-lg font-semibold text-blue-900 mb-3">
-									📝 Subject *
+								<label htmlFor="subject" className="label-elegance">
+									Subject *
 								</label>
 								<input
 									type="text"
@@ -165,8 +159,8 @@ export default function SuggestionsPage() {
 									name="subject"
 									value={formData.subject}
 									onChange={handleChange}
-									className="w-full rounded-2xl border-2 border-blue-200 bg-blue-50/50 px-6 py-4 text-blue-900 font-medium focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-200 transition-all duration-200 shadow-sm hover:shadow-md placeholder:text-blue-400"
-									placeholder="What's your brilliant idea about?"
+									className="input-elegance"
+									placeholder="What's your idea about?"
 									required
 									maxLength={100}
 								/>
@@ -174,10 +168,8 @@ export default function SuggestionsPage() {
 
 							{/* Message */}
 							<div className="space-y-3">
-								<label
-									htmlFor="message"
-									className="block text-lg font-semibold text-blue-900 mb-3">
-									💬 Your Suggestion *
+								<label htmlFor="message" className="label-elegance">
+									Your Suggestion *
 								</label>
 								<textarea
 									id="message"
@@ -185,16 +177,16 @@ export default function SuggestionsPage() {
 									value={formData.message}
 									onChange={handleChange}
 									rows={8}
-									className="w-full rounded-2xl border-2 border-blue-200 bg-blue-50/50 px-6 py-4 text-blue-900 font-medium focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-200 transition-all duration-200 shadow-sm hover:shadow-md placeholder:text-blue-400 resize-none"
+									className="input-elegance resize-none"
 									placeholder="Tell us your ideas, suggestions, or feedback in detail. Every word counts towards making our bakery better!"
 									required
 									maxLength={1000}
 								/>
 								<div className="flex justify-between items-center">
-									<p className="text-sm text-blue-600 font-medium">
+									<p className="text-elegance-caption">
 										{formData.message.length}/1000 characters
 									</p>
-									<div className="flex items-center text-blue-600 text-sm">
+									<div className="flex items-center text-elegance-caption">
 										<svg
 											className="w-4 h-4 mr-1"
 											fill="currentColor"
@@ -215,39 +207,25 @@ export default function SuggestionsPage() {
 								<button
 									type="submit"
 									disabled={isSubmitting}
-									className="w-full rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-8 py-5 text-white text-lg font-bold hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0">
+									className="btn-elegance-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
 									{isSubmitting ? (
 										<div className="flex items-center justify-center">
-											<div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent mr-3"></div>
-											<span>Submitting Your Brilliant Ideas...</span>
+											<div className="animate-spin rounded-full h-5 w-5 border border-white border-t-transparent mr-3"></div>
+											<span>Submitting...</span>
 										</div>
 									) : (
-										<div className="flex items-center justify-center">
-											<svg
-												className="w-6 h-6 mr-3"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24">
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-												/>
-											</svg>
-											<span>Submit Your Suggestion</span>
-										</div>
+										<span>Submit Your Suggestion</span>
 									)}
 								</button>
 							</div>
 						</form>
 
 						{/* Additional Info */}
-						<div className="mt-12 pt-8 border-t border-blue-200/50">
-							<div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200">
+						<div className="mt-12 pt-8 border-t border-neutral-200">
+							<div className="bg-neutral-50 p-8 border border-neutral-200">
 								<div className="flex items-start space-x-4">
 									<div className="flex-shrink-0">
-										<div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+										<div className="w-12 h-12 bg-neutral-900 flex items-center justify-center">
 											<svg
 												className="w-6 h-6 text-white"
 												fill="none"
@@ -256,49 +234,48 @@ export default function SuggestionsPage() {
 												<path
 													strokeLinecap="round"
 													strokeLinejoin="round"
-													strokeWidth={2}
+													strokeWidth={1.5}
 													d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
 												/>
 											</svg>
 										</div>
 									</div>
 									<div className="flex-1">
-										<h3 className="text-xl font-bold text-blue-900 mb-4">
-											💡 Tips for Outstanding Feedback
+										<h3 className="text-xl text-elegance-heading mb-4">
+											Tips for Outstanding Feedback
 										</h3>
 										<div className="grid md:grid-cols-2 gap-4">
 											<ul className="space-y-3">
 												<li className="flex items-start space-x-3">
-													<span className="text-blue-500 font-bold">✓</span>
-													<span className="text-blue-800 font-medium">
+													<span className="text-neutral-500">—</span>
+													<span className="text-elegance-body">
 														Be specific about improvements you'd like to see
 													</span>
 												</li>
 												<li className="flex items-start space-x-3">
-													<span className="text-blue-500 font-bold">✓</span>
-													<span className="text-blue-800 font-medium">
+													<span className="text-neutral-500">—</span>
+													<span className="text-elegance-body">
 														Include real examples from your experience
 													</span>
 												</li>
 											</ul>
 											<ul className="space-y-3">
 												<li className="flex items-start space-x-3">
-													<span className="text-blue-500 font-bold">✓</span>
-													<span className="text-blue-800 font-medium">
+													<span className="text-neutral-500">—</span>
+													<span className="text-elegance-body">
 														We personally read and respond to every suggestion
 													</span>
 												</li>
 												<li className="flex items-start space-x-3">
-													<span className="text-blue-500 font-bold">✓</span>
-													<span className="text-blue-800 font-medium">
+													<span className="text-neutral-500">—</span>
+													<span className="text-elegance-body">
 														Your ideas directly shape our future offerings
 													</span>
 												</li>
 											</ul>
 										</div>
-										<div className="mt-6 p-4 bg-white/60 rounded-xl border border-blue-200">
-											<p className="text-blue-700 font-medium text-center">
-												<span className="text-2xl mr-2">🎯</span>
+										<div className="mt-6 p-4 bg-neutral-100 border border-neutral-200">
+											<p className="text-elegance-body text-center">
 												"Every great bakery innovation started with a customer's
 												brilliant idea!"
 											</p>
@@ -310,6 +287,6 @@ export default function SuggestionsPage() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</main>
 	);
 }

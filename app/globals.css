@@ -2,56 +2,215 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Minimal Elegance Design System */
+
 :root {
 	color-scheme: light;
 }
 
 @layer utilities {
+	/* Typography Classes */
+	.text-elegance-heading {
+		@apply text-neutral-900 font-light tracking-wide;
+	}
+
+	.text-elegance-subheading {
+		@apply text-neutral-700 font-light tracking-wider uppercase text-sm;
+	}
+
+	.text-elegance-body {
+		@apply text-neutral-600 font-light leading-relaxed;
+	}
+
+	.text-elegance-caption {
+		@apply text-neutral-400 text-xs tracking-wider uppercase;
+	}
+
+	.text-elegance-price {
+		@apply text-neutral-500 tracking-wider uppercase text-sm;
+	}
+
+	/* Button Classes */
+	.btn-elegance-primary {
+		@apply bg-black text-white px-8 py-3 text-sm font-medium tracking-wider uppercase hover:bg-neutral-800 transition-all duration-300 border-none;
+	}
+
+	.btn-elegance-secondary {
+		@apply bg-white text-black px-8 py-3 text-sm font-medium tracking-wider uppercase hover:bg-neutral-100 transition-all duration-300 border border-neutral-200;
+	}
+
+	.btn-elegance-ghost {
+		@apply bg-transparent text-neutral-600 px-6 py-2 text-sm font-light tracking-wide hover:text-neutral-800 transition-all duration-300;
+	}
+
+	.btn-elegance-minimal {
+		@apply text-neutral-400 hover:text-neutral-600 transition-colors duration-300 font-light tracking-wide;
+	}
+
+	/* Layout Classes */
+	.container-elegance {
+		@apply mx-auto px-6 max-w-6xl;
+	}
+
+	.section-elegance {
+		@apply py-20;
+	}
+
+	.grid-elegance-products {
+		@apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+	}
+
+	.grid-elegance-features {
+		@apply grid grid-cols-1 md:grid-cols-3 gap-12;
+	}
+
+	/* Card Classes */
+	.card-elegance {
+		@apply bg-white border-none shadow-none;
+	}
+
+	.card-elegance-product {
+		@apply cursor-pointer;
+	}
+
+	.card-elegance-hover {
+		@apply hover:shadow-lg transition-shadow duration-300;
+	}
+
+	/* Form Classes */
+	.input-elegance {
+		@apply w-full px-0 py-3 text-neutral-800 placeholder-neutral-400 bg-transparent border-0 border-b border-neutral-200 focus:border-neutral-400 focus:ring-0 transition-colors duration-300;
+	}
+
+	.textarea-elegance {
+		@apply w-full px-0 py-3 text-neutral-800 placeholder-neutral-400 bg-transparent border-0 border-b border-neutral-200 focus:border-neutral-400 focus:ring-0 resize-none transition-colors duration-300;
+	}
+
+	.label-elegance {
+		@apply block text-xs text-neutral-400 tracking-wider uppercase mb-2;
+	}
+
+	/* Background Classes */
+	.bg-elegance {
+		@apply bg-white;
+	}
+
+	.bg-elegance-neutral {
+		@apply bg-neutral-50;
+	}
+
+	.bg-elegance-hero {
+		@apply bg-gradient-to-b from-neutral-50 to-white;
+	}
+
+	/* Image Classes */
+	.img-elegance-product {
+		@apply object-cover transition-transform duration-700 group-hover:scale-105;
+	}
+
+	.img-elegance-hero {
+		@apply object-cover object-center;
+	}
+
+	/* Navigation Classes */
+	.nav-elegance {
+		@apply bg-white/95 backdrop-blur-sm border-b border-neutral-100;
+	}
+
+	.nav-elegance-link {
+		@apply text-neutral-600 hover:text-neutral-900 font-light tracking-wide transition-colors duration-300;
+	}
+
+	.nav-elegance-button {
+		@apply text-neutral-700 hover:text-neutral-900 transition-colors duration-300;
+	}
+
+	/* Spacing Classes */
+	.space-elegance-section {
+		@apply space-y-20;
+	}
+
+	.space-elegance-content {
+		@apply space-y-8;
+	}
+
+	.space-elegance-compact {
+		@apply space-y-4;
+	}
+
+	/* Animation Classes */
+	.fade-in-elegance {
+		@apply opacity-0 translate-y-4;
+	}
+
+	.hover-lift-elegance {
+		@apply hover:-translate-y-1 transition-transform duration-300;
+	}
+
+	/* Legacy classes for backward compatibility */
 	.text-textbody {
-		@apply text-textPrimary;
+		@apply text-elegance-body;
 	}
 	.text-heading {
-		@apply text-primaryDark;
+		@apply text-elegance-heading;
 	}
 	.btn-primary {
-		@apply px-4 py-2 rounded-full font-semibold text-white bg-gradient-to-r from-primary to-primaryDark shadow-md hover:shadow-lg hover:from-primaryLight hover:to-primary transition-all duration-200;
+		@apply btn-elegance-primary;
 	}
 	.btn-secondary {
-		@apply px-4 py-2 rounded-full font-semibold text-textPrimary bg-cardBg hover:bg-surface border border-surfaceAlt transition-all duration-200;
+		@apply btn-elegance-secondary;
 	}
 	.btn-outline {
-		@apply px-4 py-2 rounded-full font-semibold text-textPrimary bg-cardBg hover:bg-surface border border-surfaceAlt transition-all duration-200;
+		@apply btn-elegance-ghost;
 	}
 	.container-modern {
-		@apply w-[min(1100px,95%)] mx-auto px-4;
+		@apply container-elegance;
 	}
 	.bg-modern {
-		@apply bg-gradient-to-br from-surface via-white to-surfaceAlt;
+		@apply bg-elegance;
 	}
 	.card-modern {
-		@apply bg-cardBg border border-surfaceAlt rounded-xl shadow-sm;
-	}
-	.text-bakery-primary {
-		@apply text-textPrimary;
-	}
-	.text-bakery-secondary {
-		@apply text-textSecondary;
+		@apply card-elegance;
 	}
 }
 
+/* Apply minimal elegance styling to body */
 body {
-	@apply bg-modern text-textbody min-h-screen;
+	@apply bg-elegance text-elegance-body font-light min-h-screen;
 }
 
+/* Clean link styling */
 a {
-	@apply text-primary hover:text-primaryDark transition-colors;
+	@apply text-neutral-600 hover:text-neutral-900 transition-colors duration-300;
 }
 
-/* Focus styles for accessibility */
+/* Focus styles - minimal and clean */
 button:focus,
 a:focus,
 input:focus,
 select:focus,
 textarea:focus {
-	@apply outline-none ring-2 ring-ringBrand ring-opacity-50;
+	@apply outline-none ring-0;
+}
+
+input:focus,
+textarea:focus {
+	@apply border-neutral-400;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+	width: 6px;
+}
+
+::-webkit-scrollbar-track {
+	@apply bg-neutral-100;
+}
+
+::-webkit-scrollbar-thumb {
+	@apply bg-neutral-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	@apply bg-neutral-400;
 }

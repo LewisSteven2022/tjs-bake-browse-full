@@ -19,8 +19,8 @@ export async function GET() {
 			ingredients,
 			short_description,
 			image_url,
-			stock,
-			visible
+			stock_quantity,
+			is_visible
 		`
 		)
 		.order("name", { ascending: true });
@@ -42,8 +42,8 @@ export async function GET() {
 		"ingredients", // plain text
 		"short_description", // plain text
 		"image_url",
-		"stock",
-		"visible",
+		"stock_quantity",
+		"is_visible",
 	];
 
 	// Escape any embedded quotes; keep CSV simple (no newlines inside fields ideally)
@@ -74,8 +74,8 @@ export async function GET() {
 			esc(r.ingredients ?? ""),
 			esc(r.short_description ?? ""),
 			esc(r.image_url ?? ""),
-			esc(r.stock ?? 0),
-			esc(r.visible === true ? "true" : "false"),
+			esc(r.stock_quantity ?? 0),
+			esc(r.is_visible === true ? "true" : "false"),
 		].join(",");
 		lines.push(line);
 	}

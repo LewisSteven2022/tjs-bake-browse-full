@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000",
+  "backendAuthType": "basic token",
+  "backendUsername": "steve@outlook.com",
+  "backendPassword": "B7cizBonqyBMRtyc",
+  "executionArgs": {
+    "projectName": "tjs-bake-browse-full",
+    "projectPath": "/Users/steve/SideProjects/tjs-bake-browse-full",
+    "testIds": [],
+    "additionalInstruction": "Execute comprehensive backend API tests focusing on authentication, product management, order processing, inventory tracking, and admin functionality. Test all endpoints for proper response formats, error handling, and business logic validation.",
+    "envs": {
+      "API_KEY": "sk-user-iaFJ4khhCYFfZF0KBKx6bQ6DQgDGT1ZzcE6pb-kYQMPOL75hoEMkHJz3VgM8_3d2my9glrAUJ1ARhKXHp4Dzm2nXaw1x2VdEAG2Oosp-UUz7SStMTkb1saXrqkmHOp4Y6Rc"
+    }
+  },
+  "proxy": "http://04878f4b-5b93-4aaf-8757-eac89d4c5217:5uaElWbpep1rtuTUQxTSUnIeav4WrNJT@tun.testsprite.com:8080"
+}

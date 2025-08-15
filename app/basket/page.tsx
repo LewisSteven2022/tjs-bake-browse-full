@@ -48,10 +48,10 @@ export default function BasketPage() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
+			<div className="min-h-screen bg-elegance flex items-center justify-center">
 				<div className="text-center">
-					<div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-					<p className="text-gray-600">Loading your basket...</p>
+					<div className="w-8 h-8 border border-neutral-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+					<p className="text-elegance-body">Loading your basket...</p>
 				</div>
 			</div>
 		);
@@ -59,35 +59,35 @@ export default function BasketPage() {
 
 	if (items.length === 0) {
 		return (
-			<div className="min-h-screen">
-				<div className="max-w-4xl mx-auto px-4 py-8">
+			<div className="min-h-screen bg-elegance">
+				<div className="container-elegance section-elegance">
 					{/* Header */}
-					<div className="mb-8">
+					<div className="mb-16">
 						<Link
 							href="/"
-							className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors mb-4">
+							className="inline-flex items-center space-x-2 nav-elegance-link mb-8">
 							<ArrowLeft className="w-4 h-4" />
-							Continue Shopping
+							<span>Continue Shopping</span>
 						</Link>
-						<h1 className="text-3xl font-bold text-gray-800 text-center">
+						<h1 className="text-3xl text-elegance-heading text-center">
 							Your Basket
 						</h1>
 					</div>
 
 					{/* Empty State */}
-					<div className="text-center max-w-md mx-auto">
-						<ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-						<h1 className="text-2xl font-bold text-gray-800 mb-2">
+					<div className="text-center max-w-md mx-auto space-elegance-compact">
+						<ShoppingBag className="w-16 h-16 text-neutral-400 mx-auto mb-6" />
+						<h2 className="text-elegance-heading text-xl mb-3">
 							Your basket is empty
-						</h1>
-						<p className="text-gray-600 mb-6">
+						</h2>
+						<p className="text-elegance-body mb-8">
 							Looks like you haven't added any items to your basket yet.
 						</p>
 						<Link
 							href="/baked-goods"
-                            className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg hover:bg-primaryDark transition-colors">
-							<ShoppingBag className="w-5 h-5" />
-							Start Shopping
+							className="btn-elegance-primary inline-flex items-center space-x-2">
+							<ShoppingBag className="w-4 h-4" />
+							<span>Start Shopping</span>
 						</Link>
 					</div>
 				</div>
@@ -96,67 +96,69 @@ export default function BasketPage() {
 	}
 
 	return (
-		<div className="min-h-screen">
-			<div className="max-w-4xl mx-auto px-4 py-8">
+		<div className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
 				{/* Header */}
-				<div className="mb-8">
+				<div className="mb-12">
 					<Link
 						href="/"
-                        className="inline-flex items-center gap-2 text-primary hover:text-primaryDark transition-colors mb-4">
+						className="inline-flex items-center space-x-2 nav-elegance-link mb-8">
 						<ArrowLeft className="w-4 h-4" />
-						Continue Shopping
+						<span>Continue Shopping</span>
 					</Link>
 					<div className="flex items-center justify-between">
-						<h1 className="text-3xl font-bold text-gray-800">Your Basket</h1>
+						<h1 className="text-3xl text-elegance-heading">Your Basket</h1>
 						<button
 							onClick={handleClearCart}
 							disabled={updating === "clear"}
-							className="inline-flex items-center gap-2 text-red-600 hover:text-red-800 transition-colors disabled:opacity-50">
-							<Trash2 className="w-4 h-4" />
+							className="btn-elegance-ghost text-red-600 hover:text-red-800 disabled:opacity-50">
+							<Trash2 className="w-4 h-4 mr-2" />
 							Clear Basket
 						</button>
 					</div>
 				</div>
 
 				{/* Basket Items */}
-				<div className="space-y-4 mb-8">
+				<div className="space-y-6 mb-12">
 					{items.map((item) => (
 						<div
 							key={item.product_id}
-							className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-							<div className="flex items-center gap-4">
+							className="card-elegance border-b border-neutral-200 pb-6">
+							<div className="flex items-center space-x-6">
 								{/* Product Image */}
-								<div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+								<div className="w-20 h-20 bg-neutral-50 flex items-center justify-center">
 									{item.image_url ? (
 										<img
 											src={item.image_url}
 											alt={item.name}
-											className="w-full h-full object-cover rounded-lg"
+											className="w-full h-full object-cover"
 										/>
 									) : (
-										<ShoppingBag className="w-8 h-8 text-gray-400" />
+										<ShoppingBag className="w-8 h-8 text-neutral-400" />
 									)}
 								</div>
 
 								{/* Product Info */}
 								<div className="flex-1">
-									<h3 className="font-semibold text-gray-800 text-lg">
+									<h3 className="text-elegance-heading text-lg mb-1">
 										{item.name}
 									</h3>
-									<p className="text-gray-600">{GBP(item.price_pence)} each</p>
+									<p className="text-elegance-price">
+										{GBP(item.price_pence)} each
+									</p>
 								</div>
 
 								{/* Quantity Controls */}
-								<div className="flex items-center gap-2">
+								<div className="flex items-center space-x-3">
 									<button
 										onClick={() =>
 											handleQuantityChange(item.product_id, item.qty - 1)
 										}
 										disabled={updating === item.product_id || item.qty <= 1}
-										className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+										className="w-8 h-8 flex items-center justify-center border border-neutral-300 hover:border-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
 										<Minus className="w-4 h-4" />
 									</button>
-									<span className="w-12 text-center font-medium">
+									<span className="w-12 text-center text-elegance-body font-medium">
 										{item.qty}
 									</span>
 									<button
@@ -164,14 +166,14 @@ export default function BasketPage() {
 											handleQuantityChange(item.product_id, item.qty + 1)
 										}
 										disabled={updating === item.product_id}
-										className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-50">
+										className="w-8 h-8 flex items-center justify-center border border-neutral-300 hover:border-neutral-400 disabled:opacity-50 transition-colors">
 										<Plus className="w-4 h-4" />
 									</button>
 								</div>
 
 								{/* Item Total */}
 								<div className="text-right min-w-[80px]">
-									<p className="font-semibold text-gray-800">
+									<p className="text-elegance-heading">
 										{GBP(item.price_pence * item.qty)}
 									</p>
 								</div>
@@ -180,7 +182,7 @@ export default function BasketPage() {
 								<button
 									onClick={() => handleRemoveItem(item.product_id)}
 									disabled={updating === item.product_id}
-									className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-full transition-colors disabled:opacity-50">
+									className="p-2 text-red-600 hover:text-red-800 transition-colors disabled:opacity-50">
 									<Trash2 className="w-4 h-4" />
 								</button>
 							</div>
@@ -189,28 +191,26 @@ export default function BasketPage() {
 				</div>
 
 				{/* Order Summary */}
-				<div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-xl font-semibold text-gray-800">
-							Order Summary
-						</h2>
+				<div className="card-elegance border border-neutral-200 p-8">
+					<div className="flex items-center justify-between mb-8">
+						<h2 className="text-elegance-heading text-xl">Order Summary</h2>
 					</div>
 
-					<div className="space-y-3 mb-6">
-						<div className="flex justify-between text-gray-600">
+					<div className="space-y-4 mb-8">
+						<div className="flex justify-between text-elegance-body">
 							<span>
 								Subtotal ({items.reduce((sum, item) => sum + item.qty, 0)}{" "}
 								items)
 							</span>
-							<span>{GBP(total)}</span>
+							<span className="text-elegance-heading">{GBP(total)}</span>
 						</div>
 					</div>
 
 					{/* Checkout Button */}
-					<div className="flex gap-4">
+					<div>
 						<Link
 							href="/checkout"
-                            className="flex-1 bg-primary text-white text-center py-3 px-6 rounded-lg hover:bg-primaryDark transition-colors font-medium">
+							className="btn-elegance-primary w-full text-center block">
 							Proceed to Checkout
 						</Link>
 					</div>

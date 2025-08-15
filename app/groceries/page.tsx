@@ -35,8 +35,12 @@ async function fetchGroceries(): Promise<Product[]> {
 		const data = await response.json();
 		const products = data.products || [];
 
-		// Filter products by category slug (not UUID)
+		// Filter products by category slug AND visibility
 		const groceriesProducts = products.filter((product: Product) => {
+			// First check visibility - only show visible products
+			const isVisible = product.is_visible === true || product.visible === true;
+			if (!isVisible) return false;
+
 			// Normalise categories to array
 			const cats = product?.categories
 				? Array.isArray(product.categories)
@@ -100,11 +104,11 @@ export default function GroceriesPage() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-white">
-				<div className="container mx-auto px-4 py-8">
+			<div className="min-h-screen bg-elegance">
+				<div className="container-elegance section-elegance">
 					<div className="text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-						<p className="mt-4 text-blue-600">Loading groceries...</p>
+						<div className="animate-spin rounded-full h-8 w-8 border-b border-neutral-400 mx-auto"></div>
+						<p className="mt-4 text-elegance-body">Loading groceries...</p>
 					</div>
 				</div>
 			</div>
@@ -113,13 +117,13 @@ export default function GroceriesPage() {
 
 	if (error) {
 		return (
-			<div className="min-h-screen bg-white">
-				<div className="container mx-auto px-4 py-8">
-					<div className="text-center">
+			<div className="min-h-screen bg-elegance">
+				<div className="container-elegance section-elegance">
+					<div className="text-center space-elegance-compact">
 						<p className="text-red-600 mb-4">Error: {error}</p>
 						<button
 							onClick={() => window.location.reload()}
-							className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+							className="btn-elegance-secondary">
 							Retry
 						</button>
 					</div>
@@ -129,24 +133,24 @@ export default function GroceriesPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-white">
-			<div className="container mx-auto px-4 py-8">
-				<div className="text-center mb-12">
-					<h1 className="text-4xl font-bold text-blue-600 mb-4">
+		<div className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
+				<div className="text-center mb-16">
+					<h1 className="text-4xl text-elegance-heading mb-4">
 						Fresh Groceries
 					</h1>
-					<p className="text-lg text-blue-600 max-w-2xl mx-auto">
+					<p className="text-elegance-body max-w-2xl mx-auto">
 						Quality ingredients and essential grocery items for all your baking
 						and cooking needs.
 					</p>
 				</div>
 
 				{products.length === 0 ? (
-					<div className="text-center text-blue-600 text-lg">
+					<div className="text-center text-elegance-body">
 						No groceries available at the moment.
 					</div>
 				) : (
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+					<div className="grid-elegance-products">
 						{products.map((product) => (
 							<ProductCard
 								key={product.id}

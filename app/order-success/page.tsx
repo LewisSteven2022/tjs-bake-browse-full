@@ -11,48 +11,50 @@ export default function OrderSuccessPage({
 			: undefined;
 
 	return (
-		<main className="mx-auto max-w-3xl p-6">
-			<h1 className="mb-2 text-2xl font-semibold text-green-700">Thank you!</h1>
-			<p className="mb-4 text-gray-700">
-				Your order has been received and is currently{" "}
-				<span className="font-medium">unpaid</span>. We’ll email you with
-				updates.
-			</p>
-
-			{orderId && (
-				<div className="mb-6 rounded-2xl border p-4">
-					<div className="text-sm text-gray-600">Order reference</div>
-					<div className="font-mono text-lg">{orderId}</div>
-				</div>
-			)}
-
-			<div className="flex gap-4 justify-center">
-				<Link
-					href="/"
-					className="rounded-full border px-4 py-2 hover:bg-gray-50">
-					Continue shopping
-				</Link>
-				<Link
-					href="/basket"
-					className="rounded-full bg-blue-800 px-4 py-2 text-white hover:bg-blue-700">
-					View basket
-				</Link>
-			</div>
-
-			{/* Suggestions Section */}
-			<div className="mt-8 pt-6 border-t border-gray-200">
-				<div className="text-center">
-					<h2 className="text-lg font-medium text-gray-900 mb-2">
-						How was your ordering experience?
-					</h2>
-					<p className="text-gray-600 mb-4">
-						We'd love to hear your feedback and suggestions for improvement.
+		<main className="min-h-screen bg-elegance">
+			<div className="container-elegance section-elegance">
+				<div className="max-w-2xl mx-auto text-center">
+					<h1 className="text-4xl text-elegance-heading mb-4 text-green-700">
+						Thank you!
+					</h1>
+					<p className="text-elegance-body text-lg mb-8">
+						Your order has been received and is currently{" "}
+						<span className="text-elegance-heading">unpaid</span>. We'll email
+						you with updates.
 					</p>
-					<Link
-						href="/suggestions"
-						className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-blue-800 hover:bg-blue-100 transition-colors duration-200">
-						💡 Share Your Suggestions
-					</Link>
+
+					{orderId && (
+						<div className="card-elegance border border-neutral-200 p-6 mb-8">
+							<div className="text-elegance-caption mb-2">Order Reference</div>
+							<div className="font-mono text-lg text-elegance-heading">
+								{orderId}
+							</div>
+						</div>
+					)}
+
+					<div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+						<Link href="/" className="btn-elegance-secondary">
+							Continue Shopping
+						</Link>
+						<Link href="/basket" className="btn-elegance-primary">
+							View Basket
+						</Link>
+					</div>
+
+					{/* Suggestions Section */}
+					<div className="border-t border-neutral-200 pt-12">
+						<div className="text-center">
+							<h2 className="text-elegance-heading text-xl mb-4">
+								How was your ordering experience?
+							</h2>
+							<p className="text-elegance-body mb-6">
+								We'd love to hear your feedback and suggestions for improvement.
+							</p>
+							<Link href="/suggestions" className="btn-elegance-ghost">
+								Share Your Suggestions →
+							</Link>
+						</div>
+					</div>
 				</div>
 			</div>
 		</main>

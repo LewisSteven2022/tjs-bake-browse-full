@@ -107,51 +107,34 @@ const PremiumNotification: React.FC<NotificationProps> = ({
 	const getIconBg = () => {
 		switch (type) {
 			case "basket":
-				return "bg-gradient-to-br from-blue-500 to-purple-600";
+				return "bg-neutral-900";
 			case "success":
-				return "bg-gradient-to-br from-green-500 to-emerald-600";
+				return "bg-green-600";
 			case "info":
-				return "bg-gradient-to-br from-blue-500 to-cyan-600";
+				return "bg-neutral-700";
 			case "warning":
-				return "bg-gradient-to-br from-yellow-500 to-orange-600";
+				return "bg-yellow-600";
 			case "error":
-				return "bg-gradient-to-br from-red-500 to-pink-600";
+				return "bg-red-600";
 			default:
-				return "bg-gradient-to-br from-blue-500 to-purple-600";
+				return "bg-neutral-900";
 		}
 	};
 
 	const getBorderColor = () => {
 		switch (type) {
 			case "basket":
-				return "border-l-blue-500";
+				return "border-l-neutral-900";
 			case "success":
-				return "border-l-green-500";
+				return "border-l-green-600";
 			case "info":
-				return "border-l-blue-500";
+				return "border-l-neutral-700";
 			case "warning":
-				return "border-l-yellow-500";
+				return "border-l-yellow-600";
 			case "error":
-				return "border-l-red-500";
+				return "border-l-red-600";
 			default:
-				return "border-l-blue-500";
-		}
-	};
-
-	const getShimmerColors = () => {
-		switch (type) {
-			case "basket":
-				return "from-blue-500 via-purple-600 to-pink-500";
-			case "success":
-				return "from-green-500 via-emerald-600 to-teal-500";
-			case "info":
-				return "from-blue-500 via-cyan-600 to-indigo-500";
-			case "warning":
-				return "from-yellow-500 via-orange-600 to-red-500";
-			case "error":
-				return "from-red-500 via-pink-600 to-rose-500";
-			default:
-				return "from-blue-500 via-purple-600 to-pink-500";
+				return "border-l-neutral-900";
 		}
 	};
 
@@ -168,36 +151,27 @@ const PremiumNotification: React.FC<NotificationProps> = ({
 						damping: 30,
 						duration: 0.4,
 					}}
-					className={`relative bg-white rounded-xl shadow-lg border-l-4 ${getBorderColor()} overflow-hidden border border-gray-100`}
+					className={`relative bg-white shadow-lg border-l-4 ${getBorderColor()} overflow-hidden border border-neutral-200`}
 					style={{ minWidth: "280px", maxWidth: "340px" }}>
-					{/* Shimmer effect at top */}
-					<div
-						className={`h-1 bg-gradient-to-r ${getShimmerColors()} animate-pulse`}
-					/>
-
 					<div className="p-4">
 						{/* Header */}
 						<div className="flex items-center justify-between mb-3">
 							<div className="flex items-center gap-3">
 								<div
-									className={`w-7 h-7 rounded-full ${getIconBg()} flex items-center justify-center text-white shadow-lg`}>
+									className={`w-7 h-7 ${getIconBg()} flex items-center justify-center text-white`}>
 									{getIcon()}
 								</div>
-								<h3 className="font-bold text-gray-900 text-base tracking-tight">
-									{title}
-								</h3>
+								<h3 className="text-elegance-heading text-base">{title}</h3>
 							</div>
 							<button
 								onClick={handleClose}
-								className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-full hover:bg-gray-100">
+								className="text-neutral-400 hover:text-neutral-600 transition-colors p-1 hover:bg-neutral-100">
 								<X size={16} />
 							</button>
 						</div>
 
 						{/* Message */}
-						<p className="text-gray-700 text-sm leading-relaxed mb-4 font-medium">
-							{message}
-						</p>
+						<p className="text-elegance-body text-sm mb-4">{message}</p>
 
 						{/* Actions */}
 						{showActions && (
@@ -205,14 +179,14 @@ const PremiumNotification: React.FC<NotificationProps> = ({
 								{onViewBasket && (
 									<button
 										onClick={onViewBasket}
-										className="flex-1 bg-primaryDark text-white px-4 py-2.5 rounded-full font-semibold text-sm hover:bg-primary transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0">
+										className="flex-1 btn-elegance-primary text-sm">
 										View Basket
 									</button>
 								)}
 								{onContinueShopping && (
 									<button
 										onClick={onContinueShopping}
-										className="flex-1 bg-gray-50 text-gray-700 px-4 py-2.5 rounded-full font-semibold text-sm hover:bg-gray-100 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 border border-gray-200">
+										className="flex-1 btn-elegance-secondary text-sm">
 										Continue Shopping
 									</button>
 								)}

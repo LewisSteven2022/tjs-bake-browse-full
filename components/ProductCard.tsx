@@ -1,12 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { addItem } from "@/lib/cart";
 import AllergenIcons from "@/components/AllergenIcons";
-// Remove ProductGrid import and define Product type locally
+
 type Product = {
 	id: string;
 	name: string;
@@ -55,100 +54,71 @@ export default function ProductCard({ product }: { product: Product }) {
 			</div>
 
 			<motion.div
-				initial={{ opacity: 0 }}
-				whileInView={{ opacity: 1 }}
+				initial={{ opacity: 0, y: 20 }}
+				whileInView={{ opacity: 1, y: 0 }}
 				viewport={{ once: true }}
-				transition={{ duration: 0.2 }}
-				className="bg-white rounded-lg shadow-lg hover:shadow-xl border border-gray-200 hover:border-blue-200 transition-all duration-300 overflow-hidden flex flex-col h-full">
+				transition={{ duration: 0.5 }}
+				className="card-elegance-product group">
 				{/* Product Image */}
-				<div className="w-full h-48 relative">
+				<div className="relative h-80 bg-neutral-50 overflow-hidden mb-6">
 					{product.image_url ? (
 						<Image
 							src={product.image_url}
 							alt={product.name}
 							fill
-							className="object-cover"
+							className="img-elegance-product"
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 						/>
 					) : (
-						<div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-							<svg
-								className="w-12 h-12"
-								fill="currentColor"
-								viewBox="0 0 20 20">
-								<path
-									fillRule="evenodd"
-									d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-									clipRule="evenodd"
-								/>
-							</svg>
+						<div className="w-full h-full bg-neutral-100 flex items-center justify-center">
+							<div className="w-20 h-20 rounded-full bg-neutral-200 flex items-center justify-center">
+								<span className="text-neutral-400 text-2xl font-light">?</span>
+							</div>
 						</div>
 					)}
+
+					{/* Hover Overlay */}
+					<div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
+
+					{/* Add to Cart Button - appears on hover */}
+					<motion.button
+						onClick={addToBasket}
+						disabled={isAdding || isAdded}
+						className="absolute bottom-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 btn-elegance-secondary disabled:opacity-50"
+						whileHover={{ scale: 1.02 }}
+						whileTap={{ scale: 0.98 }}>
+						{isAdding ? "Adding..." : isAdded ? "Added ✓" : "Add to Cart"}
+					</motion.button>
 				</div>
 
-				{/* Content */}
-				<div className="flex flex-col items-center text-center p-6 pb-3 space-y-2 flex-grow">
-					<h3 className="font-semibold text-xl text-primaryDark leading-tight">
+				{/* Product Info */}
+				<div className="text-center space-y-2">
+					<h3 className="text-lg font-light tracking-wide text-neutral-800">
 						{product.name}
 					</h3>
-					<p className="text-primaryDark font-semibold text-lg">
+					<p className="text-elegance-price">
 						£{(product.price_pence / 100).toFixed(2)}
 					</p>
+					{product.pack_label && (
+						<p className="text-xs text-neutral-400 italic">
+							{product.pack_label}
+						</p>
+					)}
 
-					{/* Optional elements container with consistent height */}
-					<div className="min-h-[80px] flex flex-col items-center justify-center space-y-2">
-						{product.pack_label && (
-							<span className="text-sm text-gray-600 italic bg-gray-50 px-3 py-1 rounded-full">
-								{product.pack_label}
-							</span>
-						)}
-
-						{/* New Clean Allergen Icons */}
-						<AllergenIcons allergens={product.allergens} variant="default" />
-					</div>
-
+					{/* Error Display */}
 					{error && (
-						<div className="text-red-500 text-sm mt-2 bg-red-50 px-3 py-2 rounded-lg">
+						<div className="text-red-500 text-xs mt-2 bg-red-50 px-3 py-2 rounded">
 							{error}
 						</div>
 					)}
 
-					<button
-						onClick={addToBasket}
-						disabled={isAdding || isAdded}
-						className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-full font-semibold transition-colors duration-200 text-sm ${
-							isAdding
-								? "bg-gray-300 text-gray-500 cursor-not-allowed"
-								: isAdded
-								? "bg-green-500 text-white cursor-default"
-								: "bg-blue-800 hover:bg-blue-700 text-white"
-						}`}>
-						{isAdding ? (
-							<>
-								<div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-								<span className="whitespace-nowrap">Adding...</span>
-							</>
-						) : isAdded ? (
-							<>
-								<svg
-									className="w-3 h-3"
-									fill="currentColor"
-									viewBox="0 0 20 20">
-									<path
-										fillRule="evenodd"
-										d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-										clipRule="evenodd"
-									/>
-								</svg>
-								<span className="whitespace-nowrap">Added!</span>
-							</>
-						) : (
-							<>
-								<ShoppingCart size={16} />
-								<span className="whitespace-nowrap">Add to Basket</span>
-							</>
-						)}
-					</button>
+					{/* Allergen Icons */}
+					<div className="flex justify-center">
+						<AllergenIcons
+							allergens={product.allergens || []}
+							variant="minimal"
+						/>
+					</div>
 				</div>
 			</motion.div>
 		</>

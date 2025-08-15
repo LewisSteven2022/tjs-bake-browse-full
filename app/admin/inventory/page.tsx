@@ -66,6 +66,8 @@ export default function AdminInventoryPage() {
 		category_id: "",
 	});
 	const [hasNewSchema, setHasNewSchema] = useState(false);
+	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const [deleteConfirm, setDeleteConfirm] = useState<Product | null>(null);
 	const { showNotification } = useNotifications();
 
 	async function load() {
@@ -273,6 +275,39 @@ export default function AdminInventoryPage() {
 		}
 	}
 
+	async function deleteProduct(product: Product) {
+		try {
+			setDeletingId(product.id);
+			const res = await fetch(`/api/admin/products/${product.id}`, {
+				method: "DELETE",
+			});
+
+			if (!res.ok) {
+				const j = await res.json().catch(() => ({}));
+				throw new Error(j?.error || `Failed to delete product (${res.status})`);
+			}
+
+			const result = await res.json();
+			showSuccessNotification(
+				showNotification,
+				"Product Deleted",
+				result.message || "Product has been permanently deleted."
+			);
+
+			// Remove from local state immediately
+			setRows((prevRows) => prevRows.filter((row) => row.id !== product.id));
+			setDeleteConfirm(null);
+		} catch (e: any) {
+			showErrorNotification(
+				showNotification,
+				"Deletion Failed",
+				e?.message || "Failed to delete product"
+			);
+		} finally {
+			setDeletingId(null);
+		}
+	}
+
 	// Handle price input changes in the modal
 	const handlePriceChange = (newPrice: string) => {
 		if (!editingProduct) return;
@@ -333,7 +368,7 @@ export default function AdminInventoryPage() {
 				<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
 					<button
 						onClick={() => setShowAddProduct(true)}
-						className="rounded border px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 w-full sm:w-auto text-center">
+						className="btn-elegance-primary rounded-full w-full sm:w-auto text-center">
 						+ Add Product
 					</button>
 				</div>
@@ -475,11 +510,19 @@ export default function AdminInventoryPage() {
 										})()}
 									</td>
 									<td className="p-3">
-										<button
-											onClick={() => startEditingProduct(p)}
-											className="rounded-lg border px-3 py-1 hover:bg-gray-50">
-											Edit Product
-										</button>
+										<div className="flex gap-2">
+											<button
+												onClick={() => startEditingProduct(p)}
+												className="rounded-lg border px-3 py-1 hover:bg-gray-50">
+												Edit
+											</button>
+											<button
+												onClick={() => setDeleteConfirm(p)}
+												className="rounded-lg border px-3 py-1 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
+												disabled={deletingId === p.id}>
+												{deletingId === p.id ? "Deleting..." : "Delete"}
+											</button>
+										</div>
 									</td>
 								</tr>
 							))}
@@ -845,6 +888,89 @@ export default function AdminInventoryPage() {
 									className="rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700"
 									onClick={createCategory}>
 									Create Category
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Delete Confirmation Modal */}
+			{deleteConfirm && (
+				<div className="fixed inset-0 z-50">
+					<div
+						className="absolute inset-0 bg-black/40"
+						onClick={() => setDeleteConfirm(null)}
+					/>
+					<div className="absolute inset-0 grid place-items-center p-4">
+						<div className="w-full max-w-md rounded-xl border bg-white p-6 shadow-xl">
+							<h2 className="mb-4 text-lg font-semibold text-red-600">
+								Confirm Product Deletion
+							</h2>
+							<div className="space-y-4">
+								<div className="bg-red-50 border border-red-200 rounded-lg p-4">
+									<p className="text-red-800 font-medium">
+										⚠️ This action cannot be undone!
+									</p>
+									<p className="text-red-700 text-sm mt-2">
+										You are about to permanently delete:
+									</p>
+								</div>
+								<div className="bg-gray-50 rounded-lg p-4">
+									<div className="flex items-center gap-3">
+										<div className="h-12 w-12 overflow-hidden rounded bg-gray-100 shrink-0">
+											{/* eslint-disable-next-line @next/next/no-img-element */}
+											<img
+												src={
+													deleteConfirm.image_url || "/images/placeholder.svg"
+												}
+												alt={deleteConfirm.name}
+												className="h-full w-full object-cover"
+												onError={(e) => {
+													const img = e.currentTarget as HTMLImageElement;
+													img.onerror = null;
+													img.src = "/images/placeholder.svg";
+												}}
+											/>
+										</div>
+										<div>
+											<p className="font-medium">{deleteConfirm.name}</p>
+											<p className="text-sm text-gray-500">
+												Price: {GBP(deleteConfirm.price_pence)}
+											</p>
+											<p className="text-sm text-gray-500">
+												Stock: {deleteConfirm.stock}
+											</p>
+										</div>
+									</div>
+								</div>
+								<div className="text-sm text-gray-600">
+									<p className="mb-2">This will:</p>
+									<ul className="list-disc list-inside space-y-1 ml-4">
+										<li>Remove the product from your website</li>
+										<li>Delete all product data from the database</li>
+										<li>Remove the product from inventory reports</li>
+									</ul>
+									<p className="mt-3 text-xs text-gray-500">
+										Note: If this product has existing orders, deletion will be
+										prevented.
+									</p>
+								</div>
+							</div>
+							<div className="mt-6 flex justify-end gap-3">
+								<button
+									className="rounded-lg border px-4 py-2 hover:bg-gray-50"
+									onClick={() => setDeleteConfirm(null)}
+									disabled={deletingId === deleteConfirm.id}>
+									Cancel
+								</button>
+								<button
+									className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+									onClick={() => deleteProduct(deleteConfirm)}
+									disabled={deletingId === deleteConfirm.id}>
+									{deletingId === deleteConfirm.id
+										? "Deleting..."
+										: "Yes, Delete Permanently"}
 								</button>
 							</div>
 						</div>

@@ -88,9 +88,7 @@ export async function GET() {
 			);
 		}
 
-		// DEBUG: Log raw data from database
-		console.log("🔍 PRODUCTS API DEBUG - Raw data from DB (first 2 products):");
-		console.log(JSON.stringify((data || []).slice(0, 2), null, 2));
+		// Products fetched successfully
 
 		// Transform products to include backward compatibility
 		const normalizedProducts = (data || []).map((product) => {
@@ -117,9 +115,7 @@ export async function GET() {
 			return transformed;
 		});
 
-		// DEBUG: Log transformed data
-		console.log("🔍 PRODUCTS API DEBUG - Transformed data (first 2 products):");
-		console.log(JSON.stringify(normalizedProducts.slice(0, 2), null, 2));
+		// Products transformed successfully
 
 		return NextResponse.json(
 			{ products: normalizedProducts },
