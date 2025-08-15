@@ -60,67 +60,38 @@ TJ's Bake & Browse is a modern bakery e-commerce platform featuring minimal-eleg
 ### **Adding New Products**
 
 1. **Navigate to Inventory Management**
-
    - Go to Admin Dashboard → Inventory
-   - Click "Add New Product" button
-
+   - Click "+ Add Product" button
 2. **Fill in Product Details**
-
-   - **Product Name**: Full descriptive name (e.g., "Gluten-Free Sourdough Bread")
-   - **SKU**: Unique product code (e.g., "GF-SOUR-001")
-   - **Price**: Enter in pounds (converted to pence automatically)
-   - **Stock**: Current quantity available
-   - **Category**: Select from predefined categories
-   - **Short Description**: Brief customer-facing description
-   - **Pack Label**: Size/weight information (e.g., "500g", "6-pack")
-   - **Allergens**: Multi-select allergen options
-   - **Image URL**: Product image path (format: `/images/products/filename.jpg`)
-
+   - Name, Price (£), Stock (required)
+   - Select a Category (required for products to appear on category pages)
+   - Optional: Pack Label, Allergens, Image URL, Short/Full Description, Ingredients
+   - Toggle "Product visible to customers" to publish immediately
 3. **Save Product**
-   - Click "Save" to add the product
-   - Product appears on website immediately if marked as visible
-   - Real-time updates ensure customer pages refresh within 30 seconds
+   - Click "Create Product"
+   - Verify appearance on:
+     - Baked goods → `/baked-goods`
+     - Groceries → `/groceries`
 
-### **Updating Existing Products**
+### **Hiding/Showing Products**
 
-1. **Find the Product**
+1. Admin → Inventory → Edit Product
+2. Toggle "Product visible to customers"
+3. Save changes
+4. Hidden products will no longer appear on customer category pages; showing them restores visibility immediately
 
-   - Go to Admin Dashboard → Inventory
-   - Use search functionality or browse the product list
-   - Products are sorted alphabetically by name
+### **Deleting Products**
 
-2. **Edit Product Information**
+1. Admin → Inventory → Edit Product → Delete
+2. Confirm deletion (cannot be undone)
+3. If the product has existing orders, deletion may be blocked for safety
+4. Verify the product no longer appears on the relevant category page
 
-   - Click the edit icon next to the product
-   - Update any fields as needed
-   - **Price Changes**: Enter new price (automatically converted to pence)
-   - **Stock Updates**: Adjust the stock quantity
-   - **Visibility**: Toggle "Visible" to show/hide from customers
-   - **Image Updates**: Change image URL path
+### **Troubleshooting Visibility & Categories**
 
-3. **Save Changes**
-   - Click "Save Changes" to apply updates
-   - Changes are reflected immediately on the website
-   - Automatic cache invalidation ensures real-time updates
-
-### **Stock Management**
-
-1. **Stock Display**
-
-   - Current stock levels displayed in dedicated column
-   - Low stock items highlighted (configurable threshold: default 5)
-   - Out-of-stock items clearly marked
-
-2. **Stock Update Methods**
-
-   - **Direct Edit**: Click on stock number to edit inline
-   - **Product Edit Modal**: Full product editing interface
-   - **Bulk Operations**: Future enhancement planned
-
-3. **Stock Policy**
-   - **Current**: Products visible regardless of stock level
-   - **Pending Decision**: Hide products when stock reaches 0
-   - Stock decrements automatically on order creation
+- New product not appearing: ensure Category is selected and Visible is ON
+- Hidden product still visible: refresh; if persists, contact technical support
+- Deleted product still visible: refresh; if persists, contact technical support
 
 ---
 

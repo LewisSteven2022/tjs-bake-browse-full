@@ -196,6 +196,51 @@
 
 ## ✅ **RECENTLY RESOLVED ISSUES**
 
+### Products API and Visibility Rendering - RESOLVED (15 Aug 2025)
+
+- Issue: Hidden or deleted products still appeared on category pages; newly hidden items did not disappear; deleted items (e.g., Free Range Eggs) still rendered on Groceries.
+- Root Causes:
+  - Frontend category pages (`app/baked-goods/page.tsx`, `app/groceries/page.tsx`) filtered only by category and ignored `is_visible` in some paths.
+  - `/api/products` joined categories in a way that could return stale/mismatched results and didn’t support category filtering by slug robustly.
+- Fixes:
+  - Backend: Rewrote `/api/products` to use the server `admin` client, added `?category=slug` filtering via category lookup, and always filter `is_visible = true`. Ensures consistent reads under RLS and reliable category filtering.
+  - Frontend: Updated baked goods and groceries pages to call `/api/products?category=baked_goods|groceries` and render the API result without brittle client-side refiltering.
+- Files:
+  - `app/api/products/route.ts`
+  - `app/baked-goods/page.tsx`, `app/groceries/page.tsx`
+- Status: Fixed and verified via curl and UI
+
+### Product Creation: Category Not Saved - RESOLVED (15 Aug 2025)
+
+- Issue: Creating a product from the inventory dashboard didn’t persist `category_id`, resulting in products without a category.
+- Root Cause: POST handler guarded category persistence behind a schema check and didn’t normalise empty string values, so valid category selections were ignored.
+- Fix: Always persist `category_id` when provided and non-empty (trimmed). Removed fragile schema guard and returned the category in the response when present.
+- Files: `app/api/admin/inventory/route.ts` (POST)
+- Status: Fixed and verified in UI and API
+
+### **Admin Inventory UI Consolidation - COMPLETED (Current Date)**
+
+#### **Edit Button Consolidation in Admin Inventory Dashboard - IMPLEMENTED**
+
+- **Enhancement**: Consolidated all product property editing into single "Edit" button in Actions column
+- **Impact**: Cleaner admin interface with improved user experience and less visual clutter
+- **Changes Made**:
+  - Removed standalone "Edit" button next to Category column
+  - Removed standalone "Edit" button next to Allergens column
+  - Enhanced main Edit Product modal to include category selection dropdown
+  - Enhanced main Edit Product modal to include comprehensive allergen checkboxes
+  - Removed separate category editing modal (functionality moved to main modal)
+  - Removed separate allergen editing modal (functionality moved to main modal)
+  - Cleaned up unused state variables for separate editing modes
+- **Files Modified**:
+  - `app/admin/inventory/page.tsx` - Complete UI consolidation and modal enhancement
+- **User Experience**: Single consolidated editing interface reduces cognitive load and provides all editing capabilities in one place
+- **Modal Responsiveness**: Fixed modal height and scrolling issues - content area scrolls while header and footer remain fixed
+- **Priority**: Medium (UI/UX improvement)
+- **Status**: Completed and Tested
+- **Date Resolved**: Current Date
+- **Testing**: All product editing functionality now accessible through unified Edit button with proper responsive modal behavior
+
 ### **Product Schema Error - RESOLVED (August 15, 2025)**
 
 #### **Product Creation Database Schema Mismatch - FIXED**

@@ -4,7 +4,9 @@
 
 ### **0. Critical Bugs & Issues** ⭐ **IMMEDIATE ACTION REQUIRED**
 
-- [ ] **CRITICAL BUG**: Admin inventory product visibility checkbox updates database but product still visible on customer pages - date logged: 2025-08-14
+- [x] **CRITICAL BUG**: Admin inventory product visibility checkbox updates database but product still visible on customer pages - date logged: 2025-08-14 - date completed: 2025-08-15
+  - Backend: `/api/products` rewritten to use service client, robust `?category=` filtering and strict `is_visible = true`
+  - Frontend: `baked-goods` and `groceries` now call `?category=` endpoint and render results directly
 - [ ] **BUG**: Center text inside divs on disclaimer page - date logged: 2025-08-14
 - [ ] **BUG**: Reduce excessive spacing in top div on disclaimer page ('please read these disclaimers carefully...') - date logged: 2025-08-14
 - [ ] **BUG**: Remove 'contact us for phone number' button and center email button on disclaimer page bottom div - date logged: 2025-08-14

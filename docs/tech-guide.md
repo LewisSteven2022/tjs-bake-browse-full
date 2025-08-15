@@ -80,6 +80,52 @@ tjs-bake-browse-full/
 
 ---
 
+## 🔌 **Products & Categories Data Flow (Visibility-safe)**
+
+### Products API (`app/api/products/route.ts`)
+
+- Uses the server `admin` Supabase client for consistent reads under RLS.
+- Supports `?category=<slug>`; resolves `category_id` by slug and filters by `category_id`.
+- Always enforces `is_visible = true` to exclude hidden products.
+- Returns backward-compatible fields (`stock`, `visible`, `description`) and a normalized `categories` array based on a category lookup.
+- Sets `Cache-Control: no-store` to avoid stale results.
+
+### Admin Inventory (Create/Update)
+
+- POST `/api/admin/inventory`
+  - Normalises and validates inputs.
+  - Persists `category_id` when provided (non-empty string, trimmed).
+  - Returns created product with backward-compatible fields (`stock`, `visible`, `category`).
+- PATCH `/api/admin/inventory`
+  - Updates price, stock, visibility, image URL, allergens, and `category_id`.
+
+### Frontend Category Pages
+
+- `app/baked-goods/page.tsx` → fetches `/api/products?category=baked_goods` and renders directly.
+- `app/groceries/page.tsx` → fetches `/api/products?category=groceries` and renders directly.
+
+This ensures hidden items and deleted items never appear client-side.
+
+## 🧪 **Verification Steps**
+
+1. Hide a product in Admin → Inventory → Edit Product → uncheck visibility → Save.
+   - Result: Product disappears from `/baked-goods` or `/groceries` within the same session.
+2. Delete a product in Admin → Inventory → Delete.
+   - Result: Product is removed from `/api/products?category=...` and category pages.
+3. Create a product with a category selected.
+   - Result: Product appears on the correct category page immediately.
+
+## 🧯 **Troubleshooting**
+
+- If results seem inconsistent:
+  - Confirm `.env.local` uses the same Supabase project for `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
+  - Restart dev server after changing env values.
+  - Use curl to validate:
+    - `curl -s "/api/products?category=baked_goods" | jq '.products[].name'`
+    - `curl -s "/api/products?category=groceries" | jq '.products[].name'`
+
+---
+
 ## 🗄️ **Complete Database Schema**
 
 ### **Products Table**
