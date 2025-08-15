@@ -99,10 +99,10 @@ export default function BasketPage() {
 		<div className="min-h-screen bg-elegance">
 			<div className="container-elegance section-elegance">
 				{/* Header */}
-				<div className="mb-12">
+				<div className="mb-6">
 					<Link
 						href="/"
-						className="inline-flex items-center space-x-2 nav-elegance-link mb-8">
+						className="inline-flex items-center space-x-2 nav-elegance-link mb-4">
 						<ArrowLeft className="w-4 h-4" />
 						<span>Continue Shopping</span>
 					</Link>
@@ -119,23 +119,27 @@ export default function BasketPage() {
 				</div>
 
 				{/* Basket Items */}
-				<div className="space-y-6 mb-12">
+				<div className="space-y-3 mb-6">
 					{items.map((item) => (
 						<div
 							key={item.product_id}
-							className="card-elegance border-b border-neutral-200 pb-6">
-							<div className="flex items-center space-x-6">
+							className="card-elegance border-b border-neutral-200 pb-3">
+							<div className="flex items-center space-x-3">
 								{/* Product Image */}
-								<div className="w-20 h-20 bg-neutral-50 flex items-center justify-center">
+								<div className="w-14 h-14 bg-neutral-50 flex items-center justify-center overflow-hidden rounded">
 									{item.image_url ? (
 										<img
 											src={item.image_url}
 											alt={item.name}
 											className="w-full h-full object-cover"
+											onError={(e) => {
+												const target = e.target as HTMLImageElement;
+												target.style.display = 'none';
+												target.nextElementSibling?.classList.remove('hidden');
+											}}
 										/>
-									) : (
-										<ShoppingBag className="w-8 h-8 text-neutral-400" />
-									)}
+									) : null}
+									<ShoppingBag className={`w-5 h-5 text-neutral-400 ${item.image_url ? 'hidden' : ''}`} />
 								</div>
 
 								{/* Product Info */}
@@ -149,7 +153,7 @@ export default function BasketPage() {
 								</div>
 
 								{/* Quantity Controls */}
-								<div className="flex items-center space-x-3">
+								<div className="flex items-center space-x-2">
 									<button
 										onClick={() =>
 											handleQuantityChange(item.product_id, item.qty - 1)
@@ -158,7 +162,7 @@ export default function BasketPage() {
 										className="w-8 h-8 flex items-center justify-center border border-neutral-300 hover:border-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
 										<Minus className="w-4 h-4" />
 									</button>
-									<span className="w-12 text-center text-elegance-body font-medium">
+									<span className="w-10 text-center text-elegance-body font-medium">
 										{item.qty}
 									</span>
 									<button
@@ -172,7 +176,7 @@ export default function BasketPage() {
 								</div>
 
 								{/* Item Total */}
-								<div className="text-right min-w-[80px]">
+								<div className="text-right min-w-[70px]">
 									<p className="text-elegance-heading">
 										{GBP(item.price_pence * item.qty)}
 									</p>
@@ -191,12 +195,12 @@ export default function BasketPage() {
 				</div>
 
 				{/* Order Summary */}
-				<div className="card-elegance border border-neutral-200 p-8">
-					<div className="flex items-center justify-between mb-8">
+				<div className="card-elegance border border-neutral-200 p-5">
+					<div className="flex items-center justify-between mb-5">
 						<h2 className="text-elegance-heading text-xl">Order Summary</h2>
 					</div>
 
-					<div className="space-y-4 mb-8">
+					<div className="space-y-2 mb-5">
 						<div className="flex justify-between text-elegance-body">
 							<span>
 								Subtotal ({items.reduce((sum, item) => sum + item.qty, 0)}{" "}

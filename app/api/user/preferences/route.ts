@@ -7,9 +7,9 @@ export async function GET() {
   const session = await getServerSession(authOptions as any);
   const userId = (session as any)?.user?.id;
   if (!userId) return NextResponse.json({ error: "unauthorised" }, { status: 401 });
-  const { data, error } = await admin.from("users").select("bag_pref").eq("id", userId).maybeSingle();
+  const { data, error } = await admin.from("users").select("bag_pref, phone").eq("id", userId).maybeSingle();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ bag_pref: data?.bag_pref ?? null });
+  return NextResponse.json({ bag_pref: data?.bag_pref ?? null, mobile: data?.phone ?? null });
 }
 
 export async function PATCH(req: NextRequest) {

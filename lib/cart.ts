@@ -47,8 +47,18 @@ export async function addItem(newItem: CartItem): Promise<void> {
 	const existingItem = findCartItem(items, newItem.product_id);
 
 	if (existingItem) {
-		// Update quantity if item already exists
+		// Update quantity and merge other properties if item already exists
 		existingItem.qty += newItem.qty;
+		// Update image_url and other properties if they're provided
+		if (newItem.image_url !== undefined) {
+			existingItem.image_url = newItem.image_url;
+		}
+		if (newItem.name) {
+			existingItem.name = newItem.name;
+		}
+		if (newItem.price_pence) {
+			existingItem.price_pence = newItem.price_pence;
+		}
 	} else {
 		// Add new item
 		items.push(newItem);
@@ -138,6 +148,7 @@ export async function setCart(items: CartItem[]): Promise<void> {
 				product_id: i.product_id,
 				name: i.name,
 				price_pence: i.price_pence,
+				image_url: i.image_url,
 				qty: i.qty,
 			})
 		)

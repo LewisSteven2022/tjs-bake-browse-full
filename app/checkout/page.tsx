@@ -25,6 +25,7 @@ import {
 type Customer = {
 	name: string;
 	email: string;
+	mobile: string;
 };
 
 export default function CheckoutPage() {
@@ -62,6 +63,7 @@ export default function CheckoutPage() {
 	const [customer, setCustomer] = useState<Customer>({
 		name: "",
 		email: "",
+		mobile: "",
 	});
 
 	const [date, setDate] = useState<string>("");
@@ -92,6 +94,10 @@ export default function CheckoutPage() {
 					.then((r) => (r.ok ? r.json() : Promise.resolve({})))
 					.then((j) => {
 						if (typeof j?.bag_pref === "boolean") setBag(j.bag_pref);
+						// Set mobile number if available
+						if (j?.mobile) {
+							setCustomer(prev => ({ ...prev, mobile: j.mobile }));
+						}
 					})
 					.catch(() => {});
 			}
@@ -106,6 +112,7 @@ export default function CheckoutPage() {
 		setCustomer((c) => ({
 			name: c.name || (session.user?.name ?? ""),
 			email: c.email || (session.user?.email ?? ""),
+			mobile: c.mobile, // Keep existing mobile from API call
 		}));
 	}, [session]);
 
@@ -135,6 +142,7 @@ export default function CheckoutPage() {
 		if (!items.length) return "Your basket is empty.";
 		if (!customer.name.trim()) return "Please enter your full name.";
 		if (!customer.email.trim()) return "Please enter your email.";
+		if (!customer.mobile.trim()) return "Please enter your contact number.";
 		const dateErr = validateDate(date);
 		if (dateErr) return dateErr;
 		if (!time) return "Please choose a pickup time.";
@@ -170,6 +178,7 @@ export default function CheckoutPage() {
 				pickup_time: time, // "HH:mm"
 				customer_name: customer.name,
 				customer_email: customer.email,
+				customer_phone: customer.mobile,
 			};
 
 			const res = await fetch("/api/orders", {
@@ -221,7 +230,7 @@ export default function CheckoutPage() {
 	return (
 		<main className="min-h-screen bg-elegance">
 			<div className="container-elegance section-elegance">
-				<h1 className="text-3xl text-elegance-heading mb-12 text-center">
+				<h1 className="text-3xl text-elegance-heading mb-6 text-center">
 					Checkout
 				</h1>
 
@@ -232,15 +241,15 @@ export default function CheckoutPage() {
 						</p>
 					</div>
 				) : (
-					<div className="grid gap-12 lg:grid-cols-[2fr_1fr]">
+					<div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
 						{/* Left: Items + Form */}
-						<div className="space-y-8">
+						<div className="space-y-6">
 							{/* Items */}
-							<div className="space-y-4">
+							<div className="space-y-3">
 								{items.map((i) => (
 									<div
 										key={i.product_id}
-										className="card-elegance border-b border-neutral-200 pb-4">
+										className="card-elegance border-b border-neutral-200 pb-3">
 										<div className="flex items-center justify-between">
 											<div className="min-w-0">
 												<div className="text-elegance-heading">{i.name}</div>
@@ -255,7 +264,7 @@ export default function CheckoutPage() {
 									</div>
 								))}
 
-								<label className="flex items-center space-x-3 cursor-pointer select-none py-4">
+								<label className="flex items-center space-x-3 cursor-pointer select-none py-3">
 									<input
 										type="checkbox"
 										className="h-4 w-4 border border-neutral-300"
@@ -278,9 +287,9 @@ export default function CheckoutPage() {
 							</div>
 
 							{/* Customer */}
-							<section className="card-elegance border border-neutral-200 p-8">
-								<h2 className="text-elegance-subheading mb-6">Your Details</h2>
-								<div className="space-y-6">
+							<section className="card-elegance border border-neutral-200 p-5 -ml-1">
+								<h2 className="text-elegance-subheading mb-5">Your Details</h2>
+								<div className="space-y-4">
 									<div>
 										<label className="label-elegance">Full Name</label>
 										<input
@@ -305,12 +314,24 @@ export default function CheckoutPage() {
 											placeholder={session?.user?.email || "jane@example.com"}
 										/>
 									</div>
+									<div>
+										<label className="label-elegance">Contact Number</label>
+										<input
+											type="tel"
+											value={customer.mobile}
+											onChange={(e) =>
+												setCustomer({ ...customer, mobile: e.target.value })
+											}
+											className="input-elegance"
+											placeholder={customer.mobile || "07123 456 789"}
+										/>
+									</div>
 								</div>
 							</section>
 
 							{/* Pickup */}
-							<section className="card-elegance border border-neutral-200 p-8">
-								<h2 className="text-elegance-subheading mb-6">Pickup</h2>
+							<section className="card-elegance border border-neutral-200 p-5 -ml-1">
+								<h2 className="text-elegance-subheading mb-5">Pickup</h2>
 								<DateTimePicker
 									onChange={(d, t) => {
 										setDate(d);
@@ -321,9 +342,9 @@ export default function CheckoutPage() {
 						</div>
 
 						{/* Right: Summary */}
-						<aside className="card-elegance border border-neutral-200 p-8 h-fit">
-							<h2 className="text-elegance-subheading mb-6">Order Summary</h2>
-							<div className="space-y-4 text-elegance-body">
+						<aside className="card-elegance border border-neutral-200 p-5 h-fit">
+							<h2 className="text-elegance-subheading mb-5">Order Summary</h2>
+							<div className="space-y-2 text-elegance-body">
 								<div className="flex items-center justify-between">
 									<span>Subtotal</span>
 									<span className="text-elegance-heading">
@@ -342,7 +363,7 @@ export default function CheckoutPage() {
 										{formatGBP(gst)}
 									</span>
 								</div>
-								<div className="mt-6 flex items-center justify-between border-t border-neutral-200 pt-6">
+								<div className="mt-5 flex items-center justify-between border-t border-neutral-200 pt-5">
 									<span className="text-elegance-heading text-lg">Total</span>
 									<span className="text-elegance-heading text-lg">
 										{formatGBP(total)}
@@ -352,7 +373,7 @@ export default function CheckoutPage() {
 
 							<button
 								onClick={placeOrder}
-								className="btn-elegance-primary w-full mt-8">
+								className="btn-elegance-primary w-full mt-5">
 								Place Order
 							</button>
 						</aside>

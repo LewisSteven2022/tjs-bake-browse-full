@@ -14,6 +14,10 @@
 		@apply text-neutral-900 font-light tracking-wide;
 	}
 
+	.text-elegance-heading-white {
+		@apply text-neutral-200 font-light tracking-wide;
+	}
+
 	.text-elegance-subheading {
 		@apply text-neutral-700 font-light tracking-wider uppercase text-sm;
 	}
@@ -54,6 +58,10 @@
 
 	.section-elegance {
 		@apply py-20;
+	}
+
+	.section-elegance-small {
+		@apply py-10;
 	}
 
 	.grid-elegance-products {

@@ -4,7 +4,17 @@ import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { AlertTriangle, Shield, Info, Mail } from "lucide-react";
 
-export default function DisclaimerPage() {
+export default function DisclaimerPrototypePage() {
+	// Hide the global header on this test page
+	useEffect(() => {
+		const hdr = document.querySelector("header") as HTMLElement | null;
+		const prevDisplay = hdr?.style.display;
+		if (hdr) hdr.style.display = "none";
+		return () => {
+			if (hdr) hdr.style.display = prevDisplay || "";
+		};
+	}, []);
+
 	return (
 		<div className="min-h-screen bg-white">
 			{/* Header */}
@@ -327,9 +337,9 @@ export default function DisclaimerPage() {
 							Contact
 						</a>
 						<a
-							href="/how-to-order"
+							href="/disclaimer"
 							className="text-neutral-400 hover:text-white transition-colors">
-							How to Order
+							Disclaimers
 						</a>
 					</div>
 					<div className="text-xs text-neutral-500 tracking-wide">

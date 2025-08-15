@@ -31,6 +31,7 @@ export default function ProductCard({ product }: { product: Product }) {
 				product_id: product.id,
 				name: product.name,
 				price_pence: product.price_pence,
+				image_url: product.image_url,
 				qty: 1,
 			});
 
