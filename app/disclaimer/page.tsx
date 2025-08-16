@@ -45,7 +45,7 @@ export default function DisclaimerPage() {
 			</header>
 
 			{/* Hero Section */}
-			<section className="py-20 px-4">
+			<section className="py-12 px-4">
 				<div className="max-w-4xl mx-auto text-center">
 					<motion.h2
 						initial={{ opacity: 0, y: 30 }}
@@ -58,15 +58,15 @@ export default function DisclaimerPage() {
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8, delay: 0.4 }}
-						className="text-2xl md:text-3xl font-light tracking-wide text-neutral-600 mb-8">
+						className="text-2xl md:text-3xl font-light tracking-wide text-neutral-600 mb-6">
 						Safety & Quality Information
 					</motion.h3>
 					<motion.p
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8, delay: 0.6 }}
-						className="text-lg text-neutral-500 max-w-2xl mx-auto leading-relaxed">
-						Your safety and satisfaction are our highest priorities. Please take a moment to read these important notices about our gluten-free products and services.
+						className="text-lg text-neutral-500 max-w-2xl mx-auto leading-relaxed text-center">
+						Please read these disclaimers carefully before placing your order.
 					</motion.p>
 				</div>
 			</section>
@@ -81,12 +81,12 @@ export default function DisclaimerPage() {
 						transition={{ duration: 0.6 }}
 					>
 						<AlertTriangle className="w-16 h-16 mx-auto mb-6 text-neutral-600" />
-						<h2 className="text-4xl font-light tracking-widest text-neutral-800 mb-6">
+						<h2 className="text-4xl font-light tracking-widest text-neutral-800 mb-6 text-center">
 							ALLERGEN SAFETY
 						</h2>
 						<div className="w-24 h-px bg-neutral-300 mx-auto mb-8"></div>
 						
-						<p className="text-neutral-500 text-xl leading-relaxed mb-12 max-w-3xl mx-auto">
+						<p className="text-neutral-500 text-xl leading-relaxed mb-12 max-w-3xl mx-auto text-center">
 							Your safety is our absolute priority. While we maintain a dedicated gluten-free facility, please read this important information carefully.
 						</p>
 
@@ -151,12 +151,12 @@ export default function DisclaimerPage() {
 						transition={{ duration: 0.6, delay: 0.1 }}
 					>
 						<Shield className="w-16 h-16 mx-auto mb-6 text-neutral-600" />
-						<h2 className="text-4xl font-light tracking-widest text-neutral-800 mb-6">
+						<h2 className="text-4xl font-light tracking-widest text-neutral-800 mb-6 text-center">
 							QUALITY PROMISE
 						</h2>
 						<div className="w-24 h-px bg-neutral-300 mx-auto mb-12"></div>
 
-						<p className="text-neutral-500 text-xl leading-relaxed mb-16 max-w-3xl mx-auto">
+						<p className="text-neutral-500 text-xl leading-relaxed mb-16 max-w-3xl mx-auto text-center">
 							Every product is crafted with care, using premium ingredients and traditional methods for exceptional quality.
 						</p>
 
@@ -213,12 +213,12 @@ export default function DisclaimerPage() {
 						viewport={{ once: true }}
 						transition={{ duration: 0.6 }}
 					>
-						<h2 className="text-4xl font-light tracking-widest text-neutral-800 mb-6">
+						<h2 className="text-4xl font-light tracking-widest text-neutral-800 mb-6 text-center">
 							MORE INFORMATION
 						</h2>
 						<div className="w-24 h-px bg-neutral-300 mx-auto mb-12"></div>
 						
-						<p className="text-neutral-500 text-xl leading-relaxed mb-16 max-w-3xl mx-auto">
+						<p className="text-neutral-500 text-xl leading-relaxed mb-16 max-w-3xl mx-auto text-center">
 							Find detailed information about our ordering process and policies.
 						</p>
 
@@ -266,7 +266,7 @@ export default function DisclaimerPage() {
 			</section>
 
 			{/* Contact Section */}
-			<section className="py-16 px-4">
+			<section className="py-12 px-4">
 				<div className="max-w-4xl mx-auto text-center">
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
@@ -275,26 +275,19 @@ export default function DisclaimerPage() {
 						transition={{ duration: 0.6 }}
 					>
 						<Mail className="w-12 h-12 mx-auto mb-4 text-neutral-600" />
-						<h2 className="text-3xl font-light tracking-widest text-neutral-800 mb-4">
+						<h2 className="text-3xl font-light tracking-widest text-neutral-800 mb-4 text-center">
 							QUESTIONS?
 						</h2>
 						<div className="w-16 h-px bg-neutral-300 mx-auto mb-8"></div>
-						<p className="text-lg text-neutral-500 mb-8 max-w-2xl mx-auto leading-relaxed">
+						<p className="text-lg text-neutral-500 mb-8 max-w-2xl mx-auto leading-relaxed text-center">
 							If you have any questions about our products, ingredients, or policies, we're here to help.
 						</p>
-						<div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+						<div className="flex justify-center">
 							<a
 								href="mailto:tjsbakeandbrowse@gmail.com"
 								className="text-neutral-600 text-sm tracking-wider uppercase border-b border-neutral-300 pb-1 hover:border-neutral-600 transition-colors"
 							>
 								tjsbakeandbrowse@gmail.com
-							</a>
-							<span className="text-neutral-300">|</span>
-							<a
-								href="/suggestions"
-								className="text-neutral-600 text-sm tracking-wider uppercase border-b border-neutral-300 pb-1 hover:border-neutral-600 transition-colors"
-							>
-								Contact Form
 							</a>
 						</div>
 					</motion.div>
