@@ -122,6 +122,22 @@ export async function POST(req: NextRequest) {
 		});
 		const order_id = orderInserted.id;
 
+		// Fetch product SKUs for the order items
+		const productIds = saneItems.map(item => item.product_id);
+		const { data: products, error: productsError } = await admin
+			.from("products")
+			.select("id, sku")
+			.in("id", productIds);
+
+		if (productsError) {
+			console.warn("Failed to fetch product SKUs:", productsError);
+		}
+
+		// Create a lookup map for SKUs
+		const skuMap = new Map(
+			products?.map(p => [p.id, p.sku || `UNKNOWN-${p.id.slice(0, 8)}`]) || []
+		);
+
 		// Check if order_items table exists before trying to insert
 		try {
 			// Try to insert order items into the new order_items table
@@ -129,7 +145,7 @@ export async function POST(req: NextRequest) {
 				order_id,
 				product_id: item.product_id,
 				product_name: item.name,
-				product_sku: "SKU", // TODO: Get actual SKU from product
+				product_sku: skuMap.get(item.product_id) || `UNKNOWN-${item.product_id.slice(0, 8)}`,
 				quantity: item.qty,
 				unit_price_pence: item.price_pence,
 				total_price_pence: item.price_pence * item.qty,
