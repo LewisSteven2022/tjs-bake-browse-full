@@ -99,10 +99,6 @@ export async function PATCH(req: NextRequest) {
 			}
 		});
 
-		// DEBUG: Log what we're about to update
-		console.log("🔍 PATCH DEBUG - Product ID:", id);
-		console.log("🔍 PATCH DEBUG - Updates received:", updates);
-		console.log("🔍 PATCH DEBUG - Update data to send:", updateData);
 
 		const { data, error } = await admin
 			.from("products")
@@ -124,12 +120,8 @@ export async function PATCH(req: NextRequest) {
 			.single();
 
 		if (error) {
-			console.log("🚨 PATCH ERROR:", error);
 			throw error;
 		}
-
-		// DEBUG: Log what the database returned
-		console.log("✅ PATCH SUCCESS - Data returned from DB:", data);
 
 		// Transform response for backward compatibility
 		const cat = (data as any).categories;

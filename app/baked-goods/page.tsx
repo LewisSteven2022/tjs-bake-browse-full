@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
+import AllergenLegend from "@/components/AllergenLegend";
 
 // Define Product type locally to avoid import issues
 type Product = {
@@ -133,21 +134,32 @@ export default function BakedGoodsPage() {
 						No baked goods available at the moment.
 					</div>
 				) : (
-					<div className="grid-elegance-products">
-						{products.map((product) => (
-							<ProductCard
-								key={product.id}
-								product={{
-									id: product.id,
-									name: product.name,
-									price_pence: product.price_pence,
-									image_url: product.image_url,
-									pack_label: product.pack_label,
-									allergens: product.allergens,
-								}}
+					<>
+						{/* Allergen Guide */}
+						<div className="mb-12">
+							<AllergenLegend 
+								variant="compact" 
+								title="Allergen Guide" 
+								showTitle={true} 
 							/>
-						))}
-					</div>
+						</div>
+
+						<div className="grid-elegance-products">
+							{products.map((product) => (
+								<ProductCard
+									key={product.id}
+									product={{
+										id: product.id,
+										name: product.name,
+										price_pence: product.price_pence,
+										image_url: product.image_url,
+										pack_label: product.pack_label,
+										allergens: product.allergens,
+									}}
+								/>
+							))}
+						</div>
+					</>
 				)}
 			</div>
 		</div>
